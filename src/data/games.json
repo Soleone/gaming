@@ -1,0 +1,61 @@
+[
+  {
+    "id": "castlevania-belmonts-curse",
+    "title": "Castlevania: Belmont's Curse",
+    "cover": "/covers/castlevania.jpg",
+    "release": {
+      "precision": "day",
+      "year": 2026,
+      "month": 10,
+      "day": 15
+    },
+    "source": "https://www.konami.com/games/castlevania/belmonts_curse/us/en-us/product",
+    "hype": 4,
+    "review": {
+      "text": "",
+      "score": 8
+    }
+  },
+  {
+    "id": "gta-vi",
+    "title": "Grand Theft Auto VI",
+    "cover": "/covers/gta-vi.jpg",
+    "release": {
+      "precision": "day",
+      "year": 2026,
+      "month": 11,
+      "day": 19
+    },
+    "source": "https://www.rockstargames.com/VI",
+    "hype": 5,
+    "review": null
+  },
+  {
+    "id": "ocarina-of-time-remake",
+    "title": "The Legend of Zelda: Ocarina of Time",
+    "cover": "/covers/ocarina-of-time.jpg",
+    "release": {
+      "precision": "day",
+      "year": 2026,
+      "month": 11,
+      "day": 5
+    },
+    "source": "https://www.nintendo.com/au/news-and-articles/you-have-been-summoned-to-watch-the-new-the-legend-of-zelda-ocarina-of-time-overview-trailer/",
+    "hype": null,
+    "review": null
+  },
+  {
+    "id": "phantom-blade-zero",
+    "title": "Phantom Blade Zero",
+    "cover": "/covers/phantom-blade-zero.jpg",
+    "release": {
+      "precision": "day",
+      "year": 2026,
+      "month": 10,
+      "day": 29
+    },
+    "source": "https://pbz.s-game.com/en-US/news/creative-director-letter/",
+    "hype": 5,
+    "review": null
+  }
+]

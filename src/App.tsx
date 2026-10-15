@@ -1,18 +1,248 @@
-import { ThemePicker } from "@/components/soleone/theme-picker";
+import { lazy, Suspense, useState } from "react";
+import {
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  Gamepad2,
+  Palette,
+  Pencil,
+  Plus,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import { Separator } from "@/components/ui/separator";
+import { ChoiceField } from "@/games/ChoiceField";
+import { GameCard } from "@/games/GameCard";
+import { calendarSections, gamesSchema, MONTHS, type Game } from "@/games/model";
+import gameData from "@/data/games.json";
+
+const ThemePicker = lazy(() =>
+  import("@/components/soleone/theme-picker").then((module) => ({ default: module.ThemePicker })),
+);
+const initialGames = gamesSchema.parse(gameData);
+const DevEditor = import.meta.env.DEV ? lazy(() => import("./games/Editor")) : null;
+const currentYear = new Date().getFullYear();
+const initialYear = initialGames.some((game) => game.release.year === currentYear)
+  ? currentYear
+  : (initialGames.find((game) => game.release.year !== null)?.release.year ?? currentYear);
 
 export function App() {
+  const [saved, setSaved] = useState<{ base: Game[]; games: Game[] } | null>(null);
+  const games = saved?.base === initialGames ? saved.games : initialGames;
+  const setGames = (next: Game[]) => setSaved({ base: initialGames, games: next });
+  const [year, setYear] = useState(String(initialYear));
+  const [month, setMonth] = useState("all");
+  const [editor, setEditor] = useState<{ id: string | null } | null>(null);
+  const years = [
+    ...new Set([
+      currentYear,
+      currentYear + 1,
+      ...games.flatMap((game) => (game.release.year === null ? [] : [game.release.year])),
+      ...(year === "unscheduled" ? [] : [Number(year)]),
+    ]),
+  ].sort((a, b) => a - b);
+  const sections = calendarSections(games, year, month);
+  const selectedGames = games.filter((game) => String(game.release.year ?? "unscheduled") === year);
+  const count = sections.reduce((total, section) => total + section.games.length, 0);
+  const editGame = DevEditor ? (id: string) => setEditor({ id }) : undefined;
+  const changeYear = (next: string) => {
+    setYear(next);
+    setMonth("all");
+  };
   return (
-    <div className="flex min-h-svh flex-col">
-      <header className="flex items-center justify-between p-4">
-        <span className="font-heading font-medium">gaming</span>
-        <ThemePicker />
+    <div className="min-h-svh">
+      <header className="border-b border-border">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-4 sm:px-8">
+          <a
+            href="/"
+            className="flex items-center gap-2.5 font-heading text-lg font-semibold tracking-tight"
+            aria-label="Gaming home"
+          >
+            <Gamepad2 className="size-5 text-primary" aria-hidden="true" />
+            gaming
+            <span className="hidden text-sm font-normal tracking-normal text-muted-foreground sm:inline">
+              / the personal collection
+            </span>
+          </a>
+          <div className="flex items-center gap-2">
+            {DevEditor && (
+              <Button variant="ghost" onClick={() => setEditor({ id: games[0]?.id ?? null })}>
+                <Pencil data-icon="inline-start" />
+                Edit collection
+              </Button>
+            )}
+            <Suspense
+              fallback={
+                <Button variant="ghost" size="icon" disabled aria-label="Loading themes">
+                  <Palette />
+                </Button>
+              }
+            >
+              <ThemePicker />
+            </Suspense>
+          </div>
+        </div>
       </header>
-      <main className="flex flex-1 items-center justify-center p-4">
-        <p className="text-muted-foreground">
-          Press <Kbd>T</Kbd> for themes, <Kbd>D</Kbd> to flip dark and light.
-        </p>
+      <main className="mx-auto max-w-6xl px-5 pt-10 pb-16 sm:px-8 sm:pt-14">
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex flex-col gap-3">
+            <h1 className="font-heading text-4xl font-semibold tracking-tight sm:text-5xl">
+              Release calendar<span className="text-primary">.</span>
+            </h1>
+            <p className="max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+              What’s worth the wait. What lived up to it.
+            </p>
+          </div>
+          {DevEditor && (
+            <Button variant="outline" onClick={() => setEditor({ id: null })}>
+              <Plus data-icon="inline-start" />
+              Add a game
+            </Button>
+          )}
+        </div>
+        <div className="mt-9 flex flex-wrap items-end justify-between gap-5 pb-5">
+          <div className="flex items-end gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Previous year"
+              disabled={year === "unscheduled" || Number(year) <= 1970}
+              onClick={() => changeYear(String(Number(year) - 1))}
+            >
+              <ChevronLeft />
+            </Button>
+            <div className="w-32">
+              <ChoiceField
+                id="calendar-year"
+                label="Year"
+                value={year}
+                onChange={changeYear}
+                options={[
+                  ...years.map((value) => ({ value: String(value), label: String(value) })),
+                  { value: "unscheduled", label: "Unscheduled" },
+                ]}
+              />
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Next year"
+              disabled={year === "unscheduled" || Number(year) >= 2200}
+              onClick={() => changeYear(String(Number(year) + 1))}
+            >
+              <ChevronRight />
+            </Button>
+          </div>
+          <div className="w-44">
+            <ChoiceField
+              id="calendar-month"
+              label="Month"
+              value={month}
+              onChange={setMonth}
+              disabled={year === "unscheduled"}
+              options={[
+                { value: "all", label: "All months" },
+                ...MONTHS.map((label, index) => ({ value: String(index + 1), label })),
+              ]}
+            />
+          </div>
+        </div>
+        <Separator />
+        <div
+          className="flex flex-wrap items-center justify-between gap-3 py-5 text-xs text-muted-foreground"
+          aria-live="polite"
+        >
+          <p>
+            {count} {count === 1 ? "game" : "games"}
+            {month === "all" ? " on your radar" : ` in ${MONTHS[Number(month) - 1]}`}
+            <span className="mx-2" aria-hidden="true">
+              /
+            </span>
+            {selectedGames.filter((game) => game.review !== null).length} played this year
+          </p>
+          <span>Hype before. A verdict after.</span>
+        </div>
+        {sections.length ? (
+          <div className="flex flex-col gap-12 pt-3">
+            {sections.map((section) => (
+              <section
+                key={section.key}
+                className="grid gap-5 sm:grid-cols-[9rem_1fr] sm:gap-8"
+                aria-labelledby={`section-${section.key}`}
+              >
+                <div className="flex items-baseline gap-3 sm:flex-col sm:gap-1.5">
+                  <h2 id={`section-${section.key}`} className="font-heading text-xl font-medium">
+                    {section.label}
+                  </h2>
+                  <span className="text-xs text-muted-foreground">
+                    {section.games.length} {section.games.length === 1 ? "release" : "releases"}
+                  </span>
+                </div>
+                <div className="grid min-w-0 gap-x-7 gap-y-9 md:grid-cols-2">
+                  {section.games.map((game) => (
+                    <GameCard key={game.id} game={game} onEdit={editGame} />
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        ) : (
+          <Empty className="min-h-72">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <CalendarDays aria-hidden="true" />
+              </EmptyMedia>
+              <EmptyTitle>
+                <h2>Nothing on the calendar. Yet.</h2>
+              </EmptyTitle>
+              <EmptyDescription>
+                {month !== "all"
+                  ? "No dated releases this month. Games with unannounced months stay in the full-year view."
+                  : year === "unscheduled"
+                    ? "Every game has a year for now. Games without one will live here."
+                    : "A little room for the next discovery. Try another year or add a game to the collection."}
+              </EmptyDescription>
+            </EmptyHeader>
+            {month !== "all" && (
+              <EmptyContent>
+                <Button variant="outline" onClick={() => setMonth("all")}>
+                  Show the whole year
+                </Button>
+              </EmptyContent>
+            )}
+          </Empty>
+        )}
+        <Separator className="mt-14" />
+        <footer className="flex flex-wrap items-center justify-between gap-3 pt-5 text-xs text-muted-foreground">
+          <span>A small collection. Not an endless backlog.</span>
+          <span className="flex items-center gap-1.5">
+            <Kbd>T</Kbd> themes<span className="mx-1">/</span>
+            <Kbd>D</Kbd> dark & light
+          </span>
+        </footer>
       </main>
+      {DevEditor && editor && (
+        <Suspense
+          fallback={
+            <div className="fixed right-5 bottom-5 max-w-sm">
+              <Alert role="status">
+                <AlertDescription>Opening local editor…</AlertDescription>
+              </Alert>
+            </div>
+          }
+        >
+          <DevEditor initialId={editor.id} onClose={() => setEditor(null)} onSaved={setGames} />
+        </Suspense>
+      )}
     </div>
   );
 }

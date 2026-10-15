@@ -5,6 +5,7 @@ import { defineConfig, lazyPlugins } from "vite-plus";
 import { BUILTIN_THEMES } from "./src/components/soleone/theme/palettes";
 import { themePlugin } from "./src/components/soleone/theme-vite";
 import { DEFAULT_THEME, THEME_STORAGE_KEY } from "./src/theme/config";
+import { gameEditorPlugin } from "./dev/game-editor";
 
 // Vendored code: shadcn primitives and @soleone registry items. They stay byte-for-byte upstream so
 // `shadcn add --overwrite` can update them; `kit check` verifies that.
@@ -25,6 +26,7 @@ export default defineConfig({
   plugins: lazyPlugins(() => [
     react(),
     tailwindcss(),
+    gameEditorPlugin(resolve(import.meta.dirname, "src/data/games.json")),
     themePlugin({
       themes: BUILTIN_THEMES,
       defaultTheme: DEFAULT_THEME,

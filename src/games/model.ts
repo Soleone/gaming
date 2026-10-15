@@ -1,0 +1,127 @@
+import { z } from "zod";
+
+const year = z.number().int().min(1970).max(2200);
+const month = z.number().int().min(1).max(12);
+const releaseSchema = z
+  .discriminatedUnion("precision", [
+    z
+      .object({ precision: z.literal("day"), year, month, day: z.number().int().min(1).max(31) })
+      .strict(),
+    z.object({ precision: z.literal("month"), year, month }).strict(),
+    z
+      .object({ precision: z.literal("quarter"), year, quarter: z.number().int().min(1).max(4) })
+      .strict(),
+    z.object({ precision: z.literal("year"), year }).strict(),
+    z.object({ precision: z.literal("unknown"), year: year.nullable() }).strict(),
+  ])
+  .refine((release) => {
+    if (release.precision !== "day") return true;
+    return (
+      new Date(Date.UTC(release.year, release.month - 1, release.day)).getUTCDate() === release.day
+    );
+  }, "That day does not exist in the selected month.");
+
+const safeUrl = z
+  .string()
+  .max(2000)
+  .refine((value) => {
+    try {
+      const url = new URL(value);
+      return url.protocol === "https:" || url.protocol === "http:";
+    } catch {
+      return false;
+    }
+  }, "Use a complete http or https URL.");
+
+export const gameSchema = z
+  .object({
+    id: z
+      .string()
+      .min(1)
+      .max(100)
+      .regex(/^[a-z0-9-]+$/),
+    title: z.string().trim().min(1).max(160),
+    cover: z.union([safeUrl, z.string().regex(/^\/covers\/[a-zA-Z0-9._-]+$/)]).nullable(),
+    release: releaseSchema,
+    source: safeUrl.nullable(),
+    hype: z.number().int().min(1).max(5).nullable(),
+    review: z
+      .object({
+        text: z.string().trim().max(1000),
+        score: z.number().int().min(1).max(10).nullable(),
+      })
+      .strict()
+      .nullable(),
+  })
+  .strict();
+
+export const gamesSchema = z
+  .array(gameSchema)
+  .max(1000)
+  .refine(
+    (games) => new Set(games.map((game) => game.id)).size === games.length,
+    "Game IDs must be unique.",
+  );
+export type Game = z.infer<typeof gameSchema>;
+export type Release = Game["release"];
+
+export const MONTHS = Array.from({ length: 12 }, (_, index) =>
+  new Intl.DateTimeFormat("en", { month: "long", timeZone: "UTC" }).format(
+    new Date(Date.UTC(2026, index, 1)),
+  ),
+);
+
+export function releaseLabel(release: Release): string {
+  switch (release.precision) {
+    case "day":
+      return `${MONTHS[release.month - 1]} ${release.day}, ${release.year}`;
+    case "month":
+      return `${MONTHS[release.month - 1]} ${release.year}`;
+    case "quarter":
+      return `Q${release.quarter} ${release.year}`;
+    case "year":
+      return `${release.year} · date TBA`;
+    case "unknown":
+      return release.year === null ? "Release date unknown" : `${release.year} · date unknown`;
+  }
+}
+
+export function calendarSections(games: Game[], selectedYear: string, selectedMonth: string) {
+  const filtered = games.filter(
+    ({ release }) =>
+      (release.year === null
+        ? selectedYear === "unscheduled"
+        : String(release.year) === selectedYear) &&
+      (selectedMonth === "all" ||
+        ((release.precision === "day" || release.precision === "month") &&
+          String(release.month) === selectedMonth)),
+  );
+  const groups = new Map<number, { label: string; games: Game[] }>();
+  for (const game of filtered) {
+    const release = game.release;
+    const key =
+      release.precision === "day" || release.precision === "month"
+        ? release.month
+        : release.precision === "quarter"
+          ? 12 + release.quarter
+          : 17;
+    const label =
+      key <= 12
+        ? MONTHS[key - 1]!
+        : key <= 16
+          ? `Q${key - 12} · month unannounced`
+          : "Date to be announced";
+    if (!groups.has(key)) groups.set(key, { label, games: [] });
+    groups.get(key)!.games.push(game);
+  }
+  return [...groups.entries()]
+    .sort(([a], [b]) => a - b)
+    .map(([key, group]) => ({
+      key,
+      label: group.label,
+      games: group.games.toSorted((a, b) => {
+        const day = (game: Game) => (game.release.precision === "day" ? game.release.day : 32);
+        return day(a) - day(b) || a.title.localeCompare(b.title);
+      }),
+    }));
+}

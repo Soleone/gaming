@@ -1,6 +1,6 @@
 # gaming
 
-Gaming is a React and TypeScript starter for a future gaming application. It currently provides the Kit app shell and persistent theme selection; no gaming features are defined yet.
+Gaming is a personal video-game release calendar with hype ratings and played reviews. It uses React, TypeScript, a JSON collection, and a loopback-only development editor; production is read-only. See [maintenance](docs/maintenance.md), [seed sources](docs/assets.md), and [product context](PRODUCT.md).
 
 ## Where things are
 
@@ -20,6 +20,7 @@ Behavior is written as rules in tables with a stable slug, `area.behavior`. Test
 
 ## UI
 
+- **Default to shadcn wherever it fits**, including cards, empty states, alerts, and other display patterns, not just interactive controls. Check for an existing component before writing custom markup. Use semantic HTML/Tailwind for page layout and custom UI only where no suitable shadcn pattern exists. Preserve the classic @soleone theme picker.
 - shadcn on Base UI (`base-nova`). App code uses the components in `src/components/ui`; direct `@base-ui/react` imports are lint errors.
 - `src/components/ui` and `src/components/soleone` are vendored and stay byte-for-byte upstream so they can be updated with `pnpm dlx shadcn add <item> --overwrite`. Don't edit them. `kit check` fails when they drift.
 - Style through tokens and component props, never raw colors, arbitrary values or className overrides on primitives. The lint rules in `vite.config.ts` enforce this.
