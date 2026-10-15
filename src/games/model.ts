@@ -74,9 +74,18 @@ export const MONTHS = Array.from({ length: 12 }, (_, index) =>
 export function releaseLabel(release: Release): string {
   switch (release.precision) {
     case "day":
-      return `${MONTHS[release.month - 1]} ${release.day}, ${release.year}`;
+      return new Intl.DateTimeFormat("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        timeZone: "UTC",
+      }).format(new Date(Date.UTC(release.year, release.month - 1, release.day)));
     case "month":
-      return `${MONTHS[release.month - 1]} ${release.year}`;
+      return new Intl.DateTimeFormat("en-US", {
+        month: "short",
+        year: "numeric",
+        timeZone: "UTC",
+      }).format(new Date(Date.UTC(release.year, release.month - 1, 1)));
     case "quarter":
       return `Q${release.quarter} ${release.year}`;
     case "year":
@@ -84,6 +93,20 @@ export function releaseLabel(release: Release): string {
     case "unknown":
       return release.year === null ? "Release date unknown" : `${release.year} · date unknown`;
   }
+}
+
+export function hasReleased(release: Release, today = new Date()): boolean {
+  if (release.precision === "unknown") return false;
+  const lastDay =
+    release.precision === "day"
+      ? new Date(release.year, release.month - 1, release.day)
+      : release.precision === "month"
+        ? new Date(release.year, release.month, 0)
+        : release.precision === "quarter"
+          ? new Date(release.year, release.quarter * 3, 0)
+          : new Date(release.year, 11, 31);
+  const currentDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  return release.precision === "day" ? currentDay >= lastDay : currentDay > lastDay;
 }
 
 export function calendarSections(games: Game[], selectedYear: string, selectedMonth: string) {

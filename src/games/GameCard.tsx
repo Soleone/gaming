@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowUpRight, Check, Flame, Gamepad2, Pencil, Star } from "lucide-react";
+import { Check, Flame, Gamepad2, Pencil, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,14 +7,13 @@ import {
   CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { releaseLabel, type Game } from "./model";
+import { hasReleased, releaseLabel, type Game } from "./model";
 
 export function GameCard({ game, onEdit }: { game: Game; onEdit?: (id: string) => void }) {
   const [failedCover, setFailedCover] = useState<string | null>(null);
@@ -92,9 +91,9 @@ export function GameCard({ game, onEdit }: { game: Game; onEdit?: (id: string) =
                   <Check data-icon="inline-start" />
                   Played
                 </Badge>
-              ) : (
+              ) : hasReleased(game.release) ? (
                 <Badge variant="outline">Not played</Badge>
-              )}
+              ) : null}
             </div>
             {game.review && (
               <>
@@ -120,19 +119,6 @@ export function GameCard({ game, onEdit }: { game: Game; onEdit?: (id: string) =
             )}
           </div>
         </CardContent>
-        {game.source && (
-          <CardFooter>
-            <a
-              href={game.source}
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-1 text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-            >
-              Release source <ArrowUpRight className="size-3" aria-hidden="true" />
-              <span className="sr-only"> (opens in a new tab)</span>
-            </a>
-          </CardFooter>
-        )}
       </Card>
     </article>
   );

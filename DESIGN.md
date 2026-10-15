@@ -6,7 +6,7 @@ An operating surface for a small personal collection, not a storefront. The user
 
 ## Layout
 
-A constrained page with a quiet app header, calendar heading, year and month controls, then monthly sections. Month labels occupy a narrow left column on desktop, with a two-column game grid to the right. Mobile stacks labels and games. Quarter-only and unknown dates have honest separate sections. The empty state keeps filters available.
+A constrained page with a quiet app header, calendar heading, month and year controls, then monthly sections. Month labels occupy a narrow left column on desktop, with a two-column game grid to the right. Mobile stacks labels and games. Quarter-only and unknown dates have honest separate sections. The empty state keeps filters available.
 
 ## Type and color
 
@@ -14,7 +14,7 @@ Use the existing self-hosted Geist family. Heading hierarchy is expressed throug
 
 ## Content
 
-Artwork carries the visual interest. Use wide, consistently cropped images with source provenance in docs/assets.md. Game entries use stock shadcn Card with CardHeader, CardTitle, CardDescription, CardAction, CardContent, and CardFooter. Keep its default surface and spacing rather than recreating a custom card treatment. Missing artwork and empty calendar results use shadcn Empty composition. Hype uses five small segments, an accessible numeric label, and an explicit Unrated label when missing. Final review scores use a distinct 1–10 scale.
+Artwork carries the visual interest. Use wide, consistently cropped images with source provenance in docs/assets.md. Game entries use stock shadcn Card with CardHeader, CardTitle, CardDescription, CardAction, and CardContent. Source links stay out of the calendar cards; they remain editable in the local editor. Keep its default surface and spacing rather than recreating a custom card treatment. Missing artwork and empty calendar results use shadcn Empty composition. Hype uses five small segments, an accessible numeric label, and an explicit Unrated label when missing. Final review scores use a distinct 1–10 scale.
 
 ## Components and editing
 

@@ -65,12 +65,12 @@ export function App() {
           <a
             href="/"
             className="flex items-center gap-2.5 font-heading text-lg font-semibold tracking-tight"
-            aria-label="Gaming home"
+            aria-label="Soleone Gaming home"
           >
             <Gamepad2 className="size-5 text-primary" aria-hidden="true" />
-            gaming
+            Soleone Gaming
             <span className="hidden text-sm font-normal tracking-normal text-muted-foreground sm:inline">
-              / the personal collection
+              / What I'm excited about
             </span>
           </a>
           <div className="flex items-center gap-2">
@@ -110,6 +110,19 @@ export function App() {
           )}
         </div>
         <div className="mt-9 flex flex-wrap items-end justify-between gap-5 pb-5">
+          <div className="w-44">
+            <ChoiceField
+              id="calendar-month"
+              label="Month"
+              value={month}
+              onChange={setMonth}
+              disabled={year === "unscheduled"}
+              options={[
+                { value: "all", label: "All months" },
+                ...MONTHS.map((label, index) => ({ value: String(index + 1), label })),
+              ]}
+            />
+          </div>
           <div className="flex items-end gap-2">
             <Button
               variant="ghost"
@@ -141,19 +154,6 @@ export function App() {
             >
               <ChevronRight />
             </Button>
-          </div>
-          <div className="w-44">
-            <ChoiceField
-              id="calendar-month"
-              label="Month"
-              value={month}
-              onChange={setMonth}
-              disabled={year === "unscheduled"}
-              options={[
-                { value: "all", label: "All months" },
-                ...MONTHS.map((label, index) => ({ value: String(index + 1), label })),
-              ]}
-            />
           </div>
         </div>
         <Separator />
@@ -222,8 +222,7 @@ export function App() {
           </Empty>
         )}
         <Separator className="mt-14" />
-        <footer className="flex flex-wrap items-center justify-between gap-3 pt-5 text-xs text-muted-foreground">
-          <span>A small collection. Not an endless backlog.</span>
+        <footer className="flex flex-wrap items-center justify-end gap-3 pt-5 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5">
             <Kbd>T</Kbd> themes<span className="mx-1">/</span>
             <Kbd>D</Kbd> dark & light

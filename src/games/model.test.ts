@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vite-plus/test";
-import { calendarSections, gameSchema, gamesSchema, releaseLabel, type Game } from "./model";
+import {
+  calendarSections,
+  gameSchema,
+  gamesSchema,
+  hasReleased,
+  releaseLabel,
+  type Game,
+} from "./model";
 import data from "../data/games.json";
 
 const game: Game = {
@@ -17,11 +24,44 @@ describe("game data", () => {
     expect(gamesSchema.safeParse(data).success).toBe(true);
   });
   it("release.precision: preserves exact, month, quarter, year and unknown labels", () => {
-    expect(releaseLabel({ precision: "day", year: 2007, month: 4, day: 2 })).toBe("April 2, 2007");
-    expect(releaseLabel({ precision: "month", year: 2007, month: 4 })).toBe("April 2007");
+    expect(releaseLabel({ precision: "day", year: 2007, month: 4, day: 2 })).toBe("Apr 2, 2007");
+    expect(releaseLabel({ precision: "month", year: 2007, month: 4 })).toBe("Apr 2007");
     expect(releaseLabel({ precision: "quarter", year: 2007, quarter: 2 })).toBe("Q2 2007");
     expect(releaseLabel({ precision: "year", year: 2007 })).toBe("2007 · date TBA");
     expect(releaseLabel({ precision: "unknown", year: null })).toBe("Release date unknown");
+  });
+  it("release.precision: formats exact dates with an abbreviated month and no leading zero", () => {
+    expect(releaseLabel({ precision: "day", year: 2026, month: 10, day: 24 })).toBe("Oct 24, 2026");
+    expect(releaseLabel({ precision: "day", year: 2026, month: 1, day: 4 })).toBe("Jan 4, 2026");
+  });
+  it("review.visibility: waits for a known release day or the end of a partial-date window", () => {
+    const exact = { precision: "day", year: 2026, month: 10, day: 24 } as const;
+    expect(hasReleased(exact, new Date(2026, 9, 23, 23, 59))).toBe(false);
+    expect(hasReleased(exact, new Date(2026, 9, 24))).toBe(true);
+    expect(hasReleased(exact, new Date(2026, 9, 25))).toBe(true);
+    const partialDates = [
+      {
+        release: { precision: "month", year: 2026, month: 10 },
+        end: new Date(2026, 9, 31),
+        after: new Date(2026, 10, 1),
+      },
+      {
+        release: { precision: "quarter", year: 2026, quarter: 2 },
+        end: new Date(2026, 5, 30),
+        after: new Date(2026, 6, 1),
+      },
+      {
+        release: { precision: "year", year: 2026 },
+        end: new Date(2026, 11, 31),
+        after: new Date(2027, 0, 1),
+      },
+    ] as const;
+    for (const { release, end, after } of partialDates) {
+      expect(hasReleased(release, end)).toBe(false);
+      expect(hasReleased(release, after)).toBe(true);
+    }
+    expect(hasReleased({ precision: "unknown", year: 2025 }, new Date(2026, 9, 24))).toBe(false);
+    expect(hasReleased({ precision: "unknown", year: null }, new Date(2026, 9, 24))).toBe(false);
   });
   it("data.valid: rejects impossible days, duplicate IDs, unsafe URLs and out-of-range ratings", () => {
     expect(
