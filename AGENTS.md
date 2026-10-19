@@ -24,7 +24,7 @@ Behavior is written as rules in tables with a stable slug, `area.behavior`. Test
 - shadcn on Base UI (`base-nova`). App code uses the components in `src/components/ui`; direct `@base-ui/react` imports are lint errors.
 - `src/components/ui` and `src/components/soleone` are vendored and stay byte-for-byte upstream so they can be updated with `pnpm dlx shadcn add <item> --overwrite`. Don't edit them. `kit check` fails when they drift.
 - Style through tokens and component props, never raw colors, arbitrary values or className overrides on primitives. The lint rules in `vite.config.ts` enforce this.
-- Need a look the stock variants don't have? Wrap the primitive in `src/components/variants/` (e.g. `ToolbarButton` around `Button`, with its own `cva`) and use the wrapper. That folder is the only place allowed to restyle primitives or import `class-variance-authority`.
+- Need a look the stock variants don't have? Wrap the primitive in `src/components/variants/` (e.g. `ToolbarButton` around `Button`) and use the wrapper. A plain class map plus `cn()` covers one state or one small set of kinds; reach for `cva` when a wrapper has several variant axes or compound variants, or exports its classes for use without the component. That folder is the only place allowed to restyle primitives or import `class-variance-authority`.
 - Themes come from `@soleone/theme`. `src/theme/config.ts` holds this app's default theme and storage key. Components use tokens only, so every theme works without knowing about them.
 - Shared components belong in the registry (Soleone/shadcn-components), not copied between apps.
 
