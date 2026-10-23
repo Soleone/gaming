@@ -57,7 +57,7 @@ If results are genuinely empty, broaden the game title or paste an official anno
 
 Search returns bounded source links and a provider-labelled summary, which must be verified against
 original pages. Page reads include announcement/navigation links so the agent can follow them directly.
-Research is limited to 12 tool calls per message, with the final call reserved for its proposal.
+Research is limited to 30 tool calls per message, shared by every game the message asks about; each game gets its own proposal card.
 It preserves uncertain dates and never supplies your hype, played status, review, or score.
 Check platform/region and source quality before accepting a proposal.
 

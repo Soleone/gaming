@@ -109,6 +109,7 @@ async function research() {
       stopReason: "toolUse",
     }),
     fauxAssistantMessage([fauxToolCall("propose_game", proposal)], { stopReason: "toolUse" }),
+    fauxAssistantMessage([fauxText("Ready to save.")]),
   ]);
   const opened = agentSnapshotSchema.parse(
     await runtime.execute({ action: "open", key: "new-game" }),
@@ -151,7 +152,88 @@ it("agent.research: searches, verifies, and presents a typed proposal without wr
   expect(await readdir(directory)).toEqual([]);
   await runtime.execute(request);
   await harness.waitForIdle(BACKGROUND_CONTEXT);
-  expect(faux.state.callCount).toBe(3);
+  expect(faux.state.callCount).toBe(4);
+});
+it("agent.proposal: proposes several requested games in one message, each saved on its own", async () => {
+  const other = {
+    ...proposal,
+    title: "Another verified game",
+    source: "https://publisher.example/other",
+    covers: [],
+  };
+  faux.setResponses([
+    fauxAssistantMessage(
+      [
+        fauxToolCall("read_page", { url: proposal.source }),
+        fauxToolCall("read_page", { url: other.source }),
+      ],
+      { stopReason: "toolUse" },
+    ),
+    fauxAssistantMessage(
+      [fauxToolCall("propose_game", proposal), fauxToolCall("propose_game", other)],
+      { stopReason: "toolUse" },
+    ),
+    fauxAssistantMessage([fauxText("Both are ready to save.")]),
+  ]);
+  const opened = agentSnapshotSchema.parse(await runtime.execute({ action: "open", key: "batch" }));
+  await runtime.execute({
+    action: "send",
+    conversationId: opened.conversationId,
+    requestId: crypto.randomUUID(),
+    text: "Add both games",
+    draft: null,
+    collection: [],
+  });
+  await harness.waitForIdle(BACKGROUND_CONTEXT);
+  const proposals = (await runtime.snapshot(opened.conversationId)).messages
+    .flatMap((message) => message.tools ?? [])
+    .filter((tool) => tool.name === "propose_game");
+  expect(proposals.map((tool) => [tool.status, tool.data])).toEqual([
+    ["complete", { proposal }],
+    ["complete", { proposal: other }],
+  ]);
+  expect(
+    await runtime.execute({
+      action: "cover",
+      conversationId: opened.conversationId,
+      toolId: proposals[0]!.id,
+      index: 0,
+    }),
+  ).toHaveProperty("cover");
+});
+it("agent.research: offers full-size page images with their alt text instead of blurred placeholders", async () => {
+  vi.mocked(fetchPublic).mockResolvedValue({
+    url: proposal.source,
+    contentType: "text/html",
+    body: Buffer.from(
+      '<main>Out now.<img aria-hidden="true" alt="Game" src="/hero.png?w=54&thumb=true"><img alt="ESRB Mature" src="/rating.png"><noscript><img alt="Game hero" src="/hero.png"></noscript></main>',
+    ),
+  });
+  faux.setResponses([
+    fauxAssistantMessage([fauxToolCall("read_page", { url: proposal.source })], {
+      stopReason: "toolUse",
+    }),
+    fauxAssistantMessage([fauxText("Found the hero art.")]),
+  ]);
+  const opened = agentSnapshotSchema.parse(
+    await runtime.execute({ action: "open", key: "images" }),
+  );
+  await runtime.execute({
+    action: "send",
+    conversationId: opened.conversationId,
+    requestId: crypto.randomUUID(),
+    text: "Find art",
+    draft: null,
+    collection: [],
+  });
+  await harness.waitForIdle(BACKGROUND_CONTEXT);
+  const read = (await runtime.snapshot(opened.conversationId)).messages.flatMap(
+    (message) => message.tools ?? [],
+  )[0]!;
+  expect(JSON.parse(read.output!).images).toEqual([
+    { url: "https://publisher.example/rating.png", alt: "ESRB Mature", source: proposal.source },
+    { url: "https://publisher.example/hero.png", alt: "Game hero", source: proposal.source },
+  ]);
 });
 it("agent.steps: titles each step by its status and subject", async () => {
   const { snapshot } = await research();
@@ -284,9 +366,9 @@ it("agent.cover: rejects SVG and invalid image bytes before creating a file", as
   ).rejects.toThrow();
   expect(await readdir(directory)).toEqual([]);
 });
-it("agent.research: stops a tool loop after 12 calls and allows a new follow-up", async () => {
+it("agent.research: stops a tool loop after 30 calls and allows a new follow-up", async () => {
   faux.setResponses(
-    Array.from({ length: 13 }, () =>
+    Array.from({ length: 31 }, () =>
       fauxAssistantMessage([fauxToolCall("search_web", { query: "A game official release" })], {
         stopReason: "toolUse",
       }),
@@ -307,16 +389,17 @@ it("agent.research: stops a tool loop after 12 calls and allows a new follow-up"
   await harness.waitForIdle(BACKGROUND_CONTEXT);
   const snapshot = await runtime.snapshot(opened.conversationId);
   expect(snapshot.busy).toBe(false);
-  expect(search).toHaveBeenCalledTimes(12);
+  expect(search).toHaveBeenCalledTimes(30);
   expect(snapshot.messages.flatMap((message) => message.tools ?? []).at(-1)).toMatchObject({
     status: "error",
-    output: expect.stringContaining("12 tool calls"),
+    output: expect.stringContaining("30 tool calls"),
   });
   faux.setResponses([
     fauxAssistantMessage([fauxToolCall("read_page", { url: proposal.source })], {
       stopReason: "toolUse",
     }),
     fauxAssistantMessage([fauxToolCall("propose_game", proposal)], { stopReason: "toolUse" }),
+    fauxAssistantMessage([fauxText("Ready to save.")]),
   ]);
   await runtime.execute({
     ...request,
