@@ -108,5 +108,81 @@
       "text": "",
       "score": 9
     }
+  },
+  {
+    "id": "3e85cf0a-f750-4dc0-a74a-73958fbe0a74",
+    "title": "PRAGMATA",
+    "cover": "/covers/agent-b89726318ef890e6e241d71e.webp",
+    "release": {
+      "precision": "day",
+      "year": 2026,
+      "month": 4,
+      "day": 17
+    },
+    "source": "https://us-store.captown.capcom.com/products/1548051-us",
+    "hype": 3,
+    "review": null
+  },
+  {
+    "id": "91312941-8398-4e59-8770-7970ddc91dce",
+    "title": "Crimson Desert",
+    "cover": "/covers/agent-ded5c01f2b65ae6bf086ca16.webp",
+    "release": {
+      "precision": "day",
+      "year": 2026,
+      "month": 3,
+      "day": 19
+    },
+    "source": "https://store.playstation.com/en-us/product/UP4162-PPSA25286_00-0653729629077452",
+    "hype": 3,
+    "review": {
+      "text": "",
+      "score": 8
+    }
+  },
+  {
+    "id": "9caa6210-ea21-414c-9bc8-73bc74869f6b",
+    "title": "Nioh 3",
+    "cover": "/covers/agent-bc3ec195c2ed62751e201f80.webp",
+    "release": {
+      "precision": "day",
+      "year": 2026,
+      "month": 2,
+      "day": 6
+    },
+    "source": "https://store.playstation.com/en-us/product/EP4108-PPSA32785_00-NIOH300000000000/",
+    "hype": 2,
+    "review": {
+      "text": "",
+      "score": 7
+    }
+  },
+  {
+    "id": "5440c0ae-c5d9-4356-af51-eee8aa4bf2e9",
+    "title": "Marvel's Wolverine",
+    "cover": "/covers/agent-b2d77e115a19661365cab787.webp",
+    "release": {
+      "precision": "day",
+      "year": 2026,
+      "month": 9,
+      "day": 15
+    },
+    "source": "https://store.playstation.com/en-us/product/UP9000-PPSA03671_00-MARVELSWOLVERINE",
+    "hype": 3,
+    "review": null
+  },
+  {
+    "id": "8e6f36fd-813c-46d1-9720-4581652864f7",
+    "title": "Fire Emblem: Fortune's Weave",
+    "cover": "/covers/agent-4002c5d87dcdd241bde592a1.webp",
+    "release": {
+      "precision": "day",
+      "year": 2026,
+      "month": 9,
+      "day": 17
+    },
+    "source": "https://www.nintendo.com/us/store/products/fire-emblem-fortunes-weave-125688/",
+    "hype": null,
+    "review": null
   }
 ]
