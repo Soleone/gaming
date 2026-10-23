@@ -91,5 +91,22 @@
       "text": "",
       "score": 8
     }
+  },
+  {
+    "id": "66ff9747-14f7-4870-aa37-ff24e2e9e316",
+    "title": "Resident Evil Requiem",
+    "cover": "/covers/agent-d956846584c7c5a805538035.webp",
+    "release": {
+      "precision": "day",
+      "year": 2026,
+      "month": 2,
+      "day": 27
+    },
+    "source": "https://store.playstation.com/en-us/product/UP0102-PPSA30803_00-REREQUIEM0000000",
+    "hype": 5,
+    "review": {
+      "text": "",
+      "score": 9
+    }
   }
 ]
