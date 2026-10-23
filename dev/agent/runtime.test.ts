@@ -77,7 +77,7 @@ beforeEach(async () => {
     answer: "The publisher announced Q2 2027.",
     results: [{ title: "Game announcement", url: proposal.source, snippet: "Q2 2027" }],
   });
-  const image = await sharp({ create: { width: 4, height: 6, channels: 3, background: "red" } })
+  const image = await sharp({ create: { width: 800, height: 450, channels: 3, background: "red" } })
     .png()
     .toBuffer();
   vi.mocked(fetchPublic).mockImplementation(async (url) => {
@@ -201,12 +201,12 @@ it("agent.proposal: proposes several requested games in one message, each saved 
     }),
   ).toHaveProperty("cover");
 });
-it("agent.research: offers full-size page images with their alt text instead of blurred placeholders", async () => {
+it("agent.research: offers full-size page images with their alt text instead of blurred placeholders or small fallbacks", async () => {
   vi.mocked(fetchPublic).mockResolvedValue({
     url: proposal.source,
     contentType: "text/html",
     body: Buffer.from(
-      '<main>Out now.<img aria-hidden="true" alt="Game" src="/hero.png?w=54&thumb=true"><img alt="ESRB Mature" src="/rating.png"><noscript><img alt="Game hero" src="/hero.png"></noscript></main>',
+      '<main>Out now.<img aria-hidden="true" alt="Game" src="/hero.png?w=54&thumb=true"><img alt="ESRB Mature" src="/rating.png"><picture><source srcset="/banner-4000.jpg" media="(min-width: 3000px)"><source srcset="/banner-1600.jpg" media="(min-width: 1024px)"><noscript><img alt="Key art" src="/banner-100.jpg"></noscript></picture><img alt="Wallpaper" src="/wall-small.jpg" srcset="/wall-small.jpg 480w, /wall-large.jpg 1920w, /wall-medium.jpg 1280w"><noscript><img alt="Game hero" src="/hero.png"></noscript></main>',
     ),
   });
   faux.setResponses([
@@ -232,6 +232,8 @@ it("agent.research: offers full-size page images with their alt text instead of 
   )[0]!;
   expect(JSON.parse(read.output!).images).toEqual([
     { url: "https://publisher.example/rating.png", alt: "ESRB Mature", source: proposal.source },
+    { url: "https://publisher.example/banner-4000.jpg", alt: "Key art", source: proposal.source },
+    { url: "https://publisher.example/wall-large.jpg", alt: "Wallpaper", source: proposal.source },
     { url: "https://publisher.example/hero.png", alt: "Game hero", source: proposal.source },
   ]);
 });
@@ -364,6 +366,28 @@ it("agent.cover: rejects SVG and invalid image bytes before creating a file", as
       index: 0,
     }),
   ).rejects.toThrow();
+  expect(await readdir(directory)).toEqual([]);
+});
+it("agent.cover: refuses thumbnails too small to use as a cover", async () => {
+  const { snapshot } = await research();
+  const tool = snapshot.messages
+    .flatMap((message) => message.tools ?? [])
+    .find((tool) => tool.name === "propose_game")!;
+  vi.mocked(fetchPublic).mockResolvedValue({
+    url: proposal.covers[0]!.url,
+    body: await sharp({ create: { width: 100, height: 38, channels: 3, background: "red" } })
+      .png()
+      .toBuffer(),
+    contentType: "image/png",
+  });
+  await expect(
+    runtime.execute({
+      action: "cover",
+      conversationId: snapshot.conversationId,
+      toolId: tool.id,
+      index: 0,
+    }),
+  ).rejects.toThrow("only 100px wide");
   expect(await readdir(directory)).toEqual([]);
 });
 it("agent.research: stops a tool loop after 30 calls and allows a new follow-up", async () => {

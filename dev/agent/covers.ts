@@ -4,6 +4,8 @@ import { join } from "node:path";
 import sharp from "sharp";
 import { fetchPublic } from "./public-web";
 
+const minimumWidth = 600;
+
 export async function downloadCover(url: string, directory: string) {
   const response = await fetchPublic(url, 8_000_000);
   if (!/^image\/(jpeg|png|webp)(?:;|$)/i.test(response.contentType)) {
@@ -17,6 +19,12 @@ export async function downloadCover(url: string, directory: string) {
     (metadata.pages ?? 1) > 1
   ) {
     throw new Error("The download is not a supported still image.");
+  }
+  // Thumbnails and blurred placeholders look broken at cover size.
+  if ((metadata.width ?? 0) < minimumWidth) {
+    throw new Error(
+      `This image is only ${metadata.width}px wide. Choose a cover at least ${minimumWidth}px wide.`,
+    );
   }
   const bytes = await image
     .rotate()

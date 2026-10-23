@@ -78,7 +78,7 @@ agent also sees the collection's titles and reuses the exact existing title for 
 Hype, played status, and reviews are never changed. **Review in form** applies the same facts and
 cover to the open draft, or opens the matching (or a new) game in the editor, for edits before **Save game**.
 
-Downloads accept bounded JPEG/PNG/WebP still images, re-encode to WebP, strip metadata, and use
+Downloads accept bounded JPEG/PNG/WebP still images at least 600px wide, re-encode to WebP, strip metadata, and use
 content-derived filenames without overwriting existing files. Late downloads never apply to a
 different or closed draft. After every save, `agent-*.webp` covers that no saved game references
 (and the open draft does not hold) are deleted; seed artwork is never touched.
