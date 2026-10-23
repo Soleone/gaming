@@ -33,3 +33,5 @@ dist-ssr
 
 # Local visual verification captures
 .impeccable/review/
+.vercel
+.env*
