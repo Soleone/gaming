@@ -1,6 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it } from "vite-plus/test";
 import { AgentPanel, type AgentMessage } from "@/components/soleone/agent";
+import { ProposalCard } from "./GameAgent";
 
 const step = (id: string, label: string) => ({
   id,
@@ -37,4 +38,35 @@ it("agent.steps: groups adjacent steps of one reply into one trace and splits th
     html.indexOf("Found the release date."),
   );
   expect(html.indexOf("Found the release date.")).toBeLessThan(html.indexOf("Proposed A game"));
+});
+it("agent.cover: previews candidates beside the current cover before anything downloads", () => {
+  const html = renderToStaticMarkup(
+    <ProposalCard
+      proposal={{
+        title: "A game",
+        release: { precision: "year", year: 2027 },
+        source: "https://publisher.example/game",
+        summary: "Announced for 2027.",
+        covers: [
+          {
+            url: "https://cdn.example/art.jpg",
+            source: "https://publisher.example/game",
+            label: "Key art",
+          },
+        ],
+      }}
+      current="/covers/mine.webp"
+      action="Update A game"
+      description="Updates title, release, source, and the chosen cover."
+      note={undefined}
+      locked={false}
+      onSave={() => {}}
+      onEdit={() => {}}
+    />,
+  );
+  expect(html).toContain('src="https://cdn.example/art.jpg"');
+  expect(html).toContain('referrerPolicy="no-referrer"');
+  expect(html).toMatch(/aria-pressed="true"[^>]*>(?:(?!<\/button>).)*\/covers\/mine\.webp/);
+  expect(html).toContain("Update A game");
+  expect(html).toContain("Review in form");
 });

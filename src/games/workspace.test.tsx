@@ -4,7 +4,7 @@ import Workspace from "./Workspace";
 
 it("agent.sidebar: exposes a single collapsed agent launcher outside the editor", () => {
   const html = renderToStaticMarkup(
-    <Workspace editor={null} onEdit={() => {}} onClose={() => {}} onSaved={() => {}}>
+    <Workspace games={[]} editor={null} onEdit={() => {}} onClose={() => {}} onSaved={() => {}}>
       <main>Calendar</main>
     </Workspace>,
   );
@@ -15,7 +15,13 @@ it("agent.sidebar: exposes a single collapsed agent launcher outside the editor"
 });
 it("agent.sidebar: renders the draft editor beside the dock, not in a focus-blocking modal", () => {
   const html = renderToStaticMarkup(
-    <Workspace editor={{ id: null }} onEdit={() => {}} onClose={() => {}} onSaved={() => {}}>
+    <Workspace
+      games={[]}
+      editor={{ id: null }}
+      onEdit={() => {}}
+      onClose={() => {}}
+      onSaved={() => {}}
+    >
       <header>Gaming</header>
     </Workspace>,
   );

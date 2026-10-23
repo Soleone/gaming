@@ -61,21 +61,16 @@ export function parseGameDraft(draft: GameDraft) {
   });
 }
 
-// A late download may update only its original draft, using that draft's latest fields.
-export function applyDownloadedCover(
-  current: GameDraft | null,
-  targetId: string,
-  cover: string,
-): GameDraft | null {
-  if (!current || current.id !== targetId) return current;
-  return { ...current, cover };
-}
-
-export function applyResearch(draft: GameDraft, proposal: ResearchProposal): GameDraft {
+export function applyResearch(
+  draft: GameDraft,
+  proposal: ResearchProposal,
+  cover?: string,
+): GameDraft {
   const release = proposal.release;
   return {
     ...draft,
     title: proposal.title,
+    cover: cover ?? draft.cover,
     source: proposal.source,
     precision: release.precision,
     year: String(release.year ?? ""),
@@ -83,4 +78,15 @@ export function applyResearch(draft: GameDraft, proposal: ResearchProposal): Gam
     day: String(release.precision === "day" ? release.day : 1),
     quarter: String(release.precision === "quarter" ? release.quarter : 1),
   };
+}
+
+// Late research (after a cover download) may update only its original draft, using that draft's latest fields.
+export function applyLateResearch(
+  current: GameDraft | null,
+  targetId: string,
+  proposal: ResearchProposal,
+  cover?: string,
+): GameDraft | null {
+  if (!current || current.id !== targetId) return current;
+  return applyResearch(current, proposal, cover);
 }

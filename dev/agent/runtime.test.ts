@@ -119,6 +119,7 @@ async function research() {
     requestId: crypto.randomUUID(),
     text: "Find facts and a cover",
     draft: { title: "A game", release: "unknown", source: "" },
+    collection: ["A game"],
   };
   await runtime.execute(request);
   await harness.waitForIdle(BACKGROUND_CONTEXT);
@@ -243,6 +244,7 @@ it("agent.proposal: refuses unsupported facts and fabricated image candidates", 
     requestId: crypto.randomUUID(),
     text: "Research",
     draft: { title: "Game", release: "unknown", source: "" },
+    collection: [],
   });
   await harness.waitForIdle(BACKGROUND_CONTEXT);
   const snapshot = await runtime.snapshot(opened.conversationId);
@@ -299,6 +301,7 @@ it("agent.research: stops a tool loop after 12 calls and allows a new follow-up"
     requestId: crypto.randomUUID(),
     text: "Research",
     draft: { title: "Game", release: "unknown", source: "" },
+    collection: [],
   };
   await runtime.execute(request);
   await harness.waitForIdle(BACKGROUND_CONTEXT);
@@ -345,6 +348,7 @@ it("agent.persistence: Stop cancels an active model request without changing the
     requestId: crypto.randomUUID(),
     text: "Research",
     draft: { title: "Game", release: "unknown", source: "" },
+    collection: [],
   });
   expect((await runtime.snapshot(opened.conversationId)).busy).toBe(true);
   await expect(

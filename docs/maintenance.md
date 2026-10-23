@@ -67,17 +67,23 @@ suffix first, then `modelThinkingLevels`, then `defaultThinkingLevel`, clamped t
 Changing model resets effort to that model's Pi default; either choice persists in this local conversation.
 Controls are locked during a run. Pi's settings are never modified. Restart the dev server to reload changed Pi configuration.
 
-Without an editor open, **Open new game draft** starts an unsaved form beside the agent. While editing,
-**Apply facts to form** replaces title, release date, and source in that unsaved draft. It leaves
-personal ratings, reviews, and the current cover alone. Cover links open the original image for
-inspection; **Download & use** explicitly downloads a selected candidate into `public/covers/` and
-sets the form's cover path. Downloads accept bounded JPEG/PNG/WebP still images, re-encode to WebP,
-strip metadata, and use content-derived filenames without overwriting existing files. Late results
-preserve newer form edits and never apply to a different or closed draft. An unused download remains
-on disk if you discard the form; remove it manually if unwanted.
+A proposal previews its cover candidates as tiles, loaded straight from the source page's host
+without a referrer, next to the current cover when the game has one. Nothing is downloaded while
+previewing. The primary button saves in one step: it downloads the selected candidate into
+`public/covers/`, merges title, release, source, and cover into the matching game, and writes
+`src/data/games.json`. The match is the collection game with the same title (ignoring case, accents,
+punctuation, and ™/®/©), else the open draft if it is that game or still unsaved, else a new game.
+The button reads **Update <title>** or **Add to collection** so you know which before clicking. The
+agent also sees the collection's titles and reuses the exact existing title for a known game.
+Hype, played status, and reviews are never changed. **Review in form** applies the same facts and
+cover to the open draft, or opens the matching (or a new) game in the editor, for edits before **Save game**.
 
-Only **Save game** changes `src/data/games.json`. The existing schema, revision check, and atomic
-save remain authoritative. Review `git diff` and any added artwork, then rebuild and redeploy.
+Downloads accept bounded JPEG/PNG/WebP still images, re-encode to WebP, strip metadata, and use
+content-derived filenames without overwriting existing files. Late downloads never apply to a
+different or closed draft. After every save, `agent-*.webp` covers that no saved game references
+(and the open draft does not hold) are deleted; seed artwork is never touched.
+
+Both save paths share the schema, revision check, and atomic write. Review `git diff` and any added artwork, then rebuild and redeploy.
 Artwork ownership remains with its original owner; downloading it does not grant redistribution rights.
 
 Conversations persist locally in SQLite, not in the deployed collection. Hiding or closing the panel

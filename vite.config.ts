@@ -26,7 +26,10 @@ export default defineConfig({
   plugins: lazyPlugins(() => [
     react(),
     tailwindcss(),
-    gameEditorPlugin(resolve(import.meta.dirname, "src/data/games.json")),
+    gameEditorPlugin(
+      resolve(import.meta.dirname, "src/data/games.json"),
+      resolve(import.meta.dirname, "public/covers"),
+    ),
     themePlugin({
       themes: BUILTIN_THEMES,
       defaultTheme: DEFAULT_THEME,

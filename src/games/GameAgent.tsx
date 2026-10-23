@@ -6,7 +6,7 @@ import {
   type Dispatch,
   type SetStateAction,
 } from "react";
-import { Download, ExternalLink, RotateCcw } from "lucide-react";
+import { ExternalLink, ImageOff, PenLine, RotateCcw, Save } from "lucide-react";
 import { z } from "zod";
 import { AgentPanel, type AgentTool } from "@/components/soleone/agent";
 import { Button } from "@/components/ui/button";
@@ -20,10 +20,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useSidebar } from "@/components/ui/sidebar";
+import { CoverChoice, CoverChoices } from "@/components/variants/CoverChoice";
 import { agentSnapshotSchema, type AgentRequest, type AgentSnapshot } from "./agent-protocol";
 import { ChoiceField } from "./ChoiceField";
+import { researchTarget } from "./collection";
 import type { GameDraft } from "./draft";
-import { releaseLabel } from "./model";
+import { releaseLabel, type Game } from "./model";
 import { researchProposalSchema, type ResearchProposal } from "./research";
 
 async function responseJson(response: Response): Promise<unknown> {
@@ -35,20 +37,137 @@ async function responseJson(response: Response): Promise<unknown> {
   return data;
 }
 
+function CoverPreview({ src, label }: { src: string; label: string }) {
+  const [failed, setFailed] = useState(false);
+  return (
+    <>
+      {failed ? (
+        <span className="flex aspect-video w-full items-center justify-center rounded-md bg-muted text-muted-foreground">
+          <ImageOff aria-label="Preview unavailable" />
+        </span>
+      ) : (
+        <img
+          src={src}
+          alt=""
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          className="aspect-video w-full rounded-md bg-muted object-cover"
+          onError={() => setFailed(true)}
+        />
+      )}
+      <span className="truncate">{label}</span>
+    </>
+  );
+}
+
+// Selecting "current" (or nothing) leaves the game's cover as it is.
+export function ProposalCard({
+  proposal,
+  current,
+  action,
+  description,
+  note,
+  locked,
+  onSave,
+  onEdit,
+}: {
+  proposal: ResearchProposal;
+  current: string | null;
+  action: string;
+  description: string;
+  note: string | undefined;
+  locked: boolean;
+  onSave: (cover: number | null) => void;
+  onEdit: (cover: number | null) => void;
+}) {
+  const [selected, setSelected] = useState<string[]>(
+    current ? ["current"] : proposal.covers.length ? ["0"] : [],
+  );
+  const cover = selected[0] === undefined || selected[0] === "current" ? null : Number(selected[0]);
+  return (
+    <Card size="sm">
+      <CardHeader>
+        <CardTitle>{proposal.title}</CardTitle>
+        <CardDescription>{proposal.summary}</CardDescription>
+        <CardAction>
+          <Badge variant="secondary">{releaseLabel(proposal.release)}</Badge>
+        </CardAction>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col gap-3">
+          {proposal.covers.length > 0 && (
+            <CoverChoices
+              aria-label="Cover"
+              value={selected}
+              onValueChange={setSelected}
+              disabled={locked}
+            >
+              {current && (
+                <CoverChoice value="current">
+                  <CoverPreview src={current} label="Current cover" />
+                </CoverChoice>
+              )}
+              {proposal.covers.map((candidate, index) => (
+                <CoverChoice key={candidate.url} value={String(index)}>
+                  <CoverPreview src={candidate.url} label={candidate.label} />
+                </CoverChoice>
+              ))}
+            </CoverChoices>
+          )}
+          <div className="flex flex-wrap items-center gap-2">
+            <Button type="button" size="sm" disabled={locked} onClick={() => onSave(cover)}>
+              <Save data-icon="inline-start" />
+              {action}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              disabled={locked}
+              onClick={() => onEdit(cover)}
+            >
+              <PenLine data-icon="inline-start" />
+              Review in form
+            </Button>
+            <Button
+              variant="link"
+              size="sm"
+              nativeButton={false}
+              render={<a href={proposal.source} target="_blank" rel="noopener noreferrer" />}
+            >
+              <ExternalLink data-icon="inline-start" />
+              Source
+            </Button>
+          </div>
+          <p role="status" className="text-xs text-muted-foreground">
+            {note ?? description}
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 export function GameAgent({
   draft,
+  games,
   prompt,
   onPromptChange,
   disabled,
-  onApply,
-  onCover,
+  onSave,
+  onEdit,
 }: {
   draft: GameDraft | null;
+  games: Game[];
   prompt: string;
   onPromptChange: Dispatch<SetStateAction<string>>;
   disabled: boolean;
-  onApply: (proposal: ResearchProposal) => void;
-  onCover: (cover: string, proposal: ResearchProposal) => void;
+  onSave: (proposal: ResearchProposal, cover?: string) => Promise<void>;
+  onEdit: (
+    proposal: ResearchProposal,
+    cover: string | undefined,
+    draftId: string | null,
+  ) => boolean;
 }) {
   const { isMobile, open: dockOpen, openMobile, setOpenMobile } = useSidebar();
   const visible = isMobile ? openMobile : dockOpen;
@@ -61,11 +180,9 @@ export function GameAgent({
   const [error, setError] = useState("");
   const [connectionError, setConnectionError] = useState("");
   const [pending, setPending] = useState(false);
-  const [applied, setApplied] = useState<string[]>([]);
-  const [coverNotice, setCoverNotice] = useState("");
+  const [notes, setNotes] = useState<Record<string, string>>({});
   const epoch = useRef(0);
   const retry = useRef<{ text: string; id: string } | null>(null);
-  const currentDraftId = useRef(draft?.id ?? null);
   // Polling pauses while nobody can see the dock and no work is running.
   const watching = useRef(visible);
   const resume = useRef<(() => void) | null>(null);
@@ -73,9 +190,6 @@ export function GameAgent({
     watching.current = visible;
     if (visible && document.visibilityState === "visible") resume.current?.();
   }, [visible]);
-  useLayoutEffect(() => {
-    currentDraftId.current = draft?.id ?? null;
-  }, [draft?.id]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -195,30 +309,26 @@ export function GameAgent({
     }
   }
 
-  async function chooseCover(toolId: string, index: number, proposal: ResearchProposal) {
+  // Covers download only once a proposal is saved or opened, never while previewing.
+  async function download(toolId: string, index: number | null) {
+    if (index === null || !connection) return undefined;
+    return z
+      .object({ cover: z.string().regex(/^\/covers\/[a-zA-Z0-9._-]+\.webp$/) })
+      .parse(await execute({ action: "cover", conversationId: connection.id, toolId, index }))
+      .cover;
+  }
+
+  async function run(toolId: string, work: () => Promise<string>) {
     if (!connection || pending || disabled) return;
-    const targetDraftId = draft?.id ?? null;
     setPending(true);
     setError("");
-    setCoverNotice("");
     try {
-      const result = z
-        .object({ cover: z.string().regex(/^\/covers\/[a-zA-Z0-9._-]+\.webp$/) })
-        .parse(await execute({ action: "cover", conversationId: connection.id, toolId, index }));
-      if (currentDraftId.current !== targetDraftId) {
-        setCoverNotice(
-          "Cover downloaded, but the game draft changed. Choose Download & use again to apply it to the current draft.",
-        );
-        return;
-      }
-      onCover(result.cover, proposal);
-      setCoverNotice("Cover downloaded. Review the form, then Save game to keep its reference.");
+      const note = await work();
+      setNotes((current) => ({ ...current, [toolId]: note }));
     } catch (error) {
       if (!connection.signal.aborted)
         setError(
-          error instanceof Error
-            ? error.message
-            : "Could not download the cover. Choose another image or retry.",
+          error instanceof Error ? error.message : "Could not save the proposal. Try again.",
         );
     } finally {
       setPending(false);
@@ -234,78 +344,50 @@ export function GameAgent({
     );
     if (!parsed.success) return undefined;
     const proposal = parsed.data;
+    const target = researchTarget(games, proposal.title, draft);
+    const existing =
+      target.kind === "game"
+        ? target.game
+        : target.kind === "draft"
+          ? games.find((game) => game.id === draft?.id)
+          : undefined;
     return (
-      <Card size="sm">
-        <CardHeader>
-          <CardTitle>{proposal.title}</CardTitle>
-          <CardDescription>{proposal.summary}</CardDescription>
-          <CardAction>
-            <Badge variant="secondary">{releaseLabel(proposal.release)}</Badge>
-          </CardAction>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col gap-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <Button
-                type="button"
-                size="sm"
-                disabled={disabled || pending || snapshot?.busy}
-                onClick={() => {
-                  onApply(proposal);
-                  if (isMobile) setOpenMobile(false);
-                  if (draft) setApplied((current) => [...current, `${draft.id}:${tool.id}`]);
-                }}
-              >
-                {draft ? "Apply facts to form" : "Open new game draft"}
-              </Button>
-              <Button
-                variant="link"
-                size="sm"
-                nativeButton={false}
-                render={<a href={proposal.source} target="_blank" rel="noopener noreferrer" />}
-              >
-                <ExternalLink data-icon="inline-start" />
-                Read source
-              </Button>
-            </div>
-            <p role="status" className="text-xs text-muted-foreground">
-              {draft && applied.includes(`${draft.id}:${tool.id}`)
-                ? "Facts applied. Review the form, then Save game."
-                : draft
-                  ? "Replaces title, release date, and source only. Your cover, hype, and reviews stay unchanged."
-                  : "Opens an unsaved game draft. Review it, then Save game."}
-            </p>
-            {proposal.covers.length > 0 && (
-              <ul aria-label="Cover choices" className="flex flex-col gap-3">
-                {proposal.covers.map((cover, index) => (
-                  <li key={cover.url} className="flex flex-wrap items-center justify-between gap-2">
-                    <a
-                      className="min-w-0 text-sm underline underline-offset-4"
-                      href={cover.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {cover.label}
-                    </a>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      disabled={disabled || pending || snapshot?.busy}
-                      onClick={() => {
-                        void chooseCover(tool.id, index, proposal);
-                      }}
-                    >
-                      <Download data-icon="inline-start" />
-                      Download & use
-                    </Button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+      <ProposalCard
+        key={tool.id}
+        proposal={proposal}
+        current={
+          (target.kind === "draft"
+            ? draft?.cover
+            : target.kind === "game"
+              ? target.game.cover
+              : null) || null
+        }
+        action={existing ? `Update ${existing.title}` : "Add to collection"}
+        description={
+          target.kind === "draft"
+            ? "Saves the open form with these facts and the chosen cover."
+            : existing
+              ? "Updates title, release, source, and the chosen cover. Hype and reviews stay."
+              : "Adds a new game with the chosen cover. Rate it later in the editor."
+        }
+        note={notes[tool.id]}
+        locked={disabled || pending || Boolean(snapshot?.busy)}
+        onSave={(index) =>
+          void run(tool.id, async () => {
+            await onSave(proposal, await download(tool.id, index));
+            return "Saved to games.json.";
+          })
+        }
+        onEdit={(index) => {
+          const draftId = draft?.id ?? null;
+          void run(tool.id, async () => {
+            if (!onEdit(proposal, await download(tool.id, index), draftId))
+              return "The open game changed while the cover downloaded. Choose Review in form again.";
+            if (isMobile) setOpenMobile(false);
+            return "Opened in the form. Review it, then Save game.";
+          });
+        }}
+      />
     );
   }
 
@@ -405,7 +487,7 @@ export function GameAgent({
         disabled={!connection || disabled || pending}
         error={error || connectionError || snapshot?.error}
         emptyTitle="Research games"
-        emptyDescription="Find release information and artwork, then choose what to apply. Nothing is saved automatically."
+        emptyDescription="Find release information and artwork, then save it to your collection in one step."
         placeholder={
           draft?.title
             ? `Find release information and a cover for ${draft.title}`
@@ -427,6 +509,7 @@ export function GameAgent({
                   source: draft.source,
                 }
               : null,
+            collection: games.map((game) => game.title),
           });
           if (accepted) retry.current = null;
           return accepted;
@@ -436,11 +519,6 @@ export function GameAgent({
             void action({ action: "stop", conversationId: connection.id });
         }}
       />
-      {coverNotice && (
-        <p role="status" className="text-sm text-muted-foreground">
-          {coverNotice}
-        </p>
-      )}
       <p className="text-xs text-muted-foreground">
         Runs on this computer using your Pi account. Research uses the internet. Downloaded artwork
         keeps its original ownership.

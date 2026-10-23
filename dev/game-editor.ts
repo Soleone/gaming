@@ -1,17 +1,29 @@
 import { createHash, randomBytes } from "node:crypto";
-import { readFile, rename, writeFile, rm } from "node:fs/promises";
+import { readdir, readFile, rename, writeFile, rm } from "node:fs/promises";
 import type { IncomingMessage, ServerResponse } from "node:http";
+import { join } from "node:path";
 import type { Plugin } from "vite-plus";
 import { z } from "zod";
 import { gamesSchema } from "../src/games/model";
 import { HttpError, localOrigin } from "./local-access";
 import { createGameAgent } from "./game-agent";
 
-const saveSchema = z.object({ revision: z.string(), games: gamesSchema }).strict();
+const saveSchema = z
+  .object({ revision: z.string(), games: gamesSchema, keepCover: z.string().max(2000).optional() })
+  .strict();
 const revisionOf = (text: string) => createHash("sha256").update(text).digest("hex");
 
-// The only writable path is supplied by the server, never by a request.
-export function createGameEditor(dataPath: string) {
+// Agent downloads that no saved game (or the open draft) references are removed after a save.
+async function pruneAgentCovers(directory: string, keep: Set<string | null | undefined>) {
+  const files = await readdir(directory).catch(() => []);
+  for (const file of files) {
+    if (/^agent-[a-f0-9]{24}\.webp$/.test(file) && !keep.has(`/covers/${file}`))
+      await rm(join(directory, file), { force: true });
+  }
+}
+
+// The only writable paths are supplied by the server, never by a request.
+export function createGameEditor(dataPath: string, coversDirectory: string) {
   const token = randomBytes(32).toString("hex");
   let writing = false;
   return async (req: IncomingMessage, res: ServerResponse, next: () => void) => {
@@ -66,6 +78,10 @@ export function createGameEditor(dataPath: string) {
       temporary = `${dataPath}.${randomBytes(8).toString("hex")}.tmp`;
       await writeFile(temporary, text, { flag: "wx" });
       await rename(temporary, dataPath);
+      await pruneAgentCovers(
+        coversDirectory,
+        new Set([...parsed.data.games.map((game) => game.cover), parsed.data.keepCover]),
+      ).catch((error: unknown) => console.error("Game editor: could not prune covers:", error));
       return respond(200, { games: parsed.data.games, revision: revisionOf(text), token });
     } catch (error) {
       if (error instanceof HttpError) return respond(error.status, { error: error.message });
@@ -83,12 +99,12 @@ export function createGameEditor(dataPath: string) {
   };
 }
 
-export function gameEditorPlugin(dataPath: string): Plugin {
+export function gameEditorPlugin(dataPath: string, coversDirectory: string): Plugin {
   return {
     name: "local-game-editor",
     apply: "serve",
     configureServer(server) {
-      const editor = createGameEditor(dataPath);
+      const editor = createGameEditor(dataPath, coversDirectory);
       const agent = createGameAgent(server.config.root, server.config.mode);
       server.middlewares.use((req, res, next) => {
         void editor(req, res, () => {

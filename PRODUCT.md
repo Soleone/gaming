@@ -20,7 +20,7 @@ Browse one year at a time, optionally narrowing to a month. Maintain selected ga
 - Titles, covers (temporary art permitted), exact or partial release dates, and unknown dates.
 - Hype rated 1–5; optional played reviews with scores 1–10.
 - JSON is the collection's source of truth. No production database or admin service.
-- Optional app-wide Pi-powered research lives in a collapsible right dock, with Pi-scoped model and effort selection. It proposes sourced game facts and downloads selected covers. Applying facts changes only the unsaved draft; saving remains explicit. Agent conversations use separate local SQLite storage, never deployed collection storage.
+- Optional app-wide Pi-powered research lives in a collapsible right dock, with Pi-scoped model and effort selection. It proposes sourced game facts with cover previews and saves a proposal to the collection in one step, updating the matching game instead of duplicating it, or hands it to the form for review. Unused downloaded covers are cleaned up on save. Agent conversations use separate local SQLite storage, never deployed collection storage.
 - Initial selection: Castlevania: Belmont's Curse, Grand Theft Auto VI, The Legend of Zelda: Ocarina of Time remake, and Phantom Blade Zero.
 - Personal ratings are not supplied and must not be invented.
 

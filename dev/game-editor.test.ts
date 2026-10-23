@@ -1,5 +1,5 @@
 import { createServer, request, type Server } from "node:http";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vite-plus/test";
@@ -7,14 +7,17 @@ import { createGameEditor } from "./game-editor";
 
 let directory: string;
 let dataPath: string;
+let coversDirectory: string;
 let server: Server;
 let base: string;
 
 beforeEach(async () => {
   directory = await mkdtemp(join(tmpdir(), "gaming-editor-"));
   dataPath = join(directory, "games.json");
+  coversDirectory = join(directory, "covers");
   await writeFile(dataPath, "[]\n");
-  const editor = createGameEditor(dataPath);
+  await mkdir(coversDirectory);
+  const editor = createGameEditor(dataPath, coversDirectory);
   server = createServer((req, res) => {
     void editor(req, res, () => {
       res.writeHead(404);
@@ -44,11 +47,11 @@ const game = {
 async function session() {
   return (await fetch(`${base}/__dev/games`)).json();
 }
-async function save(token: string, revision: string, games: unknown) {
+async function save(token: string, revision: string, games: unknown, keepCover?: string) {
   return fetch(`${base}/__dev/games`, {
     method: "PUT",
     headers: { Origin: base, "Content-Type": "application/json", "X-Game-Editor": token },
-    body: JSON.stringify({ revision, games }),
+    body: JSON.stringify({ revision, games, keepCover }),
   });
 }
 
@@ -77,6 +80,22 @@ describe("local editor", () => {
     expect((await save(opened.token, opened.revision, [{ ...game, hype: 10 }])).status).toBe(400);
     expect((await save(opened.token, opened.revision, [game, game])).status).toBe(400);
     expect(await readFile(dataPath, "utf8")).toBe("[]\n");
+  });
+  it("agent.cleanup: a save removes agent covers that nothing references, and only those", async () => {
+    const used = "agent-aaaaaaaaaaaaaaaaaaaaaaaa.webp";
+    const drafted = "agent-bbbbbbbbbbbbbbbbbbbbbbbb.webp";
+    const orphan = "agent-cccccccccccccccccccccccc.webp";
+    for (const file of [used, drafted, orphan, "seed.jpg"])
+      await writeFile(join(coversDirectory, file), "");
+    const opened = await session();
+    const saved = await save(
+      opened.token,
+      opened.revision,
+      [{ ...game, cover: `/covers/${used}` }],
+      `/covers/${drafted}`,
+    );
+    expect(saved.status).toBe(200);
+    expect((await readdir(coversDirectory)).sort()).toEqual([used, drafted, "seed.jpg"].sort());
   });
   it("editor.safety: rejects cross-origin requests and DNS-rebinding hostnames", async () => {
     expect(

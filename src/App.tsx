@@ -236,6 +236,7 @@ export function App() {
   return DevWorkspace ? (
     <Suspense fallback={content}>
       <DevWorkspace
+        games={games}
         editor={editor}
         onEdit={(id) => setEditor({ id })}
         onClose={() => setEditor(null)}

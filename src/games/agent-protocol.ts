@@ -43,6 +43,7 @@ export const agentRequestSchema = z.discriminatedUnion("action", [
         })
         .strict()
         .nullable(),
+      collection: z.array(z.string().max(160)).max(1000),
     })
     .strict(),
   z

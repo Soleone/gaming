@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vite-plus/test";
-import { applyResearch, applyDownloadedCover, createGameDraft, parseGameDraft } from "./draft";
+import { applyLateResearch, applyResearch, createGameDraft, parseGameDraft } from "./draft";
+import { researchTarget, upsertGame } from "./collection";
 import { researchProposalSchema } from "./research";
 import type { Game } from "./model";
 
@@ -22,16 +23,31 @@ const proposal = researchProposalSchema.parse({
 
 describe("agent drafts", () => {
   it("agent.cover: late downloads preserve edits made while downloading", () => {
-    const current = { ...createGameDraft(game), title: "Edited while downloading", hype: "5" };
-    expect(applyDownloadedCover(current, game.id, "/covers/new.webp")).toEqual({
-      ...current,
+    const current = { ...createGameDraft(game), hype: "5" };
+    expect(applyLateResearch(current, game.id, proposal, "/covers/new.webp")).toEqual({
+      ...applyResearch(current, proposal),
       cover: "/covers/new.webp",
     });
   });
   it("agent.cover: late downloads cannot replace a switched or closed draft", () => {
     const current = createGameDraft({ ...game, id: "another-game" });
-    expect(applyDownloadedCover(current, game.id, "/covers/new.webp")).toBe(current);
-    expect(applyDownloadedCover(null, game.id, "/covers/new.webp")).toBeNull();
+    expect(applyLateResearch(current, game.id, proposal, "/covers/new.webp")).toBe(current);
+    expect(applyLateResearch(null, game.id, proposal, "/covers/new.webp")).toBeNull();
+  });
+  it("agent.save: updates the collection game with a matching title instead of duplicating it", () => {
+    const games = [{ ...game, title: "Hollow Knight: Silksong™" }];
+    const target = researchTarget(games, "hollow knight silksong", null);
+    expect(target).toEqual({ kind: "game", game: games[0] });
+    expect(upsertGame(games, { ...game, hype: 5 })).toEqual([{ ...game, hype: 5 }]);
+    expect(upsertGame(games, { ...game, id: "other" })).toHaveLength(2);
+  });
+  it("agent.save: targets the open draft only when it is that game or still unsaved", () => {
+    const saved = createGameDraft(game);
+    const unsaved = createGameDraft(null);
+    expect(researchTarget([game], "Old title", saved)).toEqual({ kind: "draft" });
+    expect(researchTarget([game], "Something else", saved)).toEqual({ kind: "new" });
+    expect(researchTarget([game], "Something else", unsaved)).toEqual({ kind: "draft" });
+    expect(researchTarget([game], "Old title", unsaved)).toEqual({ kind: "game", game });
   });
   it("agent.proposal: applies sourced facts without changing identity, cover, or personal opinions", () => {
     const draft = createGameDraft(game);
