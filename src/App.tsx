@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Empty,
   EmptyContent,
@@ -29,7 +28,7 @@ const ThemePicker = lazy(() =>
   import("@/components/soleone/theme-picker").then((module) => ({ default: module.ThemePicker })),
 );
 const initialGames = gamesSchema.parse(gameData);
-const DevEditor = import.meta.env.DEV ? lazy(() => import("./games/Editor")) : null;
+const DevWorkspace = import.meta.env.DEV ? lazy(() => import("./games/Workspace")) : null;
 const currentYear = new Date().getFullYear();
 const initialYear = initialGames.some((game) => game.release.year === currentYear)
   ? currentYear
@@ -53,13 +52,13 @@ export function App() {
   const sections = calendarSections(games, year, month);
   const selectedGames = games.filter((game) => String(game.release.year ?? "unscheduled") === year);
   const count = sections.reduce((total, section) => total + section.games.length, 0);
-  const editGame = DevEditor ? (id: string) => setEditor({ id }) : undefined;
+  const editGame = DevWorkspace ? (id: string) => setEditor({ id }) : undefined;
   const changeYear = (next: string) => {
     setYear(next);
     setMonth("all");
   };
-  return (
-    <div className="min-h-svh">
+  const content = (
+    <div className={editor ? undefined : "min-h-svh"}>
       <header className="border-b border-border">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-4 sm:px-8">
           <a
@@ -74,7 +73,7 @@ export function App() {
             </span>
           </a>
           <div className="flex items-center gap-2">
-            {DevEditor && (
+            {DevWorkspace && !editor && (
               <Button variant="ghost" onClick={() => setEditor({ id: games[0]?.id ?? null })}>
                 <Pencil data-icon="inline-start" />
                 Edit collection
@@ -92,7 +91,10 @@ export function App() {
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-5 pt-10 pb-16 sm:px-8 sm:pt-14">
+      <main
+        hidden={Boolean(editor)}
+        className="mx-auto max-w-6xl px-5 pt-10 pb-16 sm:px-8 sm:pt-14"
+      >
         <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex flex-col gap-3">
             <h1 className="font-heading text-4xl font-semibold tracking-tight sm:text-5xl">
@@ -102,7 +104,7 @@ export function App() {
               What’s worth the wait. What lived up to it.
             </p>
           </div>
-          {DevEditor && (
+          {DevWorkspace && (
             <Button variant="outline" onClick={() => setEditor({ id: null })}>
               <Plus data-icon="inline-start" />
               Add a game
@@ -229,19 +231,20 @@ export function App() {
           </span>
         </footer>
       </main>
-      {DevEditor && editor && (
-        <Suspense
-          fallback={
-            <div className="fixed right-5 bottom-5 max-w-sm">
-              <Alert role="status">
-                <AlertDescription>Opening local editor…</AlertDescription>
-              </Alert>
-            </div>
-          }
-        >
-          <DevEditor initialId={editor.id} onClose={() => setEditor(null)} onSaved={setGames} />
-        </Suspense>
-      )}
     </div>
+  );
+  return DevWorkspace ? (
+    <Suspense fallback={content}>
+      <DevWorkspace
+        editor={editor}
+        onEdit={(id) => setEditor({ id })}
+        onClose={() => setEditor(null)}
+        onSaved={setGames}
+      >
+        {content}
+      </DevWorkspace>
+    </Suspense>
+  ) : (
+    content
   );
 }

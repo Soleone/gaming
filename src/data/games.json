@@ -41,7 +41,7 @@
       "day": 5
     },
     "source": "https://www.nintendo.com/au/news-and-articles/you-have-been-summoned-to-watch-the-new-the-legend-of-zelda-ocarina-of-time-overview-trailer/",
-    "hype": null,
+    "hype": 4,
     "review": null
   },
   {
@@ -57,5 +57,39 @@
     "source": "https://pbz.s-game.com/en-US/news/creative-director-letter/",
     "hype": 5,
     "review": null
+  },
+  {
+    "id": "a0afc4d8-cdc4-444e-9894-267523ea16ff",
+    "title": "CONTROL Resonant",
+    "cover": "/covers/agent-cb45a021f47cc83bd189f37e.webp",
+    "release": {
+      "precision": "day",
+      "year": 2026,
+      "month": 9,
+      "day": 24
+    },
+    "source": "https://www.remedygames.com/article/control-resonant-launches-worldwide-on-september-24",
+    "hype": 3,
+    "review": {
+      "text": "",
+      "score": 8
+    }
+  },
+  {
+    "id": "76a20e3b-f44a-4ea3-970c-af315aea6c29",
+    "title": "Onimusha: Way of the Sword",
+    "cover": "/covers/agent-9e97388e210e8de8ae02805c.webp",
+    "release": {
+      "precision": "day",
+      "year": 2026,
+      "month": 9,
+      "day": 4
+    },
+    "source": "https://www.capcom.co.jp/ir/english/news/html/e260702.html",
+    "hype": 4,
+    "review": {
+      "text": "",
+      "score": 8
+    }
   }
 ]

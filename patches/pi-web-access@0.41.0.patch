@@ -1,0 +1,16 @@
+diff --git a/exa.ts b/exa.ts
+index 47176f05addee15f8c75fa686a0dd9925efb76b1..df9e86b717f055a35b342710f960097365649ed9 100644
+--- a/exa.ts
++++ b/exa.ts
+@@ -288,6 +288,11 @@ export async function callExaMcp(
+ 	if (!text) {
+ 		throw new Error("Exa MCP returned empty content");
+ 	}
++	if (/^you['’]ve hit exa['’]s free mcp rate limit\b/i.test(text.trim())) {
++		throw new Error(
++			`Exa MCP rate limit reached (429). Add "exaApiKey" to ${CONFIG_PATH} or wait before retrying.`,
++		);
++	}
+ 
+ 	return text;
+ }

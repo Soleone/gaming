@@ -1,15 +1,14 @@
 import { createHash, randomBytes } from "node:crypto";
 import { readFile, rename, writeFile, rm } from "node:fs/promises";
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { isIP } from "node:net";
 import type { Plugin } from "vite-plus";
 import { z } from "zod";
 import { gamesSchema } from "../src/games/model";
+import { HttpError, localOrigin } from "./local-access";
+import { createGameAgent } from "./game-agent";
 
 const saveSchema = z.object({ revision: z.string(), games: gamesSchema }).strict();
 const revisionOf = (text: string) => createHash("sha256").update(text).digest("hex");
-const loopback = (address: string | undefined) =>
-  address === "::1" || address === "127.0.0.1" || address === "::ffff:127.0.0.1";
 
 // The only writable path is supplied by the server, never by a request.
 export function createGameEditor(dataPath: string) {
@@ -24,20 +23,7 @@ export function createGameEditor(dataPath: string) {
     let ownsWrite = false;
     let temporary: string | undefined;
     try {
-      const host = new URL(`http://${req.headers.host}`).hostname;
-      if (
-        !loopback(req.socket.remoteAddress) ||
-        !(host === "localhost" || host === "[::1]" || (isIP(host) === 4 && host === "127.0.0.1"))
-      ) {
-        return respond(403, { error: "The editor is available on localhost only." });
-      }
-      const origin = `http://${req.headers.host}`;
-      if (
-        (req.headers.origin && req.headers.origin !== origin) ||
-        req.headers["sec-fetch-site"] === "cross-site"
-      ) {
-        return respond(403, { error: "Cross-origin editing is not allowed." });
-      }
+      const origin = localOrigin(req);
       if (req.method === "GET") {
         const text = await readFile(dataPath, "utf8");
         return respond(200, {
@@ -82,6 +68,7 @@ export function createGameEditor(dataPath: string) {
       await rename(temporary, dataPath);
       return respond(200, { games: parsed.data.games, revision: revisionOf(text), token });
     } catch (error) {
+      if (error instanceof HttpError) return respond(error.status, { error: error.message });
       if (error instanceof SyntaxError)
         return respond(400, { error: "Invalid JSON. Check the game data and try again." });
       console.error("Game editor:", error);
@@ -102,8 +89,18 @@ export function gameEditorPlugin(dataPath: string): Plugin {
     apply: "serve",
     configureServer(server) {
       const editor = createGameEditor(dataPath);
+      const agent = createGameAgent(server.config.root, server.config.mode);
       server.middlewares.use((req, res, next) => {
-        void editor(req, res, next);
+        void editor(req, res, () => {
+          void agent.handle(req, res, next);
+        });
+      });
+      server.httpServer?.once("close", () => {
+        void agent
+          .close()
+          .catch((error) =>
+            server.config.logger.error(`Could not close the gaming agent: ${String(error)}`),
+          );
       });
     },
   };

@@ -1,0 +1,86 @@
+import { gameSchema, type Game, type Release } from "./model";
+import type { ResearchProposal } from "./research";
+
+export type GameDraft = {
+  id: string;
+  title: string;
+  cover: string;
+  precision: Release["precision"];
+  year: string;
+  month: string;
+  day: string;
+  quarter: string;
+  source: string;
+  hype: string;
+  played: string;
+  score: string;
+  review: string;
+};
+
+export function createGameDraft(game: Game | null): GameDraft {
+  return {
+    id: game?.id ?? crypto.randomUUID(),
+    title: game?.title ?? "",
+    cover: game?.cover ?? "",
+    precision: game?.release.precision ?? "unknown",
+    year: String(game ? (game.release.year ?? "") : new Date().getFullYear()),
+    month: String(game && "month" in game.release ? game.release.month : 1),
+    day: String(game?.release.precision === "day" ? game.release.day : 1),
+    quarter: String(game?.release.precision === "quarter" ? game.release.quarter : 1),
+    source: game?.source ?? "",
+    hype: String(game?.hype ?? "unrated"),
+    played: game?.review ? "yes" : "no",
+    score: String(game?.review?.score ?? ""),
+    review: game?.review?.text ?? "",
+  };
+}
+
+export function parseGameDraft(draft: GameDraft) {
+  return gameSchema.safeParse({
+    id: draft.id,
+    title: draft.title.trim(),
+    cover: draft.cover.trim() || null,
+    release: {
+      precision: draft.precision,
+      year: draft.year.trim() === "" ? null : Number(draft.year),
+      ...(draft.precision === "day" || draft.precision === "month"
+        ? { month: Number(draft.month) }
+        : {}),
+      ...(draft.precision === "day" ? { day: Number(draft.day) } : {}),
+      ...(draft.precision === "quarter" ? { quarter: Number(draft.quarter) } : {}),
+    },
+    source: draft.source.trim() || null,
+    hype: draft.hype === "unrated" ? null : Number(draft.hype),
+    review:
+      draft.played === "yes"
+        ? {
+            text: draft.review.trim(),
+            score: draft.score.trim() === "" ? null : Number(draft.score),
+          }
+        : null,
+  });
+}
+
+// A late download may update only its original draft, using that draft's latest fields.
+export function applyDownloadedCover(
+  current: GameDraft | null,
+  targetId: string,
+  cover: string,
+): GameDraft | null {
+  if (!current || current.id !== targetId) return current;
+  return { ...current, cover };
+}
+
+export function applyResearch(draft: GameDraft, proposal: ResearchProposal): GameDraft {
+  const release = proposal.release;
+  return {
+    ...draft,
+    title: proposal.title,
+    source: proposal.source,
+    precision: release.precision,
+    year: String(release.year ?? ""),
+    month: String("month" in release ? release.month : 1),
+    day: String(release.precision === "day" ? release.day : 1),
+    quarter: String(release.precision === "quarter" ? release.quarter : 1),
+  };
+}

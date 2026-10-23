@@ -19,7 +19,7 @@ export function ChoiceField({
   id: string;
   label: string;
   value: string;
-  options: { value: string; label: string }[];
+  options: { value: string; label: string; disabled?: boolean }[];
   onChange: (value: string) => void;
   disabled?: boolean;
 }) {
@@ -41,7 +41,7 @@ export function ChoiceField({
         <SelectContent>
           <SelectGroup>
             {options.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
+              <SelectItem key={option.value} value={option.value} disabled={option.disabled}>
                 {option.label}
               </SelectItem>
             ))}
