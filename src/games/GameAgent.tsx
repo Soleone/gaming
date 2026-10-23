@@ -37,30 +37,25 @@ async function responseJson(response: Response): Promise<unknown> {
   return data;
 }
 
-function CoverPreview({ src, label }: { src: string; label: string }) {
+function CoverImage({ src, alt = "" }: { src: string; alt?: string }) {
   const [failed, setFailed] = useState(false);
-  return (
-    <>
-      {failed ? (
-        <span className="flex aspect-video w-full items-center justify-center rounded-md bg-muted text-muted-foreground">
-          <ImageOff aria-label="Preview unavailable" />
-        </span>
-      ) : (
-        <img
-          src={src}
-          alt=""
-          loading="lazy"
-          referrerPolicy="no-referrer"
-          className="aspect-video w-full rounded-md bg-muted object-cover"
-          onError={() => setFailed(true)}
-        />
-      )}
-      <span className="truncate">{label}</span>
-    </>
+  return failed ? (
+    <span className="flex aspect-video w-full items-center justify-center rounded-md bg-muted text-muted-foreground">
+      <ImageOff aria-label="Preview unavailable" />
+    </span>
+  ) : (
+    <img
+      src={src}
+      alt={alt}
+      loading="lazy"
+      referrerPolicy="no-referrer"
+      className="aspect-video w-full rounded-md bg-muted object-cover"
+      onError={() => setFailed(true)}
+    />
   );
 }
 
-// Selecting "current" (or nothing) leaves the game's cover as it is.
+// Selecting "current" leaves the game's cover as it is.
 export function ProposalCard({
   proposal,
   current,
@@ -84,6 +79,12 @@ export function ProposalCard({
     current ? ["current"] : proposal.covers.length ? ["0"] : [],
   );
   const cover = selected[0] === undefined || selected[0] === "current" ? null : Number(selected[0]);
+  const preview =
+    selected[0] === "current"
+      ? { src: current, label: "Current cover" }
+      : cover === null
+        ? undefined
+        : { src: proposal.covers[cover]?.url, label: proposal.covers[cover]?.label };
   return (
     <Card size="sm">
       <CardHeader>
@@ -95,21 +96,35 @@ export function ProposalCard({
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-3">
+          {preview?.src && (
+            <a
+              href={preview.src}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Open full size"
+              aria-label={`Open ${preview.label} full size`}
+            >
+              <CoverImage key={preview.src} src={preview.src} alt={preview.label} />
+            </a>
+          )}
           {proposal.covers.length > 0 && (
             <CoverChoices
               aria-label="Cover"
               value={selected}
-              onValueChange={setSelected}
+              // Clicking the selected tile keeps it selected so its large preview stays.
+              onValueChange={(value) => value.length > 0 && setSelected(value)}
               disabled={locked}
             >
               {current && (
                 <CoverChoice value="current">
-                  <CoverPreview src={current} label="Current cover" />
+                  <CoverImage src={current} />
+                  <span className="truncate">Current cover</span>
                 </CoverChoice>
               )}
               {proposal.covers.map((candidate, index) => (
                 <CoverChoice key={candidate.url} value={String(index)}>
-                  <CoverPreview src={candidate.url} label={candidate.label} />
+                  <CoverImage src={candidate.url} />
+                  <span className="truncate">{candidate.label}</span>
                 </CoverChoice>
               ))}
             </CoverChoices>
