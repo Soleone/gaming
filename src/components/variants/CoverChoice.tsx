@@ -1,23 +1,29 @@
 import type { ComponentProps } from "react";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Button } from "@/components/ui/button";
+import { DialogContent } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
-// A grid of image tiles for picking at most one cover; the pressed tile carries a ring.
-export function CoverChoices({ className, ...props }: ComponentProps<typeof ToggleGroup>) {
+// An image tile that opens its cover's preview; the selected tile carries a ring.
+export function CoverTile({
+  selected,
+  className,
+  ...props
+}: ComponentProps<typeof Button> & { selected: boolean }) {
   return (
-    <ToggleGroup className={cn("grid w-full grid-cols-2 items-stretch", className)} {...props} />
-  );
-}
-
-export function CoverChoice({ className, ...props }: ComponentProps<typeof ToggleGroupItem>) {
-  return (
-    <ToggleGroupItem
+    <Button
+      type="button"
       variant="outline"
+      aria-pressed={selected}
       className={cn(
-        "h-auto min-w-0 flex-col items-stretch gap-1.5 p-1.5 text-xs font-normal whitespace-normal aria-pressed:border-primary aria-pressed:bg-transparent aria-pressed:ring-2 aria-pressed:ring-primary/40",
+        "h-auto min-w-0 flex-col items-stretch gap-1.5 p-1.5 text-xs font-normal whitespace-normal aria-pressed:border-primary aria-pressed:ring-2 aria-pressed:ring-primary/40",
         className,
       )}
       {...props}
     />
   );
+}
+
+// A wide dialog for looking at one cover at a large size.
+export function CoverDialogContent({ className, ...props }: ComponentProps<typeof DialogContent>) {
+  return <DialogContent className={cn("sm:max-w-3xl", className)} {...props} />;
 }

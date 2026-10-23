@@ -39,7 +39,7 @@ it("agent.steps: groups adjacent steps of one reply into one trace and splits th
   );
   expect(html.indexOf("Found the release date.")).toBeLessThan(html.indexOf("Proposed A game"));
 });
-it("agent.cover: previews candidates beside the current cover, the selection at full width, before anything downloads", () => {
+it("agent.cover: shows candidate tiles beside the selected current cover before anything downloads", () => {
   const html = renderToStaticMarkup(
     <ProposalCard
       proposal={{
@@ -65,8 +65,8 @@ it("agent.cover: previews candidates beside the current cover, the selection at 
     />,
   );
   expect(html).toContain('src="https://cdn.example/art.jpg"');
-  expect(html).toContain('alt="Current cover"');
-  expect(html).toContain('href="/covers/mine.webp"');
+  expect(html).toContain('aria-label="Preview Key art"');
+  expect(html).not.toContain('href="/covers/mine.webp"');
   expect(html).toContain('referrerPolicy="no-referrer"');
   expect(html).toMatch(/aria-pressed="true"[^>]*>(?:(?!<\/button>).)*\/covers\/mine\.webp/);
   expect(html).toContain("Update A game");

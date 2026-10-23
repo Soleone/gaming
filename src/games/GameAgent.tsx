@@ -6,7 +6,16 @@ import {
   type Dispatch,
   type SetStateAction,
 } from "react";
-import { ExternalLink, ImageOff, PenLine, RotateCcw, Save } from "lucide-react";
+import {
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  ExternalLink,
+  ImageOff,
+  PenLine,
+  RotateCcw,
+  Save,
+} from "lucide-react";
 import { z } from "zod";
 import { AgentPanel, type AgentTool } from "@/components/soleone/agent";
 import { Button } from "@/components/ui/button";
@@ -19,8 +28,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useSidebar } from "@/components/ui/sidebar";
-import { CoverChoice, CoverChoices } from "@/components/variants/CoverChoice";
+import { CoverDialogContent, CoverTile } from "@/components/variants/CoverChoice";
 import { agentSnapshotSchema, type AgentRequest, type AgentSnapshot } from "./agent-protocol";
 import { ChoiceField } from "./ChoiceField";
 import { researchTarget } from "./collection";
@@ -37,7 +53,16 @@ async function responseJson(response: Response): Promise<unknown> {
   return data;
 }
 
-function CoverImage({ src, alt = "" }: { src: string; alt?: string }) {
+// Tiles crop to the calendar's 16:9 card; the large preview shows the whole image.
+function CoverImage({
+  src,
+  alt = "",
+  whole = false,
+}: {
+  src: string;
+  alt?: string;
+  whole?: boolean;
+}) {
   const [failed, setFailed] = useState(false);
   return failed ? (
     <span className="flex aspect-video w-full items-center justify-center rounded-md bg-muted text-muted-foreground">
@@ -49,7 +74,11 @@ function CoverImage({ src, alt = "" }: { src: string; alt?: string }) {
       alt={alt}
       loading="lazy"
       referrerPolicy="no-referrer"
-      className="aspect-video w-full rounded-md bg-muted object-cover"
+      className={
+        whole
+          ? "max-h-[70svh] w-full rounded-md object-contain"
+          : "aspect-video w-full rounded-md bg-muted object-cover"
+      }
       onError={() => setFailed(true)}
     />
   );
@@ -75,16 +104,22 @@ export function ProposalCard({
   onSave: (cover: number | null) => void;
   onEdit: (cover: number | null) => void;
 }) {
-  const [selected, setSelected] = useState<string[]>(
-    current ? ["current"] : proposal.covers.length ? ["0"] : [],
-  );
-  const cover = selected[0] === undefined || selected[0] === "current" ? null : Number(selected[0]);
-  const preview =
-    selected[0] === "current"
-      ? { src: current, label: "Current cover" }
-      : cover === null
-        ? undefined
-        : { src: proposal.covers[cover]?.url, label: proposal.covers[cover]?.label };
+  const options = [
+    ...(current ? [{ key: "current", src: current, label: "Current cover" }] : []),
+    ...proposal.covers.map((candidate, index) => ({
+      key: String(index),
+      src: candidate.url,
+      label: candidate.label,
+    })),
+  ];
+  const [selected, setSelected] = useState(options[0]?.key);
+  const [viewing, setViewing] = useState<number | null>(null);
+  const cover = selected === undefined || selected === "current" ? null : Number(selected);
+  const shown = viewing === null ? undefined : options[viewing];
+  const flip = (step: number) =>
+    setViewing((index) =>
+      index === null ? null : (index + step + options.length) % options.length,
+    );
   return (
     <Card size="sm">
       <CardHeader>
@@ -96,39 +131,71 @@ export function ProposalCard({
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-3">
-          {preview?.src && (
-            <a
-              href={preview.src}
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Open full size"
-              aria-label={`Open ${preview.label} full size`}
-            >
-              <CoverImage key={preview.src} src={preview.src} alt={preview.label} />
-            </a>
-          )}
           {proposal.covers.length > 0 && (
-            <CoverChoices
-              aria-label="Cover"
-              value={selected}
-              // Clicking the selected tile keeps it selected so its large preview stays.
-              onValueChange={(value) => value.length > 0 && setSelected(value)}
-              disabled={locked}
-            >
-              {current && (
-                <CoverChoice value="current">
-                  <CoverImage src={current} />
-                  <span className="truncate">Current cover</span>
-                </CoverChoice>
-              )}
-              {proposal.covers.map((candidate, index) => (
-                <CoverChoice key={candidate.url} value={String(index)}>
-                  <CoverImage src={candidate.url} />
-                  <span className="truncate">{candidate.label}</span>
-                </CoverChoice>
+            <ul aria-label="Cover" className="grid grid-cols-2 gap-2">
+              {options.map((option, index) => (
+                <li key={option.key} className="flex min-w-0">
+                  <CoverTile
+                    selected={selected === option.key}
+                    className="w-full"
+                    aria-label={`Preview ${option.label}`}
+                    onClick={() => setViewing(index)}
+                  >
+                    <CoverImage src={option.src} />
+                    <span className="truncate">{option.label}</span>
+                  </CoverTile>
+                </li>
               ))}
-            </CoverChoices>
+            </ul>
           )}
+          <Dialog open={shown !== undefined} onOpenChange={(open) => !open && setViewing(null)}>
+            {shown && (
+              <CoverDialogContent>
+                <DialogHeader>
+                  <DialogTitle>{shown.label}</DialogTitle>
+                  <DialogDescription>
+                    {proposal.title} · {viewing! + 1} of {options.length}
+                  </DialogDescription>
+                </DialogHeader>
+                <CoverImage key={shown.src} src={shown.src} alt={shown.label} whole />
+                <DialogFooter>
+                  {options.length > 1 && (
+                    <div className="flex gap-2 sm:mr-auto">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        aria-label="Previous cover"
+                        onClick={() => flip(-1)}
+                      >
+                        <ChevronLeft />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        aria-label="Next cover"
+                        onClick={() => flip(1)}
+                      >
+                        <ChevronRight />
+                      </Button>
+                    </div>
+                  )}
+                  <Button
+                    type="button"
+                    disabled={locked || selected === shown.key}
+                    onClick={() => {
+                      setSelected(shown.key);
+                      setViewing(null);
+                    }}
+                  >
+                    <Check data-icon="inline-start" />
+                    {selected === shown.key ? "Selected" : "Use this cover"}
+                  </Button>
+                </DialogFooter>
+              </CoverDialogContent>
+            )}
+          </Dialog>
           <div className="flex flex-wrap items-center gap-2">
             <Button type="button" size="sm" disabled={locked} onClick={() => onSave(cover)}>
               <Save data-icon="inline-start" />
