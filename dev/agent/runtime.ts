@@ -33,10 +33,33 @@ const Conversations = defineDoc<{ byDraft: Record<string, number> }>({
   scope: "session",
   initial: () => ({ byDraft: {} }),
 });
-const labels: Record<string, string> = {
-  search_web: "Search the web",
-  read_page: "Read a source",
-  propose_game: "Game proposal",
+// Trace titles carry the status: present tense while running, past when done, "Failed to" on error.
+const steps: Record<
+  string,
+  {
+    verbs: Record<AgentTool["status"], string>;
+    subject: (input: Record<string, unknown>) => string;
+  }
+> = {
+  search_web: {
+    verbs: { running: "Searching", complete: "Searched", error: "Failed to search" },
+    subject: ({ query }) => (typeof query === "string" && query ? `for “${query}”` : "the web"),
+  },
+  read_page: {
+    verbs: { running: "Reading", complete: "Read", error: "Failed to read" },
+    subject: ({ url }) =>
+      typeof url === "string" && URL.canParse(url) ? new URL(url).hostname : "a source",
+  },
+  propose_game: {
+    verbs: { running: "Proposing", complete: "Proposed", error: "Failed to propose" },
+    subject: ({ title }) => (typeof title === "string" && title ? title : "a game"),
+  },
+};
+const stepTitle = (name: string, status: AgentTool["status"], input: Record<string, unknown>) => {
+  const step = steps[name];
+  if (!step)
+    return `${{ running: "Running", complete: "Ran", error: "Failed to run" }[status]} ${name}`;
+  return `${step.verbs[status]} ${step.subject(input)}`;
 };
 const messageText = (message: AssistantMessage | ToolResultMessage) =>
   message.content.flatMap((part) => (part.type === "text" ? [part.text] : [])).join("\n");
@@ -79,18 +102,19 @@ export function createGamingRuntime(
             if (part.type !== "toolCall") return [];
             const result = results.get(part.id);
             const slot = live?.tools?.find((tool) => tool.callId === part.id);
+            const status = result
+              ? result.isError
+                ? "error"
+                : "complete"
+              : slot?.status === "done"
+                ? "error"
+                : "running";
             return [
               {
                 id: part.id,
                 name: part.name,
-                label: labels[part.name] ?? part.name,
-                status: result
-                  ? result.isError
-                    ? "error"
-                    : "complete"
-                  : slot?.status === "done"
-                    ? "error"
-                    : "running",
+                label: stepTitle(part.name, status, part.arguments ?? {}),
+                status,
                 output: result ? messageText(result).slice(0, 6000) : slot?.output,
                 data: result?.details,
               },

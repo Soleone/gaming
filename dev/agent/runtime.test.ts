@@ -152,6 +152,16 @@ it("agent.research: searches, verifies, and presents a typed proposal without wr
   await harness.waitForIdle(BACKGROUND_CONTEXT);
   expect(faux.state.callCount).toBe(3);
 });
+it("agent.steps: titles each step by its status and subject", async () => {
+  const { snapshot } = await research();
+  expect(
+    snapshot.messages.flatMap((message) => message.tools ?? []).map((tool) => tool.label),
+  ).toEqual([
+    "Searched for “A verified game official release”",
+    `Read ${new URL(proposal.source).hostname}`,
+    `Proposed ${proposal.title}`,
+  ]);
+});
 it("agent.persistence: researches another game after reset with the same model and search access", async () => {
   const first = await research();
   const reset = agentSnapshotSchema.parse(

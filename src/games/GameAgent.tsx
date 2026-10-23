@@ -11,6 +11,14 @@ import { z } from "zod";
 import { AgentPanel, type AgentTool } from "@/components/soleone/agent";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { useSidebar } from "@/components/ui/sidebar";
 import { agentSnapshotSchema, type AgentRequest, type AgentSnapshot } from "./agent-protocol";
 import { ChoiceField } from "./ChoiceField";
@@ -42,7 +50,8 @@ export function GameAgent({
   onApply: (proposal: ResearchProposal) => void;
   onCover: (cover: string, proposal: ResearchProposal) => void;
 }) {
-  const { isMobile, setOpenMobile } = useSidebar();
+  const { isMobile, open: dockOpen, openMobile, setOpenMobile } = useSidebar();
+  const visible = isMobile ? openMobile : dockOpen;
   const [connection, setConnection] = useState<{
     token: string;
     id: number;
@@ -57,6 +66,13 @@ export function GameAgent({
   const epoch = useRef(0);
   const retry = useRef<{ text: string; id: string } | null>(null);
   const currentDraftId = useRef(draft?.id ?? null);
+  // Polling pauses while nobody can see the dock and no work is running.
+  const watching = useRef(visible);
+  const resume = useRef<(() => void) | null>(null);
+  useLayoutEffect(() => {
+    watching.current = visible;
+    if (visible && document.visibilityState === "visible") resume.current?.();
+  }, [visible]);
   useLayoutEffect(() => {
     currentDraftId.current = draft?.id ?? null;
   }, [draft?.id]);
@@ -64,6 +80,10 @@ export function GameAgent({
   useEffect(() => {
     const controller = new AbortController();
     let timer: ReturnType<typeof setTimeout>;
+    const wake = () => {
+      if (watching.current && document.visibilityState === "visible") resume.current?.();
+    };
+    document.addEventListener("visibilitychange", wake);
     async function open() {
       try {
         const session = z
@@ -85,6 +105,16 @@ export function GameAgent({
           signal: controller.signal,
         });
         setSnapshot(opened);
+        function schedule(busy: boolean) {
+          if (controller.signal.aborted) return;
+          const seen = watching.current && document.visibilityState === "visible";
+          if (busy || seen) timer = setTimeout(poll, busy && seen ? 600 : 2500);
+          else
+            resume.current = () => {
+              resume.current = null;
+              void poll();
+            };
+        }
         async function poll() {
           const started = epoch.current;
           try {
@@ -96,9 +126,14 @@ export function GameAgent({
                 }),
               ),
             );
-            if (started === epoch.current) setSnapshot(current);
+            // Keep the previous object when nothing changed so an idle poll renders nothing.
+            const serialized = JSON.stringify(current);
+            if (started === epoch.current)
+              setSnapshot((previous) =>
+                JSON.stringify(previous) === serialized ? previous : current,
+              );
             setConnectionError("");
-            if (!controller.signal.aborted) timer = setTimeout(poll, current.busy ? 600 : 2500);
+            schedule(current.busy);
           } catch (error) {
             if (!controller.signal.aborted) {
               setConnectionError(
@@ -110,7 +145,7 @@ export function GameAgent({
             }
           }
         }
-        timer = setTimeout(poll, opened.busy ? 600 : 2500);
+        schedule(opened.busy);
       } catch (error) {
         if (!controller.signal.aborted)
           setConnectionError(
@@ -124,6 +159,8 @@ export function GameAgent({
     return () => {
       controller.abort();
       clearTimeout(timer);
+      resume.current = null;
+      document.removeEventListener("visibilitychange", wake);
     };
   }, []);
 
@@ -198,71 +235,77 @@ export function GameAgent({
     if (!parsed.success) return undefined;
     const proposal = parsed.data;
     return (
-      <div className="flex min-w-0 flex-col gap-3">
-        <div className="flex flex-wrap items-center gap-2">
-          <h3 className="text-sm font-medium">{proposal.title}</h3>
-          <Badge variant="secondary">{releaseLabel(proposal.release)}</Badge>
-        </div>
-        <p className="text-sm text-muted-foreground">{proposal.summary}</p>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button
-            type="button"
-            size="sm"
-            disabled={disabled || pending || snapshot?.busy}
-            onClick={() => {
-              onApply(proposal);
-              if (isMobile) setOpenMobile(false);
-              if (draft) setApplied((current) => [...current, `${draft.id}:${tool.id}`]);
-            }}
-          >
-            {draft ? "Apply facts to form" : "Open new game draft"}
-          </Button>
-          <Button
-            variant="link"
-            size="sm"
-            nativeButton={false}
-            render={<a href={proposal.source} target="_blank" rel="noopener noreferrer" />}
-          >
-            <ExternalLink data-icon="inline-start" />
-            Read source
-          </Button>
-        </div>
-        <p role="status" className="text-xs text-muted-foreground">
-          {draft && applied.includes(`${draft.id}:${tool.id}`)
-            ? "Facts applied. Review the form, then Save game."
-            : draft
-              ? "Replaces title, release date, and source only. Your cover, hype, and reviews stay unchanged."
-              : "Opens an unsaved game draft. Review it, then Save game."}
-        </p>
-        {proposal.covers.length > 0 && (
-          <ul aria-label="Cover choices" className="flex flex-col gap-3">
-            {proposal.covers.map((cover, index) => (
-              <li key={cover.url} className="flex flex-wrap items-center justify-between gap-2">
-                <a
-                  className="min-w-0 text-sm underline underline-offset-4"
-                  href={cover.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {cover.label}
-                </a>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  disabled={disabled || pending || snapshot?.busy}
-                  onClick={() => {
-                    void chooseCover(tool.id, index, proposal);
-                  }}
-                >
-                  <Download data-icon="inline-start" />
-                  Download & use
-                </Button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      <Card size="sm">
+        <CardHeader>
+          <CardTitle>{proposal.title}</CardTitle>
+          <CardDescription>{proposal.summary}</CardDescription>
+          <CardAction>
+            <Badge variant="secondary">{releaseLabel(proposal.release)}</Badge>
+          </CardAction>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                type="button"
+                size="sm"
+                disabled={disabled || pending || snapshot?.busy}
+                onClick={() => {
+                  onApply(proposal);
+                  if (isMobile) setOpenMobile(false);
+                  if (draft) setApplied((current) => [...current, `${draft.id}:${tool.id}`]);
+                }}
+              >
+                {draft ? "Apply facts to form" : "Open new game draft"}
+              </Button>
+              <Button
+                variant="link"
+                size="sm"
+                nativeButton={false}
+                render={<a href={proposal.source} target="_blank" rel="noopener noreferrer" />}
+              >
+                <ExternalLink data-icon="inline-start" />
+                Read source
+              </Button>
+            </div>
+            <p role="status" className="text-xs text-muted-foreground">
+              {draft && applied.includes(`${draft.id}:${tool.id}`)
+                ? "Facts applied. Review the form, then Save game."
+                : draft
+                  ? "Replaces title, release date, and source only. Your cover, hype, and reviews stay unchanged."
+                  : "Opens an unsaved game draft. Review it, then Save game."}
+            </p>
+            {proposal.covers.length > 0 && (
+              <ul aria-label="Cover choices" className="flex flex-col gap-3">
+                {proposal.covers.map((cover, index) => (
+                  <li key={cover.url} className="flex flex-wrap items-center justify-between gap-2">
+                    <a
+                      className="min-w-0 text-sm underline underline-offset-4"
+                      href={cover.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {cover.label}
+                    </a>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={disabled || pending || snapshot?.busy}
+                      onClick={() => {
+                        void chooseCover(tool.id, index, proposal);
+                      }}
+                    >
+                      <Download data-icon="inline-start" />
+                      Download & use
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
