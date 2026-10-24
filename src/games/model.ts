@@ -59,7 +59,7 @@ export const verdictLabels: Record<Verdict, string> = {
   questionable: "Questionable",
   terrible: "Terrible",
 };
-const notes = z.array(z.string().trim().min(1).max(200)).max(20);
+const notes = z.array(z.string().trim().min(1));
 
 export const gameFieldsSchema = z
   .object({

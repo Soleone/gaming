@@ -4,9 +4,11 @@ import { CircleHelp, Sparkles, ThumbsDown, ThumbsUp, type LucideIcon } from "luc
 import { Dialog, DialogDescription } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { ReviewDialogContent, ReviewTitle } from "@/components/variants/ReviewDialog";
+import { Spoiler } from "@/components/variants/Spoiler";
 import { cn } from "@/lib/utils";
 import { Pips } from "./Pips";
 import { PlayBadge } from "./PlayBadge";
+import { markdownSpoilers, spoilerHref, splitSpoilers } from "./spoilers";
 import {
   playLabels,
   releaseLabel,
@@ -144,14 +146,17 @@ export function ReviewDialog({
                 allowedElements={markdownElements}
                 unwrapDisallowed
                 components={{
-                  a: ({ href, children }) => (
-                    <a href={href} target="_blank" rel="noreferrer">
-                      {children}
-                    </a>
-                  ),
+                  a: ({ href, children }) =>
+                    href === spoilerHref ? (
+                      <Spoiler>{children}</Spoiler>
+                    ) : (
+                      <a href={href} target="_blank" rel="noreferrer">
+                        {children}
+                      </a>
+                    ),
                 }}
               >
-                {review.text}
+                {markdownSpoilers(review.text)}
               </ReactMarkdown>
             </div>
           )}
@@ -182,7 +187,15 @@ export function ReviewDialog({
                                     mark,
                                   )}
                                 />
-                                <span className="min-w-0">{point}</span>
+                                <span className="min-w-0">
+                                  {splitSpoilers(point).map((part, i) =>
+                                    part.spoiler ? (
+                                      <Spoiler key={i}>{part.text}</Spoiler>
+                                    ) : (
+                                      part.text
+                                    ),
+                                  )}
+                                </span>
                               </li>
                             ))}
                           </ul>

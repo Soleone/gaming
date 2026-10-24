@@ -108,9 +108,12 @@ describe("game data", () => {
       gameSchema.safeParse({
         ...game,
         play: "started",
-        review: { ...emptyReview, terrible: Array.from({ length: 21 }, () => "Too much") },
+        review: {
+          ...emptyReview,
+          terrible: Array.from({ length: 30 }, () => "A long point. ".repeat(40)),
+        },
       }).success,
-    ).toBe(false);
+    ).toBe(true);
     expect(gameSchema.safeParse({ ...game, play: "not_played", review: emptyReview }).success).toBe(
       false,
     );

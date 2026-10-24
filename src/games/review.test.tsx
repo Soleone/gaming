@@ -2,6 +2,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it } from "vite-plus/test";
 import { GameCard } from "./GameCard";
 import { reviewColumns } from "./Review";
+import { markdownSpoilers, splitSpoilers } from "./spoilers";
 import type { Game } from "./model";
 
 const emptyReview = {
@@ -102,4 +103,20 @@ it("review.tone: colours the card score gold from 9, plain at 7 and 8, red below
   expect(scoreClass(7)).toBe("text-foreground");
   expect(scoreClass(6)).toBe("text-destructive");
   expect(scoreClass(5)).toBe("text-destructive");
+});
+
+it("review.spoiler: splits ||wrapped|| text out of a point and leaves stray bars alone", () => {
+  expect(splitSpoilers("The twist: ||she was the killer|| all along")).toEqual([
+    { text: "The twist: ", spoiler: false },
+    { text: "she was the killer", spoiler: true },
+    { text: " all along", spoiler: false },
+  ]);
+  expect(splitSpoilers("a || b")).toEqual([{ text: "a || b", spoiler: false }]);
+  expect(splitSpoilers("||one|| and ||two||").filter((part) => part.spoiler)).toHaveLength(2);
+});
+
+it("review.spoiler: carries a write-up spoiler through Markdown without its brackets breaking", () => {
+  expect(markdownSpoilers("Ends with ||a *twist* [sic]||.")).toBe(
+    "Ends with [a *twist* \\[sic\\]](#spoiler).",
+  );
 });

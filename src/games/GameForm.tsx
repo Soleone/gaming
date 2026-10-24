@@ -353,7 +353,7 @@ export function GameForm({
                     {...input("review")}
                     rows={6}
                     maxLength={1000}
-                    placeholder="What stayed with you? Markdown works."
+                    placeholder="What stayed with you? Markdown works. Hide spoilers with ||double bars||."
                   />
                   <FieldDescription>{draft.review.length} / 1,000 characters</FieldDescription>
                 </Field>
@@ -370,7 +370,7 @@ export function GameForm({
                           id={`review-${verdict}`}
                           {...input(verdict)}
                           rows={4}
-                          placeholder="One point per line"
+                          placeholder="One point per line. ||Spoilers|| in double bars."
                         />
                       </Field>
                     );
