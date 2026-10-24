@@ -13,6 +13,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { ChoiceField } from "@/games/ChoiceField";
 import { GameCard } from "@/games/GameCard";
+import { useGameSelection } from "@/games/useGameSelection";
 import { calendarPath, editPath, parseRoute, type Route } from "@/games/routes";
 import { calendarSections, gamesSchema, isPlayed, MONTHS, type Game } from "@/games/model";
 import gameData from "@/data/games.json";
@@ -63,6 +64,11 @@ function Games({ route }: { route: Route }) {
   const selectedGames = games.filter((game) => String(game.release.year ?? "unscheduled") === year);
   const count = sections.reduce((total, section) => total + section.games.length, 0);
   const editGame = DevWorkspace ? (id: string) => openEditor(id) : undefined;
+  const selectedId = useGameSelection(
+    sections.flatMap((section) => section.games.map((game) => game.id)),
+    Boolean(editGame) && !editor,
+    (id) => openEditor(id),
+  );
   const changeYear = (next: string) => void navigate(calendarPath(next));
   const content = (
     <div className={editor ? undefined : "min-h-svh"}>
@@ -192,7 +198,12 @@ function Games({ route }: { route: Route }) {
                 </div>
                 <div className="grid min-w-0 gap-x-7 gap-y-9 md:grid-cols-2">
                   {section.games.map((game) => (
-                    <GameCard key={game.id} game={game} onEdit={editGame} />
+                    <GameCard
+                      key={game.id}
+                      game={game}
+                      selected={game.id === selectedId}
+                      onEdit={editGame}
+                    />
                   ))}
                 </div>
               </section>
