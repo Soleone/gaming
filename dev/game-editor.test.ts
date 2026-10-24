@@ -42,6 +42,7 @@ const game = {
   release: { precision: "quarter", year: 2007, quarter: 2 },
   source: null,
   hype: 4,
+  play: "played",
   review: { text: "A lovely surprise.", score: 9 },
 };
 async function session() {

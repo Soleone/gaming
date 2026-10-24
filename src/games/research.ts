@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { gameSchema } from "./model";
+import { gameFieldsSchema } from "./model";
 
 const httpsUrl = z
   .string()
@@ -7,7 +7,7 @@ const httpsUrl = z
   .max(2000)
   .refine((url) => url.startsWith("https://"), "Use an HTTPS URL.");
 
-export const researchProposalSchema = gameSchema
+export const researchProposalSchema = gameFieldsSchema
   .pick({ title: true, release: true })
   .extend({
     source: httpsUrl,

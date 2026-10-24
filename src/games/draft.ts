@@ -1,4 +1,4 @@
-import { gameSchema, type Game, type Release } from "./model";
+import { canReview, gameSchema, type Game, type Release } from "./model";
 import type { ResearchProposal } from "./research";
 
 export type GameDraft = {
@@ -12,7 +12,7 @@ export type GameDraft = {
   quarter: string;
   source: string;
   hype: string;
-  played: string;
+  play: string;
   score: string;
   review: string;
 };
@@ -29,7 +29,7 @@ export function createGameDraft(game: Game | null): GameDraft {
     quarter: String(game?.release.precision === "quarter" ? game.release.quarter : 1),
     source: game?.source ?? "",
     hype: String(game?.hype ?? "unrated"),
-    played: game?.review ? "yes" : "no",
+    play: game?.play ?? "not_played",
     score: String(game?.review?.score ?? ""),
     review: game?.review?.text ?? "",
   };
@@ -51,13 +51,13 @@ export function parseGameDraft(draft: GameDraft) {
     },
     source: draft.source.trim() || null,
     hype: draft.hype === "unrated" ? null : Number(draft.hype),
-    review:
-      draft.played === "yes"
-        ? {
-            text: draft.review.trim(),
-            score: draft.score.trim() === "" ? null : Number(draft.score),
-          }
-        : null,
+    play: draft.play,
+    review: canReview(draft.play)
+      ? {
+          text: draft.review.trim(),
+          score: draft.score.trim() === "" ? null : Number(draft.score),
+        }
+      : null,
   });
 }
 

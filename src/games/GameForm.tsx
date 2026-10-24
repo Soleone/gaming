@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ChoiceField } from "./ChoiceField";
 import { parseGameDraft, type GameDraft } from "./draft";
-import { MONTHS, type Game } from "./model";
+import { canReview, MONTHS, playLabels, playStatuses, type Game } from "./model";
 
 export function GameForm({
   game,
@@ -232,17 +232,14 @@ export function GameForm({
                 ]}
               />
               <ChoiceField
-                id="played"
+                id="play"
                 label="Play status"
-                value={draft.played}
-                onChange={(value) => edit("played", value)}
-                options={[
-                  { value: "no", label: "Not played" },
-                  { value: "yes", label: "Played" },
-                ]}
+                value={draft.play}
+                onChange={(value) => edit("play", value)}
+                options={playStatuses.map((value) => ({ value, label: playLabels[value] }))}
               />
             </div>
-            <Field data-disabled={draft.played !== "yes"}>
+            <Field data-disabled={!canReview(draft.play)}>
               <FieldLabel htmlFor="score">Your score (1–10)</FieldLabel>
               <Input
                 id="score"
@@ -251,22 +248,22 @@ export function GameForm({
                 min={1}
                 max={10}
                 step={1}
-                disabled={draft.played !== "yes"}
+                disabled={!canReview(draft.play)}
                 placeholder="Not scored"
               />
             </Field>
-            <Field data-disabled={draft.played !== "yes"}>
+            <Field data-disabled={!canReview(draft.play)}>
               <FieldLabel htmlFor="review">Short review</FieldLabel>
               <Textarea
                 id="review"
                 {...input("review")}
                 rows={3}
                 maxLength={1000}
-                disabled={draft.played !== "yes"}
+                disabled={!canReview(draft.play)}
                 placeholder="What stayed with you?"
               />
               <FieldDescription>
-                Up to 1,000 characters. Switching to “Not played” clears the review when saved.
+                Up to 1,000 characters. Choosing Not played clears the review when saved.
               </FieldDescription>
             </Field>
           </FieldGroup>

@@ -33,7 +33,24 @@ const safeUrl = z
     }
   }, "Use a complete http or https URL.");
 
-export const gameSchema = z
+export const playStatuses = ["not_played", "started", "played", "completed"] as const;
+export const playLabels: Record<(typeof playStatuses)[number], string> = {
+  not_played: "Not played",
+  started: "Started",
+  played: "Played",
+  completed: "Completed",
+};
+
+// Any game that has been started can carry a review.
+export function canReview(play: string): boolean {
+  return play !== "not_played";
+}
+
+export function isPlayed(play: string): boolean {
+  return play === "played" || play === "completed";
+}
+
+export const gameFieldsSchema = z
   .object({
     id: z
       .string()
@@ -45,6 +62,7 @@ export const gameSchema = z
     release: releaseSchema,
     source: safeUrl.nullable(),
     hype: z.number().int().min(1).max(5).nullable(),
+    play: z.enum(playStatuses),
     review: z
       .object({
         text: z.string().trim().max(1000),
@@ -54,6 +72,12 @@ export const gameSchema = z
       .nullable(),
   })
   .strict();
+
+// Reviews exist exactly for games that have been started.
+export const gameSchema = gameFieldsSchema.refine(
+  (game) => (game.review !== null) === canReview(game.play),
+  "Only started, played, and completed games have a review.",
+);
 
 export const gamesSchema = z
   .array(gameSchema)

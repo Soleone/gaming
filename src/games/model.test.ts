@@ -16,6 +16,7 @@ const game: Game = {
   release: { precision: "unknown", year: 2026 },
   source: null,
   hype: null,
+  play: "not_played",
   review: null,
 };
 
@@ -81,6 +82,15 @@ describe("game data", () => {
     expect(gameSchema.safeParse({ ...game, review: { text: "", score: 10.5 } }).success).toBe(
       false,
     );
+    expect(gameSchema.safeParse({ ...game, play: "dropped" }).success).toBe(false);
+    expect(gameSchema.safeParse({ ...game, play: "started" }).success).toBe(false);
+    expect(
+      gameSchema.safeParse({ ...game, play: "started", review: { text: "", score: null } }).success,
+    ).toBe(true);
+    expect(
+      gameSchema.safeParse({ ...game, play: "not_played", review: { text: "", score: null } })
+        .success,
+    ).toBe(false);
     expect(gameSchema.safeParse({ ...game, source: "javascript:alert(1)" }).success).toBe(false);
     expect(gameSchema.safeParse({ ...game, cover: "/covers/../../secret" }).success).toBe(false);
     expect(gamesSchema.safeParse([game, game]).success).toBe(false);

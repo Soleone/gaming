@@ -449,7 +449,7 @@ export function GameAgent({
           target.kind === "draft"
             ? "Saves the open form with these facts and the chosen cover."
             : existing
-              ? "Updates title, release, source, and the chosen cover. Hype and reviews stay."
+              ? "Updates title, release, source, and the chosen cover. Hype, play status, and reviews stay."
               : "Adds a new game with the chosen cover. Rate it later in the editor."
         }
         note={notes[tool.id]}

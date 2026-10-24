@@ -11,6 +11,7 @@ const game: Game = {
   release: { precision: "unknown", year: null },
   source: null,
   hype: 4,
+  play: "played",
   review: { text: "My own opinion", score: 9 },
 };
 const proposal = researchProposalSchema.parse({
@@ -100,6 +101,21 @@ describe("agent drafts", () => {
     };
     expect(parseGameDraft(draft).success).toBe(false);
     expect(draft.day).toBe("30");
-    expect(parseGameDraft({ ...draft, day: "28", played: "no" }).data?.review).toBeNull();
+    expect(parseGameDraft({ ...draft, day: "28", play: "not_played" }).data?.review).toBeNull();
+  });
+  it("play.status: keeps a review for started, played, and completed games only", () => {
+    const draft = createGameDraft(game);
+    for (const play of ["started", "played", "completed"]) {
+      expect(parseGameDraft({ ...draft, play }).data).toMatchObject({
+        play,
+        review: { text: "My own opinion", score: 9 },
+      });
+    }
+    expect(parseGameDraft({ ...draft, play: "not_played" }).data).toMatchObject({
+      play: "not_played",
+      review: null,
+    });
+    expect(createGameDraft({ ...game, play: "started", review: null }).play).toBe("started");
+    expect(createGameDraft(null).play).toBe("not_played");
   });
 });

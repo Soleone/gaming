@@ -11,6 +11,7 @@
     },
     "source": "https://www.konami.com/games/castlevania/belmonts_curse/us/en-us/product",
     "hype": 4,
+    "play": "played",
     "review": {
       "text": "",
       "score": 8
@@ -28,6 +29,7 @@
     },
     "source": "https://www.rockstargames.com/VI",
     "hype": 5,
+    "play": "not_played",
     "review": null
   },
   {
@@ -42,6 +44,7 @@
     },
     "source": "https://www.nintendo.com/au/news-and-articles/you-have-been-summoned-to-watch-the-new-the-legend-of-zelda-ocarina-of-time-overview-trailer/",
     "hype": 4,
+    "play": "not_played",
     "review": null
   },
   {
@@ -56,6 +59,7 @@
     },
     "source": "https://pbz.s-game.com/en-US/news/creative-director-letter/",
     "hype": 5,
+    "play": "not_played",
     "review": null
   },
   {
@@ -70,6 +74,7 @@
     },
     "source": "https://www.remedygames.com/article/control-resonant-launches-worldwide-on-september-24",
     "hype": 3,
+    "play": "played",
     "review": {
       "text": "",
       "score": 8
@@ -87,6 +92,7 @@
     },
     "source": "https://www.capcom.co.jp/ir/english/news/html/e260702.html",
     "hype": 4,
+    "play": "played",
     "review": {
       "text": "",
       "score": 8
@@ -104,6 +110,7 @@
     },
     "source": "https://store.playstation.com/en-us/product/UP0102-PPSA30803_00-REREQUIEM0000000",
     "hype": 5,
+    "play": "played",
     "review": {
       "text": "",
       "score": 9
@@ -121,6 +128,7 @@
     },
     "source": "https://us-store.captown.capcom.com/products/1548051-us",
     "hype": 3,
+    "play": "not_played",
     "review": null
   },
   {
@@ -135,6 +143,7 @@
     },
     "source": "https://store.playstation.com/en-us/product/UP4162-PPSA25286_00-0653729629077452",
     "hype": 3,
+    "play": "played",
     "review": {
       "text": "",
       "score": 8
@@ -143,7 +152,7 @@
   {
     "id": "9caa6210-ea21-414c-9bc8-73bc74869f6b",
     "title": "Nioh 3",
-    "cover": "/covers/agent-bc3ec195c2ed62751e201f80.webp",
+    "cover": "/covers/agent-e4a2c5bddab4e77fd0d1061e.webp",
     "release": {
       "precision": "day",
       "year": 2026,
@@ -152,6 +161,7 @@
     },
     "source": "https://store.playstation.com/en-us/product/EP4108-PPSA32785_00-NIOH300000000000/",
     "hype": 2,
+    "play": "played",
     "review": {
       "text": "",
       "score": 7
@@ -169,6 +179,7 @@
     },
     "source": "https://store.playstation.com/en-us/product/UP9000-PPSA03671_00-MARVELSWOLVERINE",
     "hype": 3,
+    "play": "not_played",
     "review": null
   },
   {
@@ -183,6 +194,7 @@
     },
     "source": "https://www.nintendo.com/us/store/products/fire-emblem-fortunes-weave-125688/",
     "hype": null,
+    "play": "not_played",
     "review": null
   }
 ]

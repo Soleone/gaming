@@ -23,7 +23,7 @@ import { Separator } from "@/components/ui/separator";
 import { ChoiceField } from "@/games/ChoiceField";
 import { GameCard } from "@/games/GameCard";
 import { calendarPath, editPath, parseRoute, type Route } from "@/games/routes";
-import { calendarSections, gamesSchema, MONTHS, type Game } from "@/games/model";
+import { calendarSections, gamesSchema, isPlayed, MONTHS, type Game } from "@/games/model";
 import gameData from "@/data/games.json";
 
 const ThemePicker = lazy(() =>
@@ -185,7 +185,7 @@ function Games({ route }: { route: Route }) {
             <span className="mx-2" aria-hidden="true">
               /
             </span>
-            {selectedGames.filter((game) => game.review !== null).length} played this year
+            {selectedGames.filter((game) => isPlayed(game.play)).length} played this year
           </p>
           <span>Hype before. A verdict after.</span>
         </div>

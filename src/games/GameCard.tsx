@@ -13,7 +13,7 @@ import {
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { hasReleased, releaseLabel, type Game } from "./model";
+import { hasReleased, isPlayed, playLabels, releaseLabel, type Game } from "./model";
 
 export function GameCard({ game, onEdit }: { game: Game; onEdit?: (id: string) => void }) {
   const [failedCover, setFailedCover] = useState<string | null>(null);
@@ -86,14 +86,16 @@ export function GameCard({ game, onEdit }: { game: Game; onEdit?: (id: string) =
                   <span className="text-xs text-muted-foreground">Unrated</span>
                 )}
               </div>
-              {game.review ? (
+              {game.play === "started" && <Badge variant="outline">Started</Badge>}
+              {isPlayed(game.play) && (
                 <Badge variant="secondary">
                   <Check data-icon="inline-start" />
-                  Played
+                  {playLabels[game.play]}
                 </Badge>
-              ) : hasReleased(game.release) ? (
+              )}
+              {game.play === "not_played" && hasReleased(game.release) && (
                 <Badge variant="outline">Not played</Badge>
-              ) : null}
+              )}
             </div>
             {game.review && (
               <>
@@ -112,7 +114,9 @@ export function GameCard({ game, onEdit }: { game: Game; onEdit?: (id: string) =
                     </p>
                   )}
                   {!game.review.text && game.review.score === null && (
-                    <p className="text-sm text-muted-foreground">Played · review to come</p>
+                    <p className="text-sm text-muted-foreground">
+                      {playLabels[game.play]} · review to come
+                    </p>
                   )}
                 </div>
               </>
