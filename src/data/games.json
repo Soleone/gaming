@@ -15,9 +15,16 @@
     "review": {
       "text": "",
       "score": 8,
-      "amazing": [],
-      "nice": [],
-      "questionable": [],
+      "amazing": [
+        "Controls feels very snappy"
+      ],
+      "nice": [
+        "Graphics are certainly not amazing, but there is enough variety and character in the levels to give certain areas some character",
+        "The jump and run failures not costing a lot of health is appreciated"
+      ],
+      "questionable": [
+        "Sometimes hard to identify your character in frantic situations can lead to damage or death"
+      ],
       "terrible": []
     }
   },
@@ -104,9 +111,15 @@
     "review": {
       "text": "",
       "score": 8,
-      "amazing": [],
+      "amazing": [
+        "Great cinematic presentation, main character has lots of charisma",
+        "Combat system feels great, an interesting mix of more slow but well timed",
+        "Impressive boss fights"
+      ],
       "nice": [],
-      "questionable": [],
+      "questionable": [
+        "Level design feels fairly linear unfortunately, or at least doesn't invite much to explore"
+      ],
       "terrible": []
     }
   },
@@ -173,9 +186,17 @@
     "review": {
       "text": "",
       "score": 8,
-      "amazing": [],
-      "nice": [],
-      "questionable": [],
+      "amazing": [
+        "Absolutely insane amount of content",
+        "Great world building and scale",
+        "Developers kept shipping new improvements quickly, very impressive"
+      ],
+      "nice": [
+        "Surprising amount of game systems, but me personally"
+      ],
+      "questionable": [
+        "Combat system is too button mashy for my taste, mainly the bosses required some strategy and variety"
+      ],
       "terrible": []
     }
   },
@@ -195,9 +216,14 @@
     "review": {
       "text": "",
       "score": 7,
-      "amazing": [],
+      "amazing": [
+        "Impeccable fighting system with lots of move and weapon variety"
+      ],
       "nice": [],
-      "questionable": [],
+      "questionable": [
+        "Open world exploration starts out interesting, but becomes formulaic and repetitive quickly",
+        "Graphics are good enough, but don't stand out at all"
+      ],
       "terrible": [
         "Loot pinata overload: most of the time I couldn't care less about what I'm picking up"
       ]
