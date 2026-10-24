@@ -44,6 +44,16 @@ export default function Editor({
   const close = () => {
     if (!busy) onClose();
   };
+  // Esc goes back, unless it was meant for an open dialog or dropdown.
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape" || event.defaultPrevented || busy) return;
+      if (document.querySelector('[role="dialog"], [role="listbox"], [role="menu"]')) return;
+      onClose();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [busy, onClose]);
   async function persist(save: () => Promise<void>) {
     setSaveError("");
     setNotice("");
