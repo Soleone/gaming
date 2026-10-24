@@ -171,18 +171,6 @@ export function GameForm({
                 Local editor · saves to src/data/games.json
               </p>
             </div>
-            {game && (
-              <Button
-                type="button"
-                variant="destructive"
-                onClick={() => setRemoving(true)}
-                disabled={busy}
-                aria-label="Remove"
-              >
-                <Trash2 data-icon="inline-start" />
-                <span className="hidden sm:inline">Remove</span>
-              </Button>
-            )}
             <Button type="submit" disabled={busy}>
               <Save data-icon="inline-start" />
               {busy ? "Saving…" : "Save game"}
@@ -396,6 +384,19 @@ export function GameForm({
             </p>
           )}
         </fieldset>
+        {game && (
+          <div className="flex items-center justify-end border-t border-border pt-4">
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={() => setRemoving(true)}
+              disabled={busy}
+            >
+              <Trash2 data-icon="inline-start" />
+              Remove
+            </Button>
+          </div>
+        )}
       </form>
       <Dialog open={removing} onOpenChange={setRemoving}>
         <DialogContent>

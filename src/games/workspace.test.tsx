@@ -40,7 +40,7 @@ it("agent.sidebar: renders the draft editor beside the dock, not in a focus-bloc
   expect(html).not.toContain('role="dialog"');
 });
 
-it("editor.actions: puts save and remove at the top of the form and confirms removal in a dialog", () => {
+it("editor.actions: puts save at the top and remove in a bottom bar, and confirms removal in a dialog", () => {
   const game = createGameDraft(null);
   const html = renderToStaticMarkup(
     <GameForm
@@ -57,7 +57,7 @@ it("editor.actions: puts save and remove at the top of the form and confirms rem
     />,
   );
   expect(html.indexOf("Save game")).toBeLessThan(html.indexOf('id="title"'));
-  expect(html.indexOf("Remove")).toBeLessThan(html.indexOf('id="title"'));
+  expect(html.indexOf("Remove")).toBeGreaterThan(html.indexOf('id="title"'));
   expect(html.indexOf("Could not save")).toBeLessThan(html.indexOf('id="title"'));
   expect(html).not.toContain("Yes, remove");
 });
