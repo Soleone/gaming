@@ -160,7 +160,7 @@ export function GameCard({
                       <span />
                     )}
                     {review && (
-                      <Button variant="link" size="sm" className="-mr-2.5" onClick={openReview}>
+                      <Button variant="link" size="sm" className="-mr-1.5" onClick={openReview}>
                         {reviewLabel(game.play)}
                         <ArrowRight data-icon="inline-end" />
                       </Button>
@@ -206,17 +206,20 @@ function Score({
   const { text } = scoreLook(score);
   const content = (
     <>
-      <Star data-icon="inline-start" className={text} />
+      <Star data-icon="inline-start" className={cn("size-4", text)} />
       <strong className={text}>{score}</strong>
       <span className="text-muted-foreground">/ 10{started && " so far"}</span>
     </>
   );
-  if (!onClick) return <span className="flex items-center gap-1.5 text-sm">{content}</span>;
+  // Mirrors the small ghost button's height, gap and text size, so a card without a review looks the same.
+  if (!onClick) {
+    return <span className="flex h-7 items-center gap-1 text-xs">{content}</span>;
+  }
   return (
     <Button
       variant="ghost"
       size="sm"
-      className="-ml-2.5"
+      className="-ml-1.5"
       aria-label={`${label}: ${score} out of 10`}
       onClick={onClick}
     >
