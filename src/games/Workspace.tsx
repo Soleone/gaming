@@ -1,6 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { useBlocker } from "react-router";
 import { AgentSidebar } from "@/components/soleone/agent";
+import { isInteractiveTarget } from "@/components/soleone/theme";
+import { useSidebar } from "@/components/ui/sidebar";
 import Editor from "./Editor";
 import { GameAgent } from "./GameAgent";
 import {
@@ -20,6 +22,25 @@ import {
 } from "./draft";
 import type { Game } from "./model";
 import type { ResearchProposal } from "./research";
+
+// Pressing A outside text fields opens the agent dock.
+function AgentShortcut() {
+  const { open, openMobile, isMobile, setOpen, setOpenMobile } = useSidebar();
+  const visible = isMobile ? openMobile : open;
+  useEffect(() => {
+    if (visible) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.defaultPrevented || event.repeat || event.key.toLowerCase() !== "a") return;
+      if (event.metaKey || event.ctrlKey || event.altKey || isInteractiveTarget(event.target))
+        return;
+      event.preventDefault();
+      (isMobile ? setOpenMobile : setOpen)(true);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [visible, isMobile, setOpen, setOpenMobile]);
+  return null;
+}
 
 const draftFor = (games: Game[], id: string | null) =>
   createGameDraft(games.find((game) => game.id === id) ?? null);
@@ -172,6 +193,7 @@ export default function Workspace({
         />
       }
     >
+      <AgentShortcut />
       {children}
       {editor && (
         <Editor

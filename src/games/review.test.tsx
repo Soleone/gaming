@@ -92,3 +92,15 @@ it("review.tone: colours the card score gold from 9, plain at 7 and 8, red below
   expect(scoreClass(6)).toBe("text-destructive");
   expect(scoreClass(5)).toBe("text-destructive");
 });
+
+it("list.keyboard: makes each card one tab stop only when an editor is available", () => {
+  const editable = renderToStaticMarkup(
+    <GameCard game={game({ review: { ...emptyReview, score: 9 } })} onEdit={() => {}} />,
+  );
+  expect(editable.match(/<article[^>]*tabindex="0"/g)).toHaveLength(1);
+  expect(editable.match(/tabindex="-1"/g)).toHaveLength(3);
+  const readOnly = renderToStaticMarkup(
+    <GameCard game={game({ review: { ...emptyReview, score: 9 } })} />,
+  );
+  expect(readOnly).not.toContain("tabindex");
+});

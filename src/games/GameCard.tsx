@@ -58,7 +58,21 @@ export function GameCard({ game, onEdit }: { game: Game; onEdit?: (id: string) =
   }
 
   return (
-    <article className="game-entry min-w-0" aria-label={game.title}>
+    <article
+      className={cn(
+        "game-entry min-w-0 rounded-xl outline-none",
+        onEdit && "focus-visible:ring-3 focus-visible:ring-ring/50",
+      )}
+      aria-label={game.title}
+      // With an editor, the card is the one tab stop; its buttons stay clickable.
+      tabIndex={onEdit ? 0 : undefined}
+      onKeyDown={
+        onEdit &&
+        ((event) => {
+          if (event.key === "Enter" && event.target === event.currentTarget) onEdit(game.id);
+        })
+      }
+    >
       <Card className="h-full">
         {showCover ? (
           <img
@@ -98,6 +112,7 @@ export function GameCard({ game, onEdit }: { game: Game; onEdit?: (id: string) =
                 variant="ghost"
                 size="icon"
                 aria-label={`Edit ${game.title}`}
+                tabIndex={-1}
                 onClick={() => onEdit(game.id)}
               >
                 <Pencil />
@@ -144,6 +159,7 @@ export function GameCard({ game, onEdit }: { game: Game; onEdit?: (id: string) =
                         size="sm"
                         className="-ml-2.5"
                         aria-label={`${reviewLabel(game.play)}: ${review.score} out of 10`}
+                        tabIndex={onEdit ? -1 : undefined}
                         onClick={openReview}
                       >
                         <Star data-icon="inline-start" className={scoreLook(review.score).text} />
@@ -155,7 +171,13 @@ export function GameCard({ game, onEdit }: { game: Game; onEdit?: (id: string) =
                     ) : (
                       <span />
                     )}
-                    <Button variant="link" size="sm" className="-mr-2.5" onClick={openReview}>
+                    <Button
+                      variant="link"
+                      size="sm"
+                      className="-mr-2.5"
+                      tabIndex={onEdit ? -1 : undefined}
+                      onClick={openReview}
+                    >
                       {reviewLabel(game.play)}
                       <ArrowRight data-icon="inline-end" />
                     </Button>
