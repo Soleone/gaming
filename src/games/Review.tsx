@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { ReviewDialogContent, ReviewTitle } from "@/components/variants/ReviewDialog";
 import { cn } from "@/lib/utils";
 import { Pips } from "./Pips";
+import { PlayBadge } from "./PlayBadge";
 import {
   playLabels,
   releaseLabel,
@@ -107,7 +108,7 @@ export function ReviewDialog({
             </span>
             <ReviewTitle>{game.title}</ReviewTitle>
             <DialogDescription>
-              {playLabels[game.play]} · Released {releaseLabel(game.release)}
+              {look ? "" : `${playLabels[game.play]} · `}Released {releaseLabel(game.release)}
             </DialogDescription>
           </div>
           {review.score !== null && look && (
@@ -130,6 +131,7 @@ export function ReviewDialog({
                 aria-hidden="true"
                 className="grid grid-cols-10 gap-1"
               />
+              <PlayBadge play={game.play} />
             </div>
           )}
         </header>

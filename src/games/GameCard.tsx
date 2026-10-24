@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { flushSync } from "react-dom";
-import { ArrowRight, Check, Flame, Gamepad2, Pencil, Star } from "lucide-react";
+import { ArrowRight, Flame, Gamepad2, Pencil, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,7 +17,8 @@ import { cn } from "@/lib/utils";
 import { canMorph, morph } from "./morph";
 import { hasReviewContent, ReviewDialog, reviewLabel, scoreLook } from "./Review";
 import { Pips } from "./Pips";
-import { hasReleased, isPlayed, playLabels, releaseLabel, type Game } from "./model";
+import { hasReleased, playLabels, releaseLabel, type Game } from "./model";
+import { PlayBadge } from "./PlayBadge";
 
 export function GameCard({
   game,
@@ -138,13 +139,7 @@ export function GameCard({
                   <span className="text-xs text-muted-foreground">Unrated</span>
                 )}
               </div>
-              {game.play === "started" && <Badge variant="outline">Started</Badge>}
-              {isPlayed(game.play) && (
-                <Badge variant="secondary">
-                  <Check data-icon="inline-start" />
-                  {playLabels[game.play]}
-                </Badge>
-              )}
+              <PlayBadge play={game.play} />
               {game.play === "not_played" && hasReleased(game.release) && (
                 <Badge variant="outline">Not played</Badge>
               )}
