@@ -294,7 +294,7 @@
       "day": 3
     },
     "source": "https://www.deepsilver.com/games/dawn-of-war-iv",
-    "hype": null,
+    "hype": 3,
     "play": "not_played",
     "review": null
   },
@@ -355,6 +355,19 @@
     },
     "source": "https://www.playstation.com/en-us/games/tomb-raider-legacy-of-atlantis/",
     "hype": 3,
+    "play": "not_played",
+    "review": null
+  },
+  {
+    "id": "352024c1-bad2-4345-83bf-d6a318aa4fce",
+    "title": "Total War: WARHAMMER 40,000",
+    "cover": "/covers/agent-76d3bb9916ab41c77ba351a6.webp",
+    "release": {
+      "precision": "unknown",
+      "year": null
+    },
+    "source": "https://store.steampowered.com/app/4199910/Total_War_WARHAMMER_40000/",
+    "hype": null,
     "play": "not_played",
     "review": null
   }

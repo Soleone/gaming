@@ -148,6 +148,15 @@ export function hasReleased(release: Release, today = new Date()): boolean {
   return release.precision === "day" ? currentDay >= lastDay : currentDay > lastDay;
 }
 
+/** Later years with games, in order, for the full-year view to continue into. */
+export function followingYears(games: Game[], selectedYear: string): number[] {
+  if (selectedYear === "unscheduled") return [];
+  const later = games.flatMap(({ release }) =>
+    release.year !== null && release.year > Number(selectedYear) ? [release.year] : [],
+  );
+  return [...new Set(later)].sort((a, b) => a - b);
+}
+
 export function calendarSections(games: Game[], selectedYear: string, selectedMonth: string) {
   const filtered = games.filter(
     ({ release }) =>

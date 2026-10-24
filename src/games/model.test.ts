@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vite-plus/test";
 import {
   calendarSections,
+  followingYears,
   gameSchema,
   gamesSchema,
   hasReleased,
@@ -142,6 +143,19 @@ describe("game data", () => {
         "all",
       ),
     ).toHaveLength(1);
+  });
+  it("calendar.continue: continues into later years that have games, skipping empty ones", () => {
+    const entries: Game[] = [
+      { ...game, id: "earlier", release: { precision: "year", year: 2025 } },
+      game,
+      { ...game, id: "later", release: { precision: "quarter", year: 2029, quarter: 1 } },
+      { ...game, id: "next", release: { precision: "month", year: 2027, month: 3 } },
+      { ...game, id: "next-too", release: { precision: "year", year: 2027 } },
+      { ...game, id: "unscheduled", release: { precision: "unknown", year: null } },
+    ];
+    expect(followingYears(entries, "2026")).toEqual([2027, 2029]);
+    expect(followingYears(entries, "2029")).toEqual([]);
+    expect(followingYears(entries, "unscheduled")).toEqual([]);
   });
   it("calendar.order: sorts exact days before month-only entries", () => {
     const entries: Game[] = [
