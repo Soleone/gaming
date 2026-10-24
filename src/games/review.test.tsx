@@ -26,7 +26,9 @@ const game = (patch: Partial<Game>): Game => ({
 
 it("review.card: names the link First impressions and the score so far while Started", () => {
   const html = renderToStaticMarkup(
-    <GameCard game={game({ play: "started", review: { ...emptyReview, score: 7 } })} />,
+    <GameCard
+      game={game({ play: "started", review: { ...emptyReview, score: 7, text: "Promising." } })}
+    />,
   );
   expect(html).toContain("First impressions");
   expect(html).toContain("/ 10 so far");
@@ -35,11 +37,20 @@ it("review.card: names the link First impressions and the score so far while Sta
 
 it("review.card: offers the Review once played, and review to come with nothing to show", () => {
   const scored = renderToStaticMarkup(
-    <GameCard game={game({ review: { ...emptyReview, score: 9 } })} />,
+    <GameCard game={game({ review: { ...emptyReview, score: 9, nice: ["Checkpoints"] } })} />,
   );
   expect(scored).toContain("Review");
+  expect(scored).toContain('aria-label="Review: 9 out of 10"');
   expect(scored).not.toContain("so far");
   expect(scored).not.toContain("review to come");
+
+  const scoreOnly = renderToStaticMarkup(
+    <GameCard game={game({ review: { ...emptyReview, score: 9 } })} />,
+  );
+  expect(scoreOnly).toContain("/ 10");
+  expect(scoreOnly).not.toContain("Review");
+  expect(scoreOnly).not.toContain("<button");
+  expect(scoreOnly).not.toContain("review to come");
 
   const written = renderToStaticMarkup(
     <GameCard game={game({ review: { ...emptyReview, text: "Tense." } })} />,
@@ -55,7 +66,7 @@ it("review.card: offers the Review once played, and review to come with nothing 
 it("review.card: makes the cover clickable only when there is a review to open", () => {
   const cover = "https://example.com/requiem.jpg";
   const reviewed = renderToStaticMarkup(
-    <GameCard game={game({ cover, review: { ...emptyReview, score: 9 } })} />,
+    <GameCard game={game({ cover, review: { ...emptyReview, text: "Tense." } })} />,
   );
   expect(reviewed).toMatch(/<img[^>]*class="[^"]*cursor-pointer/);
   const blank = renderToStaticMarkup(<GameCard game={game({ cover })} />);

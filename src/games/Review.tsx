@@ -38,13 +38,9 @@ export function reviewLabel(play: Game["play"]): string {
   return play === "started" ? "First impressions" : "Review";
 }
 
-// Whether a review has anything to open: a score, a write-up, or a point.
+// Whether a review has anything to open: a write-up or a point. A score alone stays on the card.
 export function hasReviewContent(review: Review): boolean {
-  return (
-    review.score !== null ||
-    review.text !== "" ||
-    verdicts.some((verdict) => review[verdict].length > 0)
-  );
+  return review.text !== "" || verdicts.some((verdict) => review[verdict].length > 0);
 }
 
 // Points read as pros and cons. Empty lists drop out, and so does a side with nothing left.
@@ -154,9 +150,6 @@ export function ReviewDialog({
                 {review.text}
               </ReactMarkdown>
             </div>
-          )}
-          {!review.text && !columns.length && (
-            <p className="text-muted-foreground">Just a score for now.</p>
           )}
           {columns.length > 0 && (
             <>

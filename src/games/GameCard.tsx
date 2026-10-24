@@ -152,29 +152,24 @@ export function GameCard({
             {game.review && (
               <>
                 <Separator />
-                {review ? (
+                {review || game.review.score !== null ? (
                   <div className="flex items-center justify-between gap-3">
-                    {review.score !== null ? (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="-ml-2.5"
-                        aria-label={`${reviewLabel(game.play)}: ${review.score} out of 10`}
-                        onClick={openReview}
-                      >
-                        <Star data-icon="inline-start" className={scoreLook(review.score).text} />
-                        <strong className={scoreLook(review.score).text}>{review.score}</strong>
-                        <span className="text-muted-foreground">
-                          / 10{game.play === "started" && " so far"}
-                        </span>
-                      </Button>
+                    {game.review.score !== null ? (
+                      <Score
+                        score={game.review.score}
+                        started={game.play === "started"}
+                        label={reviewLabel(game.play)}
+                        onClick={review ? openReview : undefined}
+                      />
                     ) : (
                       <span />
                     )}
-                    <Button variant="link" size="sm" className="-mr-2.5" onClick={openReview}>
-                      {reviewLabel(game.play)}
-                      <ArrowRight data-icon="inline-end" />
-                    </Button>
+                    {review && (
+                      <Button variant="link" size="sm" className="-mr-2.5" onClick={openReview}>
+                        {reviewLabel(game.play)}
+                        <ArrowRight data-icon="inline-end" />
+                      </Button>
+                    )}
                   </div>
                 ) : (
                   <p className="text-sm text-muted-foreground">
@@ -198,5 +193,39 @@ export function GameCard({
         />
       )}
     </article>
+  );
+}
+
+// The score out of 10. It opens the review when there is one, otherwise it is just a number.
+function Score({
+  score,
+  started,
+  label,
+  onClick,
+}: {
+  score: number;
+  started: boolean;
+  label: string;
+  onClick?: () => void;
+}) {
+  const { text } = scoreLook(score);
+  const content = (
+    <>
+      <Star data-icon="inline-start" className={text} />
+      <strong className={text}>{score}</strong>
+      <span className="text-muted-foreground">/ 10{started && " so far"}</span>
+    </>
+  );
+  if (!onClick) return <span className="flex items-center gap-1.5 text-sm">{content}</span>;
+  return (
+    <Button
+      variant="ghost"
+      size="sm"
+      className="-ml-2.5"
+      aria-label={`${label}: ${score} out of 10`}
+      onClick={onClick}
+    >
+      {content}
+    </Button>
   );
 }
