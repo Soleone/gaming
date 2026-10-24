@@ -48,7 +48,9 @@ export default function Editor({
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape" || event.defaultPrevented || busy) return;
-      if (document.querySelector('[role="dialog"], [role="listbox"], [role="menu"]')) return;
+      // The theme picker stays mounted but hidden, so only count what is shown.
+      const open = document.querySelectorAll('[role="dialog"], [role="listbox"], [role="menu"]');
+      if (Array.from(open).some((element) => !element.closest("[hidden]"))) return;
       onClose();
     };
     window.addEventListener("keydown", onKeyDown);
