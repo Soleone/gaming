@@ -126,7 +126,10 @@
     "review": {
       "text": "",
       "score": 9,
-      "amazing": ["Zombie variety and personalities", "Cinematic presentation"],
+      "amazing": [
+        "Zombie variety and personalities",
+        "Cinematic presentation"
+      ],
       "nice": [],
       "questionable": [],
       "terrible": []
@@ -203,15 +206,8 @@
     },
     "source": "https://store.playstation.com/en-us/product/UP9000-PPSA03671_00-MARVELSWOLVERINE",
     "hype": 3,
-    "play": "started",
-    "review": {
-      "text": "",
-      "score": 6,
-      "amazing": [],
-      "nice": [],
-      "questionable": [],
-      "terrible": []
-    }
+    "play": "not_played",
+    "review": null
   },
   {
     "id": "8e6f36fd-813c-46d1-9720-4581652864f7",
@@ -225,6 +221,20 @@
     },
     "source": "https://www.nintendo.com/us/store/products/fire-emblem-fortunes-weave-125688/",
     "hype": null,
+    "play": "not_played",
+    "review": null
+  },
+  {
+    "id": "90fdcd86-65a6-471f-9849-f014d5709bfc",
+    "title": "Squadron 42",
+    "cover": "/covers/agent-eecd53704a1bf4b749c55ab6.webp",
+    "release": {
+      "precision": "quarter",
+      "year": 2027,
+      "quarter": 2
+    },
+    "source": "https://store.steampowered.com/app/4045720/Squadron_42/",
+    "hype": 5,
     "play": "not_played",
     "review": null
   }
