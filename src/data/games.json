@@ -122,11 +122,11 @@
     },
     "source": "https://store.playstation.com/en-us/product/UP0102-PPSA30803_00-REREQUIEM0000000",
     "hype": 5,
-    "play": "played",
+    "play": "completed",
     "review": {
       "text": "",
       "score": 9,
-      "amazing": [],
+      "amazing": ["Zombie variety and personalities", "Cinematic presentation"],
       "nice": [],
       "questionable": [],
       "terrible": []
