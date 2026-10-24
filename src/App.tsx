@@ -228,8 +228,7 @@ function Games({ route }: { route: Route }) {
         <Separator className="mt-14" />
         <footer className="flex flex-wrap items-center justify-end gap-3 pt-5 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5">
-            <Kbd>T</Kbd> themes<span className="mx-1">/</span>
-            <Kbd>D</Kbd> dark & light
+            <Kbd>T</Kbd> themes
           </span>
         </footer>
       </main>
