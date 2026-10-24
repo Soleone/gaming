@@ -9,14 +9,7 @@ import { cn } from "@/lib/utils";
 import { Pips } from "./Pips";
 import { PlayBadge } from "./PlayBadge";
 import { markdownSpoilers, spoilerHref, splitSpoilers } from "./spoilers";
-import {
-  playLabels,
-  releaseLabel,
-  verdictLabels,
-  verdicts,
-  type Game,
-  type Verdict,
-} from "./model";
+import { playLabels, releaseLabel, verdictLabels, type Game, type Verdict } from "./model";
 
 type Review = NonNullable<Game["review"]>;
 
@@ -39,11 +32,6 @@ const markdownElements = ["p", "em", "strong", "a", "ul", "ol", "li", "code"];
 // A Started game's review is a first impression; it becomes the review once played.
 export function reviewLabel(play: Game["play"]): string {
   return play === "started" ? "First impressions" : "Review";
-}
-
-// Whether a review has anything to open: a write-up or a point. A score alone stays on the card.
-export function hasReviewContent(review: Review): boolean {
-  return review.text !== "" || verdicts.some((verdict) => review[verdict].length > 0);
 }
 
 // Points read as pros and cons. Empty lists drop out, and so does a side with nothing left.

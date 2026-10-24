@@ -13,7 +13,6 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { ChoiceField } from "@/games/ChoiceField";
 import { GameCard } from "@/games/GameCard";
-import { hasReviewContent } from "@/games/Review";
 import { useGameSelection } from "@/games/useGameSelection";
 import {
   backdropOf,
@@ -28,6 +27,7 @@ import {
   calendarSections,
   followingYears,
   gamesSchema,
+  hasReviewContent,
   isPlayed,
   MONTHS,
   type Game,

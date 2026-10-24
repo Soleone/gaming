@@ -5,6 +5,7 @@ import { defineConfig, lazyPlugins } from "vite-plus";
 import { BUILTIN_THEMES } from "./src/components/soleone/theme/palettes";
 import { themePlugin } from "./src/components/soleone/theme-vite";
 import { DEFAULT_THEME, THEME_STORAGE_KEY } from "./src/theme/config";
+import { sharePagesPlugin } from "./build/share-pages";
 import { gameEditorPlugin } from "./dev/game-editor";
 
 // Vendored code: shadcn primitives, its mobile hook, and @soleone registry items.
@@ -29,6 +30,11 @@ export default defineConfig({
     gameEditorPlugin(
       resolve(import.meta.dirname, "src/data/games.json"),
       resolve(import.meta.dirname, "public/covers"),
+    ),
+    sharePagesPlugin(
+      resolve(import.meta.dirname, "src/data/games.json"),
+      resolve(import.meta.dirname, "public/covers"),
+      resolve(import.meta.dirname, "docs/media/hero.png"),
     ),
     themePlugin({
       themes: BUILTIN_THEMES,

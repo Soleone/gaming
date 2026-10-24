@@ -61,6 +61,11 @@ export const verdictLabels: Record<Verdict, string> = {
 };
 const notes = z.array(z.string().trim().min(1));
 
+// Whether a review has anything to open: a write-up or a point. A score alone stays on the card.
+export function hasReviewContent(review: NonNullable<Game["review"]>): boolean {
+  return review.text !== "" || verdicts.some((verdict) => review[verdict].length > 0);
+}
+
 export const gameFieldsSchema = z
   .object({
     id: z

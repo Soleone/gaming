@@ -14,9 +14,16 @@ import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empt
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { canMorph, morph } from "./morph";
-import { hasReviewContent, ReviewDialog, reviewLabel, scoreLook } from "./Review";
+import { ReviewDialog, reviewLabel, scoreLook } from "./Review";
 import { Pips } from "./Pips";
-import { hasReleased, playLabels, releaseCountdown, releaseLabel, type Game } from "./model";
+import {
+  hasReleased,
+  hasReviewContent,
+  playLabels,
+  releaseCountdown,
+  releaseLabel,
+  type Game,
+} from "./model";
 import { PlayBadge } from "./PlayBadge";
 
 export function GameCard({

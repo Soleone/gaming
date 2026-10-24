@@ -141,6 +141,10 @@ kit check
 vp run build
 ```
 
+## Link previews
+
+Crawlers that unfurl a pasted link don't run the app, so `build/share-pages.ts` writes the preview tags into the built pages. The calendar gets site-wide tags and an image cropped from `docs/media/hero.png` (re-record it with `vp run media:capture`). Each game whose review opens also gets `dist/games/<title>/index.html` with its own tags and a 1200x630 `dist/share/<title>.jpg` made from its cover. Remote covers are used as they are, so the build stays offline. Spoilers never appear in a description. The site address is `SITE_URL` in that file; change it if the domain moves. After deploying, check a link with the platform's debugger (Facebook Sharing Debugger, LinkedIn Post Inspector) since they cache previews.
+
 ## Local editor boundary
 
 The Vite plugin lives in `dev/game-editor.ts`; it only registers development middleware, never preview middleware. Requests must come from loopback sockets with a localhost/loopback Host header. Writes also require the matching Origin and an unguessable per-server token obtained by the same-origin editor. The endpoint cannot select filesystem paths and limits bodies to 256 KB. This protects local editing from unrelated web pages; it is not account authentication or a substitute for keeping the dev server local.
