@@ -51,9 +51,10 @@
   --color-score-gold: var(--score-gold);
 }
 
-/* Top review scores are gold in every theme: Gilt's accent on dark, a deeper gold on light. */
+/* Top review scores are gold in every theme: Gilt's accent on dark, a richer, brighter gold on light.
+   Any lighter and it washes out against the light background. */
 :root {
-  --score-gold: #8a6d14;
+  --score-gold: #b89a00;
 }
 :root.dark {
   --score-gold: #d4af37;
