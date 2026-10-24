@@ -314,6 +314,28 @@ it("agent.cover: downloads only a chosen candidate, normalizes it, and never ove
     "completed proposal",
   );
 });
+it("agent.cover: downsizes 4K key art to a 1600px WebP", async () => {
+  const { snapshot } = await research();
+  const tool = snapshot.messages
+    .flatMap((message) => message.tools ?? [])
+    .find((tool) => tool.name === "propose_game")!;
+  vi.mocked(fetchPublic).mockResolvedValue({
+    url: proposal.covers[0]!.url,
+    body: await sharp({ create: { width: 3840, height: 2160, channels: 4, background: "red" } })
+      .png()
+      .toBuffer(),
+    contentType: "image/png",
+  });
+  await runtime.execute({
+    action: "cover",
+    conversationId: snapshot.conversationId,
+    toolId: tool.id,
+    index: 0,
+  });
+  const [file] = await readdir(join(directory, "covers"));
+  const metadata = await sharp(await readFile(join(directory, "covers", file!))).metadata();
+  expect([metadata.format, metadata.width, metadata.height]).toEqual(["webp", 1600, 900]);
+});
 it("agent.proposal: refuses unsupported facts and fabricated image candidates", async () => {
   faux.setResponses([
     fauxAssistantMessage([fauxToolCall("propose_game", proposal)], { stopReason: "toolUse" }),

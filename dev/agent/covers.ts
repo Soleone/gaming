@@ -7,7 +7,7 @@ import { fetchPublic } from "./public-web";
 const minimumWidth = 600;
 
 export async function downloadCover(url: string, directory: string) {
-  const response = await fetchPublic(url, 8_000_000);
+  const response = await fetchPublic(url, 20_000_000);
   if (!/^image\/(jpeg|png|webp)(?:;|$)/i.test(response.contentType)) {
     throw new Error("Choose a JPEG, PNG, or WebP cover. SVG and other formats are not accepted.");
   }

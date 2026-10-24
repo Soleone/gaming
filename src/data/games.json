@@ -15,7 +15,9 @@
     "review": {
       "text": "",
       "score": 8,
-      "amazing": ["Controls feels very snappy"],
+      "amazing": [
+        "Controls feels very snappy"
+      ],
       "nice": [
         "Graphics are certainly not amazing, but there is enough variety and character in the levels to give certain areas some character",
         "The jump and run failures not costing a lot of health is appreciated"
@@ -141,7 +143,10 @@
         "Zombie variety ||And especially the personalities feel like an evolution in the series||",
         "Cinematic presentation"
       ],
-      "nice": ["Good amount of content", "Exploring the areas, especially early on, feels great"],
+      "nice": [
+        "Good amount of content",
+        "Exploring the areas, especially early on, feels great"
+      ],
       "questionable": [
         "Pacing starts off great, but is more one-dimensional towards the end ||Just tons of shooting, which isn't bad, but a few more survival scenes would have bee nice.||"
       ],
@@ -186,7 +191,9 @@
         "Great world building and scale",
         "Developers kept shipping new improvements quickly, very impressive"
       ],
-      "nice": ["Surprising amount of game systems, but me personally"],
+      "nice": [
+        "Surprising amount of game systems, but me personally"
+      ],
       "questionable": [
         "Combat system is too button mashy for my taste, mainly the bosses required some strategy and variety"
       ],
@@ -209,7 +216,9 @@
     "review": {
       "text": "",
       "score": 7,
-      "amazing": ["Impeccable fighting system with lots of move and weapon variety"],
+      "amazing": [
+        "Impeccable fighting system with lots of move and weapon variety"
+      ],
       "nice": [],
       "questionable": [
         "Open world exploration starts out interesting, but becomes formulaic and repetitive quickly",
@@ -403,5 +412,153 @@
     "hype": 4,
     "play": "not_played",
     "review": null
+  },
+  {
+    "id": "5a2cd358-0fca-484e-8f83-9dda21298fa4",
+    "title": "ACE COMBAT 8: WINGS OF THEVE",
+    "cover": "/covers/agent-e1042d7bf64d59a29dd7e42f.webp",
+    "release": {
+      "precision": "day",
+      "year": 2026,
+      "month": 10,
+      "day": 2
+    },
+    "source": "https://www.bandainamcoent.com/games/ace-combat-8",
+    "hype": 2,
+    "play": "not_played",
+    "review": null
+  },
+  {
+    "id": "0d9777b9-e8b4-4bfd-b904-5a6d98976a3d",
+    "title": "Beast of Reincarnation",
+    "cover": "/covers/agent-376aa268bc90ca80064b4a5c.webp",
+    "release": {
+      "precision": "day",
+      "year": 2026,
+      "month": 8,
+      "day": 4
+    },
+    "source": "https://www.playstation.com/en-us/games/beast-of-reincarnation/",
+    "hype": 3,
+    "play": "played",
+    "review": {
+      "text": "",
+      "score": 6,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
+  },
+  {
+    "id": "4e923023-b956-42bd-817c-3223241629aa",
+    "title": "WARDOGS",
+    "cover": "/covers/agent-9b9e5c3595b6ca80dc280b42.webp",
+    "release": {
+      "precision": "day",
+      "year": 2026,
+      "month": 9,
+      "day": 10
+    },
+    "source": "https://store.steampowered.com/app/1867240/WARDOGS/",
+    "hype": 3,
+    "play": "not_played",
+    "review": null
+  },
+  {
+    "id": "f791de00-4dba-4af2-b35c-c8452617b0da",
+    "title": "Silent Hill: Townfall",
+    "cover": "/covers/agent-65dc04343a80234d29fb4bfc.webp",
+    "release": {
+      "precision": "day",
+      "year": 2026,
+      "month": 9,
+      "day": 24
+    },
+    "source": "https://www.playstation.com/en-us/games/silent-hill-townfall/",
+    "hype": 2,
+    "play": "started",
+    "review": {
+      "text": "",
+      "score": null,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
+  },
+  {
+    "id": "6a7d5f08-e7db-46ee-b191-23406e1b78cb",
+    "title": "Star Wars Zero Company",
+    "cover": "/covers/agent-b2f3a81ee9ba9a8c51b2a60d.webp",
+    "release": {
+      "precision": "day",
+      "year": 2026,
+      "month": 8,
+      "day": 27
+    },
+    "source": "https://www.ea.com/games/starwars/zero-company/buy",
+    "hype": 2,
+    "play": "played",
+    "review": {
+      "text": "",
+      "score": 7,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
+  },
+  {
+    "id": "181d2763-c6d2-4c6f-8ee4-59d0dac99249",
+    "title": "Mortal Shell II",
+    "cover": "/covers/agent-4503ba635d45493bb16bd207.webp",
+    "release": {
+      "precision": "day",
+      "year": 2026,
+      "month": 8,
+      "day": 20
+    },
+    "source": "https://www.playstack.com/news/mortal-shell-ii-release-date/",
+    "hype": 4,
+    "play": "not_played",
+    "review": null
+  },
+  {
+    "id": "528e165c-43e4-4316-97b4-29ed9aa68370",
+    "title": "The Blood of Dawnwalker",
+    "cover": "/covers/agent-23843adadd88d40a806bd9cc.webp",
+    "release": {
+      "precision": "day",
+      "year": 2026,
+      "month": 9,
+      "day": 3
+    },
+    "source": "https://en.bandainamcoent.eu/dawnwalker/news/the-blood-of-dawnwalker-now-available-pc-playstation-5-and-xbox-series-xs",
+    "hype": 1,
+    "play": "not_played",
+    "review": null
+  },
+  {
+    "id": "98fde180-1c02-485c-b5a2-f5e9acc98d3a",
+    "title": "Slay the Spire 2",
+    "cover": "/covers/agent-b35374258d9facaea4e785bb.webp",
+    "release": {
+      "precision": "day",
+      "year": 2026,
+      "month": 3,
+      "day": 5
+    },
+    "source": "https://www.megacrit.com/press-kits/slay-the-spire-2/",
+    "hype": 4,
+    "play": "played",
+    "review": {
+      "text": "I mean it is amazing. They polished all aspects. But it was kind of just more of the same, and not enough for me personally to keep me engaged beyond a few playthroughs.",
+      "score": 8,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
   }
 ]
