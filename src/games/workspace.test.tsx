@@ -4,7 +4,7 @@ import { createMemoryRouter, RouterProvider } from "react-router";
 import { expect, it } from "vite-plus/test";
 import Workspace from "./Workspace";
 import { GameForm } from "./GameForm";
-import { createGameDraft } from "./draft";
+import { createGameDraft, type GameDraft } from "./draft";
 import type { Game } from "./model";
 
 // Workspace guards navigation with a blocker, which needs a data router.
@@ -36,6 +36,7 @@ it("agent.sidebar: renders the draft editor beside the dock, not in a focus-bloc
   );
   expect(html).toContain("Local collection editor");
   expect(html).toContain('aria-labelledby="editor-title"');
+  expect(html).not.toContain("Games to edit");
   expect(html).not.toContain('role="dialog"');
 });
 
@@ -50,6 +51,7 @@ it("editor.actions: puts save and remove at the top of the form and confirms rem
       onSave={async () => {}}
       onDelete={async () => {}}
       onDirty={() => {}}
+      onClose={() => {}}
       saveError="Could not save"
       notice=""
     />,
@@ -58,4 +60,44 @@ it("editor.actions: puts save and remove at the top of the form and confirms rem
   expect(html.indexOf("Remove")).toBeLessThan(html.indexOf('id="title"'));
   expect(html.indexOf("Could not save")).toBeLessThan(html.indexOf('id="title"'));
   expect(html).not.toContain("Yes, remove");
+});
+
+const form = (draft: GameDraft) =>
+  renderToStaticMarkup(
+    <GameForm
+      game={null}
+      draft={draft}
+      onChange={() => {}}
+      busy={false}
+      onSave={async () => {}}
+      onDelete={async () => {}}
+      onDirty={() => {}}
+      onClose={() => {}}
+      saveError=""
+      notice=""
+    />,
+  );
+const order = (html: string, ids: string[]) =>
+  ids
+    .map((id) => html.indexOf(`id="${id}"`))
+    .every((at, index, all) => at > (all[index - 1] ?? -1));
+
+it("editor.layout: previews the cover and orders release, rating, and review fields", () => {
+  const blank = form({ ...createGameDraft(null), precision: "day" });
+  expect(blank).toContain("No cover yet");
+  expect(order(blank, ["precision", "release-year", "release-month", "release-day"])).toBe(true);
+  expect(order(blank, ["hype", "score", "play"])).toBe(true);
+  expect(blank).not.toContain('id="review"');
+
+  const played = form({ ...createGameDraft(null), cover: "/covers/hades.jpg", play: "played" });
+  expect(played).toContain('src="/covers/hades.jpg"');
+  expect(
+    order(played, [
+      "review",
+      "review-amazing",
+      "review-nice",
+      "review-questionable",
+      "review-terrible",
+    ]),
+  ).toBe(true);
 });

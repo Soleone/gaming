@@ -1,14 +1,6 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router";
-import {
-  CalendarDays,
-  ChevronLeft,
-  ChevronRight,
-  Gamepad2,
-  Palette,
-  Pencil,
-  Plus,
-} from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, Gamepad2, Palette, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
 import {
@@ -89,12 +81,6 @@ function Games({ route }: { route: Route }) {
             </span>
           </Link>
           <div className="flex items-center gap-2">
-            {DevWorkspace && !editor && (
-              <Button variant="ghost" onClick={() => openEditor(games[0]?.id ?? null)}>
-                <Pencil data-icon="inline-start" />
-                Edit collection
-              </Button>
-            )}
             <Suspense
               fallback={
                 <Button variant="ghost" size="icon" disabled aria-label="Loading themes">

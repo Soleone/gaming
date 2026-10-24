@@ -1,4 +1,4 @@
-import { canReview, gameSchema, type Game, type Release } from "./model";
+import { canReview, gameSchema, verdicts, type Game, type Release, type Verdict } from "./model";
 import type { ResearchProposal } from "./research";
 
 export type GameDraft = {
@@ -15,7 +15,14 @@ export type GameDraft = {
   play: string;
   score: string;
   review: string;
-};
+} & Record<Verdict, string>;
+
+// Each line of a verdict field is one bullet; pasted Markdown bullet markers are dropped.
+const notesFrom = (text: string) =>
+  text
+    .split("\n")
+    .map((line) => line.replace(/^\s*[-*•]\s*/, "").trim())
+    .filter(Boolean);
 
 export function createGameDraft(game: Game | null): GameDraft {
   return {
@@ -32,6 +39,10 @@ export function createGameDraft(game: Game | null): GameDraft {
     play: game?.play ?? "not_played",
     score: String(game?.review?.score ?? ""),
     review: game?.review?.text ?? "",
+    amazing: game?.review?.amazing.join("\n") ?? "",
+    nice: game?.review?.nice.join("\n") ?? "",
+    questionable: game?.review?.questionable.join("\n") ?? "",
+    terrible: game?.review?.terrible.join("\n") ?? "",
   };
 }
 
@@ -56,6 +67,7 @@ export function parseGameDraft(draft: GameDraft) {
       ? {
           text: draft.review.trim(),
           score: draft.score.trim() === "" ? null : Number(draft.score),
+          ...Object.fromEntries(verdicts.map((verdict) => [verdict, notesFrom(draft[verdict])])),
         }
       : null,
   });

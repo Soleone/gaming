@@ -14,7 +14,11 @@
     "play": "played",
     "review": {
       "text": "",
-      "score": 8
+      "score": 8,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
     }
   },
   {
@@ -77,7 +81,11 @@
     "play": "played",
     "review": {
       "text": "",
-      "score": 8
+      "score": 8,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
     }
   },
   {
@@ -95,7 +103,11 @@
     "play": "played",
     "review": {
       "text": "",
-      "score": 8
+      "score": 8,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
     }
   },
   {
@@ -113,7 +125,11 @@
     "play": "played",
     "review": {
       "text": "",
-      "score": 9
+      "score": 9,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
     }
   },
   {
@@ -146,7 +162,11 @@
     "play": "played",
     "review": {
       "text": "",
-      "score": 8
+      "score": 8,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
     }
   },
   {
@@ -164,7 +184,11 @@
     "play": "played",
     "review": {
       "text": "",
-      "score": 7
+      "score": 7,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
     }
   },
   {

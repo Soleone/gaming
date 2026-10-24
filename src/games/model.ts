@@ -50,6 +50,17 @@ export function isPlayed(play: string): boolean {
   return play === "played" || play === "completed";
 }
 
+// Short bullet points that sit beside the written review.
+export const verdicts = ["amazing", "nice", "questionable", "terrible"] as const;
+export type Verdict = (typeof verdicts)[number];
+export const verdictLabels: Record<Verdict, string> = {
+  amazing: "Amazing",
+  nice: "Nice",
+  questionable: "Questionable",
+  terrible: "Terrible",
+};
+const notes = z.array(z.string().trim().min(1).max(200)).max(20);
+
 export const gameFieldsSchema = z
   .object({
     id: z
@@ -67,6 +78,10 @@ export const gameFieldsSchema = z
       .object({
         text: z.string().trim().max(1000),
         score: z.number().int().min(1).max(10).nullable(),
+        amazing: notes,
+        nice: notes,
+        questionable: notes,
+        terrible: notes,
       })
       .strict()
       .nullable(),

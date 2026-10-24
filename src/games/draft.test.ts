@@ -12,7 +12,14 @@ const game: Game = {
   source: null,
   hype: 4,
   play: "played",
-  review: { text: "My own opinion", score: 9 },
+  review: {
+    text: "My own opinion",
+    score: 9,
+    amazing: ["Combat", "Music"],
+    nice: [],
+    questionable: ["Pacing"],
+    terrible: [],
+  },
 };
 const proposal = researchProposalSchema.parse({
   title: "Verified title",
@@ -108,7 +115,7 @@ describe("agent drafts", () => {
     for (const play of ["started", "played", "completed"]) {
       expect(parseGameDraft({ ...draft, play }).data).toMatchObject({
         play,
-        review: { text: "My own opinion", score: 9 },
+        review: game.review,
       });
     }
     expect(parseGameDraft({ ...draft, play: "not_played" }).data).toMatchObject({
@@ -117,5 +124,15 @@ describe("agent drafts", () => {
     });
     expect(createGameDraft({ ...game, play: "started", review: null }).play).toBe("started");
     expect(createGameDraft(null).play).toBe("not_played");
+  });
+  it("review.points: turns each non-blank line into a point and loads points back one per line", () => {
+    const draft = createGameDraft(game);
+    expect(draft.amazing).toBe("Combat\nMusic");
+    expect(
+      parseGameDraft({ ...draft, nice: "- Boss fights\n\n  • Art direction \n* Map" }).data?.review,
+    ).toMatchObject({
+      amazing: ["Combat", "Music"],
+      nice: ["Boss fights", "Art direction", "Map"],
+    });
   });
 });

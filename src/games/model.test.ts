@@ -19,6 +19,14 @@ const game: Game = {
   play: "not_played",
   review: null,
 };
+const emptyReview = {
+  text: "",
+  score: null,
+  amazing: [],
+  nice: [],
+  questionable: [],
+  terrible: [],
+};
 
 describe("game data", () => {
   it("data.valid: validates the current collection", () => {
@@ -85,12 +93,26 @@ describe("game data", () => {
     expect(gameSchema.safeParse({ ...game, play: "dropped" }).success).toBe(false);
     expect(gameSchema.safeParse({ ...game, play: "started" }).success).toBe(false);
     expect(
-      gameSchema.safeParse({ ...game, play: "started", review: { text: "", score: null } }).success,
+      gameSchema.safeParse({ ...game, play: "started", review: { ...emptyReview, score: null } })
+        .success,
     ).toBe(true);
     expect(
-      gameSchema.safeParse({ ...game, play: "not_played", review: { text: "", score: null } })
+      gameSchema.safeParse({ ...game, play: "started", review: { text: "", score: null } }).success,
+    ).toBe(false);
+    expect(
+      gameSchema.safeParse({ ...game, play: "started", review: { ...emptyReview, nice: [""] } })
         .success,
     ).toBe(false);
+    expect(
+      gameSchema.safeParse({
+        ...game,
+        play: "started",
+        review: { ...emptyReview, terrible: Array.from({ length: 21 }, () => "Too much") },
+      }).success,
+    ).toBe(false);
+    expect(gameSchema.safeParse({ ...game, play: "not_played", review: emptyReview }).success).toBe(
+      false,
+    );
     expect(gameSchema.safeParse({ ...game, source: "javascript:alert(1)" }).success).toBe(false);
     expect(gameSchema.safeParse({ ...game, cover: "/covers/../../secret" }).success).toBe(false);
     expect(gamesSchema.safeParse([game, game]).success).toBe(false);

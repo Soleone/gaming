@@ -43,7 +43,14 @@ const game = {
   source: null,
   hype: 4,
   play: "played",
-  review: { text: "A lovely surprise.", score: 9 },
+  review: {
+    text: "A lovely surprise.",
+    score: 9,
+    amazing: [],
+    nice: [],
+    questionable: [],
+    terrible: [],
+  },
 };
 async function session() {
   return (await fetch(`${base}/__dev/games`)).json();

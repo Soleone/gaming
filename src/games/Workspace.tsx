@@ -181,7 +181,6 @@ export default function Workspace({
           loadError={loadError}
           busy={busy}
           onChange={setDraft}
-          onChoose={onEdit}
           onSave={async (game) => {
             if (!session) return;
             show((await persist(session, upsertGame(session.games, game))).games, game.id);

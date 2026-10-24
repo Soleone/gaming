@@ -7,7 +7,7 @@ vp install
 vp run dev
 ```
 
-Open the local URL (`localhost` or `127.0.0.1`). **Edit collection**, **Add a game**, and each game's pencil button open the development-only editor. Save writes to `src/data/games.json`. Production and `vp run preview` are read-only, with no editor endpoint. Do not expose the development server as a public admin service.
+Open the local URL (`localhost` or `127.0.0.1`). **Add a game** and each game's pencil button open the development-only editor. Save writes to `src/data/games.json`. Production and `vp run preview` are read-only, with no editor endpoint. Do not expose the development server as a public admin service.
 
 The editor supports titles, local or remote cover URLs, release precision, hype 1–5, play status (Not played, Started, Played, or Completed), a short review, and a score 1–10. Missing ratings stay unrated. A blank cover gets a placeholder. Put replacement cover files in `public/covers/` and enter `/covers/filename.jpg`.
 
