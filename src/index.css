@@ -48,6 +48,15 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --color-score-gold: var(--score-gold);
+}
+
+/* Top review scores are gold in every theme: Gilt's accent on dark, a deeper gold on light. */
+:root {
+  --score-gold: #8a6d14;
+}
+:root.dark {
+  --score-gold: #d4af37;
 }
 
 @layer base {
@@ -76,7 +85,90 @@
   }
 }
 
+/* The cover that flies between a card and its open review (src/games/morph.ts). */
+.review-morph {
+  view-transition-name: review-cover;
+}
+::view-transition-group(review-cover) {
+  animation-duration: 460ms;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+::view-transition-old(review-cover),
+::view-transition-new(review-cover) {
+  height: 100%;
+  object-fit: cover;
+  overflow: clip;
+}
+/* The review cover's fade rides above the flying cover, so it fades in with the flight
+   instead of snapping on when the flight ends. */
+.review-morph + .review-cover-fade {
+  view-transition-name: review-cover-fade;
+}
+::view-transition-old(review-cover-fade),
+::view-transition-new(review-cover-fade) {
+  animation-duration: 460ms;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* The review cover melts into the dialog along an eased curve; a linear ramp leaves a visible band. */
+.review-cover-fade {
+  background: linear-gradient(
+    to top,
+    var(--popover) 0%,
+    color-mix(in oklab, var(--popover) 98%, transparent) 8%,
+    color-mix(in oklab, var(--popover) 93%, transparent) 18%,
+    color-mix(in oklab, var(--popover) 84%, transparent) 28%,
+    color-mix(in oklab, var(--popover) 70%, transparent) 39%,
+    color-mix(in oklab, var(--popover) 52%, transparent) 51%,
+    color-mix(in oklab, var(--popover) 33%, transparent) 63%,
+    color-mix(in oklab, var(--popover) 17%, transparent) 75%,
+    color-mix(in oklab, var(--popover) 6%, transparent) 87%,
+    transparent 100%
+  );
+}
+
+/* A review's score, stamped onto the cover once the cover has landed (its flight takes 460ms). */
+.review-stamp {
+  rotate: -3deg;
+}
+@keyframes review-stamp {
+  from {
+    opacity: 0;
+    scale: 1.4;
+    rotate: -9deg;
+  }
+}
+
+/* The write-up reads like a magazine lede. */
+.review-text > * + * {
+  margin-top: 1rem;
+}
+.review-text > p:first-child::first-letter {
+  float: left;
+  padding: 0.375rem 0.75rem 0 0;
+  font-size: 3.7em;
+  font-weight: 700;
+  line-height: 0.82;
+  color: var(--primary);
+}
+.review-text a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.review-text ul {
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+.review-text ol {
+  padding-left: 1.25rem;
+  list-style: decimal;
+}
+
 @media (prefers-reduced-motion: no-preference) {
+  .review-stamp {
+    animation: review-stamp 460ms cubic-bezier(0.2, 1.5, 0.4, 1) 520ms backwards;
+  }
   .game-entry img.game-cover {
     transition: transform 300ms ease-out;
   }
