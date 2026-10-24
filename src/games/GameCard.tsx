@@ -127,19 +127,21 @@ export function GameCard({
         <CardContent className="flex-1">
           <div className="flex flex-col gap-3">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-2 text-sm">
+              <div className="flex items-center gap-1 text-sm">
                 <Flame className="size-4 text-primary" aria-hidden="true" />
-                <span className="text-muted-foreground">Hype</span>
-                <Pips
-                  value={game.hype}
-                  max={5}
-                  className="flex gap-1"
-                  pipClassName="w-3"
-                  aria-label={game.hype === null ? "Not rated" : `${game.hype} out of 5`}
-                />
-                {game.hype === null && (
-                  <span className="text-xs text-muted-foreground">Unrated</span>
-                )}
+                <div className="flex items-center gap-2">
+                  <span className="text-muted-foreground">Hype</span>
+                  <Pips
+                    value={game.hype}
+                    max={5}
+                    className="flex gap-1"
+                    pipClassName="w-3"
+                    aria-label={game.hype === null ? "Not rated" : `${game.hype} out of 5`}
+                  />
+                  {game.hype === null && (
+                    <span className="text-xs text-muted-foreground">Unrated</span>
+                  )}
+                </div>
               </div>
               <PlayBadge play={game.play} />
               {game.play === "not_played" && hasReleased(game.release) && (
