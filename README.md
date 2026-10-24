@@ -1,6 +1,6 @@
 # Soleone Gaming
 
-A personal release calendar for the games I'm watching: how hyped I am before launch, and a short scored review once I've played them.
+A release calendar for the games I'm watching, with hype ratings, scored reviews and an inline AI agent that finds release dates and cover art.
 
 **[Open the calendar](https://gaming.soleone.xyz)**, no install or account.
 
@@ -10,6 +10,7 @@ A personal release calendar for the games I'm watching: how hyped I am before la
 
 - **Cover-led cards grouped by month.** Browse one year at a time, or narrow it to a month. Uncertain dates stay honest: a game slated for "Q2 2027" or just "2027" gets its own section instead of a made-up day.
 - **Hype before, verdict after.** Each game has a 1 to 5 hype rating and a play status. Once started, it can carry a review with a 1 to 10 score, a short write-up and Amazing, Nice, Questionable and Terrible lists. Spoilers hide behind `||double bars||`, and every review has its own URL.
+- **An inline research agent.** In the editor, an agent on your own Pi login reads official pages for a game's release date and cover art and proposes them for you to accept.
 - **Themes.** Gilt by default, plus the rest of the @soleone theme picker.
 
 The hosted site is read-only. The collection is one JSON file, `src/data/games.json`, embedded at build time.

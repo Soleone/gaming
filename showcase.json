@@ -1,10 +1,10 @@
 {
   "$schema": "https://raw.githubusercontent.com/Soleone/showcase/main/schema/showcase.schema.json",
   "title": "Soleone Gaming",
-  "pitch": "A personal release calendar for the games I'm watching: how hyped I am before launch, and a short scored review once I've played them.",
-  "description": "Cover-led cards by month that keep uncertain dates honest, reviews with spoiler tags and their own URLs, and a local editor with a Pi research agent that sources dates and cover art.",
+  "pitch": "A release calendar for the games I'm watching, with hype ratings, scored reviews and an inline AI agent that finds release dates and cover art.",
+  "description": "The agent runs in the editor on your own Pi login, reads official pages and proposes changes you accept or reject. Cover-led cards by month keep uncertain dates honest, and every review has spoiler tags and its own URL.",
   "kind": "web-app",
-  "stage": "prototype",
+  "stage": "product",
   "year": 2026,
   "tech": ["React", "TypeScript", "Vite+", "shadcn/ui", "Tailwind CSS", "Pi"],
   "repo": "https://github.com/Soleone/gaming",
