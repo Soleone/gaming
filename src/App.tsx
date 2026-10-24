@@ -163,9 +163,6 @@ function Games({ route }: { route: Route }) {
           >
             <Gamepad2 className="size-5 text-primary" aria-hidden="true" />
             Soleone Gaming
-            <span className="hidden text-sm font-normal tracking-normal text-muted-foreground sm:inline">
-              / What I'm excited about
-            </span>
           </Link>
           <div className="flex items-center gap-2">
             <Suspense
@@ -190,7 +187,7 @@ function Games({ route }: { route: Route }) {
               Release calendar<span className="text-primary">.</span>
             </h1>
             <p className="max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-              What’s worth the wait. What lived up to it.
+              Interesting games I care about
             </p>
           </div>
           {DevWorkspace && (
@@ -260,7 +257,6 @@ function Games({ route }: { route: Route }) {
             </span>
             {selectedGames.filter((game) => isPlayed(game.play)).length} played this year
           </p>
-          <span>Hype before. A verdict after.</span>
         </div>
         {sections.length ? (
           <div className="flex flex-col gap-12 pt-3">
