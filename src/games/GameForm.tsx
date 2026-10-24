@@ -366,12 +366,7 @@ export function GameForm({
                           <Icon className="size-4 text-muted-foreground" aria-hidden="true" />
                           {verdictLabels[verdict]}
                         </FieldLabel>
-                        <Textarea
-                          id={`review-${verdict}`}
-                          {...input(verdict)}
-                          rows={4}
-                          placeholder="One point per line. ||Spoilers|| in double bars."
-                        />
+                        <Textarea id={`review-${verdict}`} {...input(verdict)} rows={4} />
                       </Field>
                     );
                   })}
