@@ -2,7 +2,6 @@ import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router";
 import { CalendarDays, ChevronLeft, ChevronRight, Gamepad2, Palette, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Kbd } from "@/components/ui/kbd";
 import {
   Empty,
   EmptyContent,
@@ -225,12 +224,6 @@ function Games({ route }: { route: Route }) {
             )}
           </Empty>
         )}
-        <Separator className="mt-14" />
-        <footer className="flex flex-wrap items-center justify-end gap-3 pt-5 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1.5">
-            <Kbd>T</Kbd> themes
-          </span>
-        </footer>
       </main>
     </div>
   );
