@@ -133,9 +133,11 @@ export function ReviewDialog({
                 aria-hidden="true"
                 className="grid grid-cols-10 gap-1"
               />
-              <div className="flex justify-center">
-                <PlayBadge play={game.play} />
-              </div>
+              {game.play === "completed" && (
+                <div className="flex justify-center">
+                  <PlayBadge play={game.play} />
+                </div>
+              )}
             </div>
           )}
         </header>
