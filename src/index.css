@@ -90,7 +90,7 @@
   view-transition-name: review-cover;
 }
 ::view-transition-group(review-cover) {
-  animation-duration: 460ms;
+  animation-duration: 280ms;
   animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 ::view-transition-old(review-cover),
@@ -106,7 +106,7 @@
 }
 ::view-transition-old(review-cover-fade),
 ::view-transition-new(review-cover-fade) {
-  animation-duration: 460ms;
+  animation-duration: 280ms;
   animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -127,7 +127,7 @@
   );
 }
 
-/* A review's score, stamped onto the cover once the cover has landed (its flight takes 460ms). */
+/* A review's score, stamped onto the cover once the cover has landed (its flight takes 280ms). */
 .review-stamp {
   rotate: -3deg;
 }
@@ -167,7 +167,7 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .review-stamp {
-    animation: review-stamp 460ms cubic-bezier(0.2, 1.5, 0.4, 1) 520ms backwards;
+    animation: review-stamp 320ms cubic-bezier(0.2, 1.5, 0.4, 1) 300ms backwards;
   }
   .game-entry img.game-cover {
     transition: transform 300ms ease-out;
