@@ -13,8 +13,17 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { ChoiceField } from "@/games/ChoiceField";
 import { GameCard } from "@/games/GameCard";
+import { hasReviewContent } from "@/games/Review";
 import { useGameSelection } from "@/games/useGameSelection";
-import { calendarPath, editPath, parseRoute, type Route } from "@/games/routes";
+import {
+  backdropOf,
+  calendarPath,
+  editPath,
+  gameSlug,
+  parseRoute,
+  reviewPath,
+  type Route,
+} from "@/games/routes";
 import {
   calendarSections,
   followingYears,
@@ -43,7 +52,8 @@ export function App() {
 
 function Games({ route }: { route: Route }) {
   const navigate = useNavigate();
-  const { pathname } = useLocation();
+  const location = useLocation();
+  const { pathname } = location;
   const calendarHere = route.view === "calendar";
   const lastCalendar = useRef("/");
   useEffect(() => {
@@ -52,12 +62,33 @@ function Games({ route }: { route: Route }) {
   const [saved, setSaved] = useState<{ base: Game[]; games: Game[] } | null>(null);
   const games = saved?.base === initialGames ? saved.games : initialGames;
   const setGames = (next: Game[]) => setSaved({ base: initialGames, games: next });
-  const year = (route.view === "calendar" && route.year) || String(initialYear);
-  const month = route.view === "calendar" ? route.month : "all";
+  // An open review sits over the calendar it was opened from, or over its game's year.
+  const reviewed =
+    route.view === "review"
+      ? games.find(
+          (game) => gameSlug(game) === route.slug && game.review && hasReviewContent(game.review),
+        )
+      : undefined;
+  const backdrop = reviewed ? backdropOf(location.state) : null;
+  const calendar =
+    route.view === "calendar"
+      ? route
+      : (backdrop?.route ?? {
+          view: "calendar" as const,
+          year: reviewed ? String(reviewed.release.year ?? "unscheduled") : null,
+          month: "all",
+        });
+  const viewPath = backdrop?.path ?? pathname;
+  const year = calendar.year || String(initialYear);
+  const month = calendar.month;
   const editId = route.view === "edit" ? route.id : undefined;
   const editor = useMemo(() => (editId === undefined ? null : { id: editId }), [editId]);
   const openEditor = (id: string | null, replace = false) =>
     void navigate(editPath(id), { replace });
+  const openReview = (game: Game) =>
+    void navigate(reviewPath(game), { state: { from: pathname }, flushSync: true });
+  const closeReview = () =>
+    void navigate(backdrop?.path ?? calendarPath(year), { flushSync: true });
   const setMonth = (next: string) => void navigate(calendarPath(year, next));
   const years = [
     ...new Set([
@@ -69,9 +100,9 @@ function Games({ route }: { route: Route }) {
   ].sort((a, b) => a - b);
   const sections = calendarSections(games, year, month);
   // The full-year view keeps going into later years as the visitor nears the bottom.
-  const [continued, setContinued] = useState({ view: pathname, count: 0 });
+  const [continued, setContinued] = useState({ view: viewPath, count: 0 });
   const following = month === "all" ? followingYears(games, year) : [];
-  const shownYears = following.slice(0, continued.view === pathname ? continued.count : 0);
+  const shownYears = following.slice(0, continued.view === viewPath ? continued.count : 0);
   const nextYear = sections.length ? following[shownYears.length] : undefined;
   const continuedSections = shownYears.map((value) => ({
     year: value,
@@ -113,11 +144,14 @@ function Games({ route }: { route: Route }) {
               game={game}
               selected={game.id === selectedId}
               onEdit={editGame}
+              reviewOpen={game.id === reviewed?.id}
+              onReviewOpenChange={(open) => (open ? openReview(game) : closeReview())}
             />
           ))}
         </div>
       </section>
     ));
+  if (route.view === "review" && !reviewed) return <Navigate to="/" replace />;
   const content = (
     <div className={editor ? undefined : "min-h-svh"}>
       <header className="border-b border-border">
@@ -247,7 +281,7 @@ function Games({ route }: { route: Route }) {
             {nextYear !== undefined && (
               <NearBottom
                 key={nextYear}
-                onReach={() => setContinued({ view: pathname, count: shownYears.length + 1 })}
+                onReach={() => setContinued({ view: viewPath, count: shownYears.length + 1 })}
               />
             )}
           </div>

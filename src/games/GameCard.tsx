@@ -1,5 +1,4 @@
 import { useRef, useState } from "react";
-import { flushSync } from "react-dom";
 import { ArrowRight, Flame, Gamepad2, Pencil, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,13 +23,17 @@ export function GameCard({
   game,
   selected,
   onEdit,
+  reviewOpen = false,
+  onReviewOpenChange,
 }: {
   game: Game;
   selected?: boolean;
   onEdit?: (id: string) => void;
+  reviewOpen?: boolean;
+  /** Must render the change before it returns, so the cover can fly into it. */
+  onReviewOpenChange?: (open: boolean) => void;
 }) {
   const [failedCover, setFailedCover] = useState<string | null>(null);
-  const [reviewOpen, setReviewOpen] = useState(false);
   // Whether the open review arrived by morphing the cover, so it leaves the same way.
   const [morphed, setMorphed] = useState(false);
   const coverRef = useRef<HTMLImageElement>(null);
@@ -42,27 +45,26 @@ export function GameCard({
     const cover = coverRef.current;
     if (!cover || !canMorph()) {
       setMorphed(false);
-      setReviewOpen(true);
+      onReviewOpenChange?.(true);
       return;
     }
     morph(
       cover,
       () => reviewCoverRef.current,
-      () =>
-        flushSync(() => {
-          setMorphed(true);
-          setReviewOpen(true);
-        }),
+      () => {
+        setMorphed(true);
+        onReviewOpenChange?.(true);
+      },
     );
   }
 
   function closeReview() {
     const cover = reviewCoverRef.current;
-    if (!morphed || !cover) return setReviewOpen(false);
+    if (!morphed || !cover) return onReviewOpenChange?.(false);
     morph(
       cover,
       () => coverRef.current,
-      () => flushSync(() => setReviewOpen(false)),
+      () => onReviewOpenChange?.(false),
     );
   }
 
