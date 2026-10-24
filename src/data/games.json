@@ -203,8 +203,15 @@
     },
     "source": "https://store.playstation.com/en-us/product/UP9000-PPSA03671_00-MARVELSWOLVERINE",
     "hype": 3,
-    "play": "not_played",
-    "review": null
+    "play": "started",
+    "review": {
+      "text": "",
+      "score": 6,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
   },
   {
     "id": "8e6f36fd-813c-46d1-9720-4581652864f7",
