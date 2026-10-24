@@ -370,8 +370,8 @@
     "title": "Total War: WARHAMMER 40,000",
     "cover": "/covers/agent-76d3bb9916ab41c77ba351a6.webp",
     "release": {
-      "precision": "unknown",
-      "year": null
+      "precision": "year",
+      "year": 2027
     },
     "source": "https://store.steampowered.com/app/4199910/Total_War_WARHAMMER_40000/",
     "hype": 4,
