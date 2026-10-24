@@ -75,7 +75,7 @@ function Games({ route }: { route: Route }) {
   const nextYear = sections.length ? following[shownYears.length] : undefined;
   const continuedSections = shownYears.map((value) => ({
     year: value,
-    sections: calendarSections(games, String(value), "all"),
+    sections: calendarSections(games, value, "all"),
   }));
   const selectedGames = games.filter((game) => String(game.release.year ?? "unscheduled") === year);
   const count = sections.reduce((total, section) => total + section.games.length, 0);
@@ -232,13 +232,17 @@ function Games({ route }: { route: Route }) {
           <div className="flex flex-col gap-12 pt-3">
             {renderSections(sections, year)}
             {continuedSections.map((entry) => [
-              <div key={entry.year} className="flex items-center gap-5 pt-6">
-                <h2 className="font-heading text-3xl font-semibold tracking-tight">{entry.year}</h2>
-                <div className="min-w-0 flex-1">
-                  <Separator />
+              entry.year !== "unscheduled" && (
+                <div key={entry.year} className="flex items-center gap-5 pt-6">
+                  <h2 className="font-heading text-3xl font-semibold tracking-tight">
+                    {entry.year}
+                  </h2>
+                  <div className="min-w-0 flex-1">
+                    <Separator />
+                  </div>
                 </div>
-              </div>,
-              ...renderSections(entry.sections, String(entry.year)),
+              ),
+              ...renderSections(entry.sections, entry.year),
             ])}
             {nextYear !== undefined && (
               <NearBottom

@@ -220,9 +220,16 @@
       "day": 17
     },
     "source": "https://www.nintendo.com/us/store/products/fire-emblem-fortunes-weave-125688/",
-    "hype": null,
-    "play": "not_played",
-    "review": null
+    "hype": 2,
+    "play": "played",
+    "review": {
+      "text": "",
+      "score": 9,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
   },
   {
     "id": "90fdcd86-65a6-471f-9849-f014d5709bfc",
@@ -264,7 +271,7 @@
       "day": 27
     },
     "source": "https://store.steampowered.com/app/2295170/Emberville/",
-    "hype": null,
+    "hype": 3,
     "play": "not_played",
     "review": null
   },
@@ -367,7 +374,7 @@
       "year": null
     },
     "source": "https://store.steampowered.com/app/4199910/Total_War_WARHAMMER_40000/",
-    "hype": null,
+    "hype": 4,
     "play": "not_played",
     "review": null
   }

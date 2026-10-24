@@ -38,7 +38,7 @@ describe("game data", () => {
     expect(releaseLabel({ precision: "month", year: 2007, month: 4 })).toBe("Apr 2007");
     expect(releaseLabel({ precision: "quarter", year: 2007, quarter: 2 })).toBe("Q2 2007");
     expect(releaseLabel({ precision: "year", year: 2007 })).toBe("2007 · date TBA");
-    expect(releaseLabel({ precision: "unknown", year: null })).toBe("Release date unknown");
+    expect(releaseLabel({ precision: "unknown", year: null })).toBe("TBD");
   });
   it("release.precision: formats exact dates with an abbreviated month and no leading zero", () => {
     expect(releaseLabel({ precision: "day", year: 2026, month: 10, day: 24 })).toBe("Oct 24, 2026");
@@ -143,6 +143,13 @@ describe("game data", () => {
         "all",
       ),
     ).toHaveLength(1);
+    expect(
+      calendarSections(
+        [{ ...game, release: { precision: "unknown", year: null } }],
+        "unscheduled",
+        "all",
+      )[0]?.label,
+    ).toBe("TBD");
   });
   it("calendar.continue: continues into later years that have games, skipping empty ones", () => {
     const entries: Game[] = [
@@ -153,8 +160,9 @@ describe("game data", () => {
       { ...game, id: "next-too", release: { precision: "year", year: 2027 } },
       { ...game, id: "unscheduled", release: { precision: "unknown", year: null } },
     ];
-    expect(followingYears(entries, "2026")).toEqual([2027, 2029]);
-    expect(followingYears(entries, "2029")).toEqual([]);
+    expect(followingYears(entries, "2026")).toEqual(["2027", "2029", "unscheduled"]);
+    expect(followingYears(entries, "2029")).toEqual(["unscheduled"]);
+    expect(followingYears(entries.slice(0, 5), "2029")).toEqual([]);
     expect(followingYears(entries, "unscheduled")).toEqual([]);
   });
   it("calendar.order: sorts exact days before month-only entries", () => {

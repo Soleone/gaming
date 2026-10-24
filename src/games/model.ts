@@ -130,7 +130,7 @@ export function releaseLabel(release: Release): string {
     case "year":
       return `${release.year} · date TBA`;
     case "unknown":
-      return release.year === null ? "Release date unknown" : `${release.year} · date unknown`;
+      return release.year === null ? "TBD" : `${release.year} · date unknown`;
   }
 }
 
@@ -148,13 +148,14 @@ export function hasReleased(release: Release, today = new Date()): boolean {
   return release.precision === "day" ? currentDay >= lastDay : currentDay > lastDay;
 }
 
-/** Later years with games, in order, for the full-year view to continue into. */
-export function followingYears(games: Game[], selectedYear: string): number[] {
+/** Later years with games, in order, then "unscheduled" last if any game has no year. */
+export function followingYears(games: Game[], selectedYear: string): string[] {
   if (selectedYear === "unscheduled") return [];
   const later = games.flatMap(({ release }) =>
     release.year !== null && release.year > Number(selectedYear) ? [release.year] : [],
   );
-  return [...new Set(later)].sort((a, b) => a - b);
+  const years = [...new Set(later)].sort((a, b) => a - b).map(String);
+  return games.some(({ release }) => release.year === null) ? [...years, "unscheduled"] : years;
 }
 
 export function calendarSections(games: Game[], selectedYear: string, selectedMonth: string) {
@@ -175,13 +176,17 @@ export function calendarSections(games: Game[], selectedYear: string, selectedMo
         ? release.month
         : release.precision === "quarter"
           ? 12 + release.quarter
-          : 17;
+          : release.year === null
+            ? 18
+            : 17;
     const label =
       key <= 12
         ? MONTHS[key - 1]!
         : key <= 16
           ? `Q${key - 12} · month unannounced`
-          : "Date to be announced";
+          : key === 17
+            ? "Date to be announced"
+            : "TBD";
     if (!groups.has(key)) groups.set(key, { label, games: [] });
     groups.get(key)!.games.push(game);
   }
