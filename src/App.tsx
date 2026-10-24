@@ -251,7 +251,7 @@ function Games({ route }: { route: Route }) {
         >
           <p>
             {count} {count === 1 ? "game" : "games"}
-            {month === "all" ? " on your radar" : ` in ${MONTHS[Number(month) - 1]}`}
+            {month === "all" ? " on my radar" : ` in ${MONTHS[Number(month) - 1]}`}
             <span className="mx-2" aria-hidden="true">
               /
             </span>
