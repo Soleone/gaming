@@ -7,6 +7,7 @@
     "dev": "vp dev",
     "build": "tsc && vp build",
     "preview": "vp preview",
+    "media:capture": "node scripts/capture-media.mjs",
     "prepare": "vp config"
   },
   "dependencies": {
@@ -31,6 +32,7 @@
     "@earendil-works/pi-coding-agent": "1.3.0",
     "@earendil-works/pi-durable": "1.3.0",
     "@shadcn/lint": "^0.2.1",
+    "@soleone/showcase": "^0.2.0",
     "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^26.6.5",
     "@types/proper-lockfile": "^4.1.4",

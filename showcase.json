@@ -1,0 +1,34 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Soleone/showcase/main/schema/showcase.schema.json",
+  "title": "Soleone Gaming",
+  "pitch": "A personal release calendar for the games I'm watching: how hyped I am before launch, and a short scored review once I've played them.",
+  "description": "Cover-led cards by month that keep uncertain dates honest, reviews with spoiler tags and their own URLs, and a local editor with a Pi research agent that sources dates and cover art.",
+  "kind": "web-app",
+  "stage": "prototype",
+  "year": 2026,
+  "tech": ["React", "TypeScript", "Vite+", "shadcn/ui", "Tailwind CSS", "Pi"],
+  "repo": "https://github.com/Soleone/gaming",
+  "live": "https://gaming.soleone.xyz",
+  "media": {
+    "hero": "docs/media/hero.png",
+    "motion": "docs/media/demo.webp",
+    "capture": "vp run media:capture"
+  },
+  "brand": {
+    "icon": "public/favicon.svg",
+    "colors": ["#f5b82e"]
+  },
+  "demo": {
+    "strategy": "hosted",
+    "local": "vp run dev",
+    "externals": [
+      {
+        "name": "Research agent",
+        "type": "model",
+        "seam": "dev/agent (development server only)",
+        "standIn": "omitted",
+        "note": "The hosted calendar is read-only: the editor and the Pi research agent only run on a local dev server."
+      }
+    ]
+  }
+}
