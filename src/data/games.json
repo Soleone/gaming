@@ -237,5 +237,125 @@
     "hype": 5,
     "play": "not_played",
     "review": null
+  },
+  {
+    "id": "5510541f-0823-419c-96e6-beee034f5971",
+    "title": "God of War Laufey",
+    "cover": "/covers/agent-bad19e3a2ac77dd046f0f18d.webp",
+    "release": {
+      "precision": "day",
+      "year": 2027,
+      "month": 2,
+      "day": 16
+    },
+    "source": "https://store.playstation.com/en-us/product/UP9000-PPSA19249_00-LAUFEY0000000000",
+    "hype": 5,
+    "play": "not_played",
+    "review": null
+  },
+  {
+    "id": "faadd1f7-dc27-4980-b632-d5cd2f676694",
+    "title": "Emberville",
+    "cover": "/covers/agent-2c0e5fde152397c837e480ae.webp",
+    "release": {
+      "precision": "day",
+      "year": 2026,
+      "month": 10,
+      "day": 27
+    },
+    "source": "https://store.steampowered.com/app/2295170/Emberville/",
+    "hype": null,
+    "play": "not_played",
+    "review": null
+  },
+  {
+    "id": "fc9b5c46-e981-4bad-ae90-8a22d9806846",
+    "title": "Metroid Ravenous",
+    "cover": "/covers/agent-4d751b74e5d0c2245b8bcbf3.webp",
+    "release": {
+      "precision": "day",
+      "year": 2027,
+      "month": 1,
+      "day": 28
+    },
+    "source": "https://www.nintendo.com/us/store/products/metroid-ravenous-switch-2/",
+    "hype": 5,
+    "play": "not_played",
+    "review": null
+  },
+  {
+    "id": "22d44ae7-d087-426f-bbf0-6607cce1e999",
+    "title": "Warhammer 40,000: Dawn of War IV",
+    "cover": "/covers/agent-bf5153b4de2154161c7be409.webp",
+    "release": {
+      "precision": "day",
+      "year": 2026,
+      "month": 12,
+      "day": 3
+    },
+    "source": "https://www.deepsilver.com/games/dawn-of-war-iv",
+    "hype": null,
+    "play": "not_played",
+    "review": null
+  },
+  {
+    "id": "85e1f424-1290-4405-8cc3-c5389474d1fe",
+    "title": "FINAL FANTASY VII REVELATION",
+    "cover": "/covers/agent-0e7dd3b1712554854945a252.webp",
+    "release": {
+      "precision": "day",
+      "year": 2027,
+      "month": 4,
+      "day": 8
+    },
+    "source": "https://www.square-enix.com/ffvii/en-us/games/revelation/",
+    "hype": 2,
+    "play": "not_played",
+    "review": null
+  },
+  {
+    "id": "d91efb46-84b3-4c5c-aa0c-6eeec53ee14b",
+    "title": "EXODUS",
+    "cover": "/covers/agent-664ba922eacf5e5260ed6a20.webp",
+    "release": {
+      "precision": "day",
+      "year": 2027,
+      "month": 4,
+      "day": 7
+    },
+    "source": "https://www.exodusgame.com/en-US/home",
+    "hype": 1,
+    "play": "not_played",
+    "review": null
+  },
+  {
+    "id": "dea9df61-c369-4e5d-ba0e-0c02363db4eb",
+    "title": "Fable",
+    "cover": "/covers/agent-b15f78d1914a07043d52e0d8.webp",
+    "release": {
+      "precision": "day",
+      "year": 2027,
+      "month": 2,
+      "day": 23
+    },
+    "source": "https://www.fablethegame.com/en-US/news/fable-faq",
+    "hype": 2,
+    "play": "not_played",
+    "review": null
+  },
+  {
+    "id": "025c5c15-7583-43d5-a684-a00d33129d09",
+    "title": "Tomb Raider: Legacy of Atlantis",
+    "cover": "/covers/agent-451b2fc3ce5de9c43677d643.webp",
+    "release": {
+      "precision": "day",
+      "year": 2027,
+      "month": 2,
+      "day": 12
+    },
+    "source": "https://www.playstation.com/en-us/games/tomb-raider-legacy-of-atlantis/",
+    "hype": 3,
+    "play": "not_played",
+    "review": null
   }
 ]
