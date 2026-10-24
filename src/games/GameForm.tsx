@@ -216,19 +216,6 @@ export function GameForm({
                 }))}
               />
             )}
-            <Field>
-              <FieldLabel htmlFor="source">Release source</FieldLabel>
-              <Input
-                id="source"
-                {...input("source")}
-                type="url"
-                placeholder="https://publisher.com/…"
-                maxLength={2000}
-              />
-              <FieldDescription>
-                Optional link to the announcement. Review researched dates before saving.
-              </FieldDescription>
-            </Field>
             <div className="grid grid-cols-2 gap-4">
               <ChoiceField
                 id="hype"

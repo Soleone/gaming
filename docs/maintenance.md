@@ -9,7 +9,7 @@ vp run dev
 
 Open the local URL (`localhost` or `127.0.0.1`). **Edit collection**, **Add a game**, and each game's pencil button open the development-only editor. Save writes to `src/data/games.json`. Production and `vp run preview` are read-only, with no editor endpoint. Do not expose the development server as a public admin service.
 
-The editor supports titles, local or remote cover URLs, release precision, a source link, hype 1–5, played status, a short review, and a score 1–10. Missing ratings stay unrated. A blank cover gets a placeholder. Put replacement cover files in `public/covers/` and enter `/covers/filename.jpg`.
+The editor supports titles, local or remote cover URLs, release precision, hype 1–5, played status, a short review, and a score 1–10. Missing ratings stay unrated. A blank cover gets a placeholder. Put replacement cover files in `public/covers/` and enter `/covers/filename.jpg`.
 
 You can also edit JSON directly. A stale editor session refuses to overwrite newer file contents. Close and reopen it to load those changes. The file is validated before saving and writes use a temporary file followed by rename. Keep the file in Git for history and recovery. This is a single-person local editor, not multi-user storage; unrelated external writers must not edit the file during the instant of an active save.
 
