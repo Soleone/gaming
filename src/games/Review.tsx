@@ -113,10 +113,10 @@ export function ReviewDialog({
           </div>
           {review.score !== null && look && (
             <div className="review-stamp relative mx-6 -mb-8 flex w-40 flex-col gap-2.5 self-end rounded-xl border border-primary/50 bg-background px-4.5 pt-3.5 pb-4 shadow-2xl sm:absolute sm:right-12 sm:-bottom-16 sm:m-0">
-              <span className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
+              <span className="text-center text-xs font-semibold tracking-widest text-muted-foreground uppercase">
                 {started ? "So far" : "Verdict"}
               </span>
-              <p className="flex items-baseline gap-1.5">
+              <p className="flex items-baseline justify-center gap-1.5">
                 <strong
                   className={cn("text-7xl leading-none font-extrabold tracking-tighter", look.text)}
                 >
@@ -131,7 +131,9 @@ export function ReviewDialog({
                 aria-hidden="true"
                 className="grid grid-cols-10 gap-1"
               />
-              <PlayBadge play={game.play} />
+              <div className="flex justify-center">
+                <PlayBadge play={game.play} />
+              </div>
             </div>
           )}
         </header>
