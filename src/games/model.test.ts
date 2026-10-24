@@ -5,6 +5,7 @@ import {
   gameSchema,
   gamesSchema,
   hasReleased,
+  releaseCountdown,
   releaseLabel,
   type Game,
 } from "./model";
@@ -43,6 +44,17 @@ describe("game data", () => {
   it("release.precision: formats exact dates with an abbreviated month and no leading zero", () => {
     expect(releaseLabel({ precision: "day", year: 2026, month: 10, day: 24 })).toBe("Oct 24, 2026");
     expect(releaseLabel({ precision: "day", year: 2026, month: 1, day: 4 })).toBe("Jan 4, 2026");
+  });
+  it("release.countdown: counts down the final week before an exact release day", () => {
+    const on = (day: number) => ({ precision: "day", year: 2026, month: 10, day }) as const;
+    const today = new Date(2026, 9, 24, 15, 30);
+    expect(releaseCountdown(on(24), today)).toBe("today");
+    expect(releaseCountdown(on(25), today)).toBe("tomorrow");
+    expect(releaseCountdown(on(29), today)).toBe("in 5 days");
+    expect(releaseCountdown(on(31), today)).toBe("in 7 days");
+    expect(releaseCountdown({ precision: "day", year: 2026, month: 11, day: 1 }, today)).toBeNull();
+    expect(releaseCountdown(on(23), today)).toBeNull();
+    expect(releaseCountdown({ precision: "month", year: 2026, month: 10 }, today)).toBeNull();
   });
   it("review.visibility: waits for a known release day or the end of a partial-date window", () => {
     const exact = { precision: "day", year: 2026, month: 10, day: 24 } as const;

@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 import { canMorph, morph } from "./morph";
 import { hasReviewContent, ReviewDialog, reviewLabel, scoreLook } from "./Review";
 import { Pips } from "./Pips";
-import { hasReleased, playLabels, releaseLabel, type Game } from "./model";
+import { hasReleased, playLabels, releaseCountdown, releaseLabel, type Game } from "./model";
 import { PlayBadge } from "./PlayBadge";
 
 export function GameCard({
@@ -38,6 +38,7 @@ export function GameCard({
   const [morphed, setMorphed] = useState(false);
   const coverRef = useRef<HTMLImageElement>(null);
   const reviewCoverRef = useRef<HTMLImageElement>(null);
+  const countdown = releaseCountdown(game.release);
   const showCover = game.cover && game.cover !== failedCover;
   const review = game.review && hasReviewContent(game.review) ? game.review : null;
 
@@ -110,7 +111,10 @@ export function GameCard({
           <CardTitle>
             <h3>{game.title}</h3>
           </CardTitle>
-          <CardDescription>{releaseLabel(game.release)}</CardDescription>
+          <CardDescription>
+            {releaseLabel(game.release)}
+            {countdown && <span className="font-medium text-primary"> · {countdown}</span>}
+          </CardDescription>
           {onEdit && (
             <CardAction>
               <Button

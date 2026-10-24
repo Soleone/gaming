@@ -134,6 +134,18 @@ export function releaseLabel(release: Release): string {
   }
 }
 
+// How soon an exact release lands, for the final week before it: "today", "tomorrow", "in 5 days".
+export function releaseCountdown(release: Release, today = new Date()): string | null {
+  if (release.precision !== "day") return null;
+  const days = Math.round(
+    (Date.UTC(release.year, release.month - 1, release.day) -
+      Date.UTC(today.getFullYear(), today.getMonth(), today.getDate())) /
+      86_400_000,
+  );
+  if (days < 0 || days > 7) return null;
+  return days === 0 ? "today" : days === 1 ? "tomorrow" : `in ${days} days`;
+}
+
 export function hasReleased(release: Release, today = new Date()): boolean {
   if (release.precision === "unknown") return false;
   const lastDay =
