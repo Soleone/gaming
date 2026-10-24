@@ -183,19 +183,20 @@ export default function Workspace({
           onChange={setDraft}
           onSave={async (game) => {
             if (!session) return;
-            show((await persist(session, upsertGame(session.games, game))).games, game.id);
+            const saved = await persist(session, upsertGame(session.games, game));
+            // The draft is clean before leaving, so closing doesn't ask to discard it.
+            const next = draftFor(saved.games, game.id);
+            latest.current = { draft: next, base: next };
+            onClose();
           }}
           onDelete={async (id) => {
             if (!session) return;
-            show(
-              (
-                await persist(
-                  session,
-                  session.games.filter((game) => game.id !== id),
-                )
-              ).games,
-              null,
+            await persist(
+              session,
+              session.games.filter((game) => game.id !== id),
             );
+            latest.current = { draft: null, base: null };
+            onClose();
           }}
           onClose={onClose}
         />

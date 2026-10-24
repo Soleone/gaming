@@ -174,7 +174,7 @@ export function GameForm({
             {game && (
               <Button
                 type="button"
-                variant="outline"
+                variant="destructive"
                 onClick={() => setRemoving(true)}
                 disabled={busy}
                 aria-label="Remove"
