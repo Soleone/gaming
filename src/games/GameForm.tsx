@@ -1,8 +1,15 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useRef, useState, type ChangeEvent, type FormEvent, type KeyboardEvent } from "react";
 import { Save, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Separator } from "@/components/ui/separator";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,6 +25,8 @@ export function GameForm({
   onSave,
   onDelete,
   onDirty,
+  saveError,
+  notice,
 }: {
   game: Game | null;
   draft: GameDraft;
@@ -26,7 +35,10 @@ export function GameForm({
   onSave: (game: Game) => Promise<void>;
   onDelete: () => Promise<void>;
   onDirty: () => void;
+  saveError: string;
+  notice: string;
 }) {
+  const formRef = useRef<HTMLFormElement>(null);
   const [invalid, setInvalid] = useState(false);
   const [error, setError] = useState("");
   const [removing, setRemoving] = useState(false);
@@ -56,13 +68,62 @@ export function GameForm({
     await onSave(parsed.data);
   }
 
+  // Enter submits from single-line inputs natively; Ctrl/Cmd+Enter submits from anywhere, including the review.
+  function submitShortcut(event: KeyboardEvent<HTMLFormElement>) {
+    if (event.key !== "Enter" || !(event.ctrlKey || event.metaKey)) return;
+    event.preventDefault();
+    if (!busy) formRef.current?.requestSubmit();
+  }
+
+  const alert = error || saveError;
   return (
     <div className="flex min-w-0 flex-col gap-6">
       <form
+        ref={formRef}
+        className="flex min-w-0 flex-col gap-6"
+        onKeyDown={submitShortcut}
         onSubmit={(event) => {
           void submit(event);
         }}
       >
+        <div className="sticky top-0 z-10 flex flex-col gap-3 bg-background py-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="min-w-0 truncate font-heading text-lg font-medium">
+              {game ? game.title : "New game"}
+            </h2>
+            <div className="flex items-center gap-2">
+              {game && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setRemoving(true)}
+                  disabled={busy}
+                >
+                  <Trash2 data-icon="inline-start" />
+                  Remove
+                </Button>
+              )}
+              <Button type="submit" disabled={busy}>
+                <Save data-icon="inline-start" />
+                {busy ? "Saving…" : "Save game"}
+              </Button>
+            </div>
+          </div>
+          {alert && (
+            <Alert variant="destructive" role="alert">
+              <AlertTitle>
+                {error ? "Check the game details" : "Could not update the collection"}
+              </AlertTitle>
+              <AlertDescription>{alert}</AlertDescription>
+            </Alert>
+          )}
+          {notice && !alert && (
+            <Alert role="status">
+              <AlertTitle>Collection saved</AlertTitle>
+              <AlertDescription>{notice}</AlertDescription>
+            </Alert>
+          )}
+        </div>
         <fieldset disabled={busy} className="flex min-w-0 flex-col gap-6">
           <legend className="sr-only">{game ? `Edit ${game.title}` : "New game"}</legend>
           <FieldGroup>
@@ -222,56 +283,34 @@ export function GameForm({
               </FieldDescription>
             </Field>
           </FieldGroup>
-          {error && (
-            <Alert variant="destructive">
-              <AlertTitle>Check the game details</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-          <Separator />
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            {game ? (
-              <Button
-                type="button"
-                variant="destructive"
-                onClick={() => setRemoving(true)}
-                disabled={busy}
-              >
-                <Trash2 data-icon="inline-start" />
-                Remove game
-              </Button>
-            ) : (
-              <span className="text-xs text-muted-foreground">Saved directly to games.json</span>
-            )}
-            <Button type="submit" disabled={busy}>
-              <Save data-icon="inline-start" />
-              {busy ? "Saving…" : "Save game"}
-            </Button>
-          </div>
-          {removing && (
-            <Alert>
-              <AlertTitle>Remove {game?.title} from your collection?</AlertTitle>
-              <AlertDescription>
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    onClick={() => {
-                      void onDelete();
-                    }}
-                    disabled={busy}
-                  >
-                    Yes, remove
-                  </Button>
-                  <Button type="button" variant="outline" onClick={() => setRemoving(false)}>
-                    Keep game
-                  </Button>
-                </div>
-              </AlertDescription>
-            </Alert>
-          )}
         </fieldset>
       </form>
+      <Dialog open={removing} onOpenChange={setRemoving}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Remove {game?.title}?</DialogTitle>
+            <DialogDescription>
+              This deletes the game from games.json. It can't be undone from the editor.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setRemoving(false)}>
+              Keep game
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={() => {
+                setRemoving(false);
+                void onDelete();
+              }}
+              disabled={busy}
+            >
+              Remove game
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -34,6 +34,7 @@ export default function Editor({
   const [saveError, setSaveError] = useState("");
   const [notice, setNotice] = useState("");
   const error = saveError || loadError;
+  const loaded = Boolean(session && draft);
   const selected = draft && session?.games.some((game) => game.id === draft.id) ? draft.id : null;
   useEffect(() => {
     if (!dirty) return;
@@ -44,15 +45,14 @@ export default function Editor({
     window.addEventListener("beforeunload", warn);
     return () => window.removeEventListener("beforeunload", warn);
   }, [dirty]);
-  const canDiscard = () => !dirty || window.confirm("Discard your unsaved game changes?");
   const choose = (id: string | null) => {
-    if (busy || !canDiscard()) return;
+    if (busy) return;
     onChoose(id);
     setSaveError("");
     setNotice("");
   };
   const close = () => {
-    if (!busy && canDiscard()) onClose();
+    if (!busy) onClose();
   };
   async function persist(save: () => Promise<void>) {
     setSaveError("");
@@ -92,16 +92,10 @@ export default function Editor({
           Development only. Changes write to src/data/games.json on this computer.
         </p>
       </header>
-      {error && (
+      {error && !loaded && (
         <Alert variant="destructive">
           <AlertTitle>Could not update the collection</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-      {notice && !dirty && (
-        <Alert role="status">
-          <AlertTitle>Collection saved</AlertTitle>
-          <AlertDescription>{notice}</AlertDescription>
         </Alert>
       )}
       {!session || !draft ? (
@@ -153,6 +147,8 @@ export default function Editor({
             onChange={onChange}
             busy={busy}
             onDirty={() => setNotice("")}
+            saveError={error}
+            notice={dirty ? "" : notice}
             onSave={(game) => persist(() => onSave(game))}
             onDelete={() => persist(() => (selected ? onDelete(selected) : Promise.resolve()))}
           />

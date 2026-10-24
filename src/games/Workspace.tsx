@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useBlocker } from "react-router";
 import { AgentSidebar } from "@/components/soleone/agent";
 import Editor from "./Editor";
 import { GameAgent } from "./GameAgent";
@@ -36,7 +37,7 @@ export default function Workspace({
   children: ReactNode;
   games: Game[];
   editor: { id: string | null } | null;
-  onEdit: (id: string | null) => void;
+  onEdit: (id: string | null, replace?: boolean) => void;
   onClose: () => void;
   onSaved: (games: Game[]) => void;
 }) {
@@ -53,11 +54,33 @@ export default function Workspace({
     latest.current = { draft, base };
   }, [draft, base]);
 
+  // Closing the editor, by any route, drops the draft so the agent no longer sees an open game.
+  const [wasOpen, setWasOpen] = useState(Boolean(editor));
+  if (wasOpen !== Boolean(editor)) {
+    setWasOpen(Boolean(editor));
+    if (!editor) {
+      setDraft(null);
+      setBase(null);
+    }
+  }
+
+  // Shows a saved game and points the URL at it; the draft is clean before the navigation is checked.
   function show(games: Game[], id: string | null) {
     const next = draftFor(games, id);
+    latest.current = { draft: next, base: next };
     setBase(next);
     setDraft(next);
+    onEdit(id, true);
   }
+
+  const blocker = useBlocker(
+    () => Boolean(editor) && isDirty(latest.current.draft, latest.current.base),
+  );
+  useEffect(() => {
+    if (blocker.state !== "blocked") return;
+    if (window.confirm("Discard your unsaved game changes?")) blocker.proceed();
+    else blocker.reset();
+  }, [blocker]);
 
   useEffect(() => {
     if (!editor) return;
@@ -158,7 +181,7 @@ export default function Workspace({
           loadError={loadError}
           busy={busy}
           onChange={setDraft}
-          onChoose={(id) => session && show(session.games, id)}
+          onChoose={onEdit}
           onSave={async (game) => {
             if (!session) return;
             show((await persist(session, upsertGame(session.games, game))).games, game.id);
@@ -175,11 +198,7 @@ export default function Workspace({
               null,
             );
           }}
-          onClose={() => {
-            setDraft(null);
-            setBase(null);
-            onClose();
-          }}
+          onClose={onClose}
         />
       )}
     </AgentSidebar>

@@ -1,4 +1,5 @@
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Link, Navigate, useLocation, useNavigate } from "react-router";
 import {
   CalendarDays,
   ChevronLeft,
@@ -21,6 +22,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { ChoiceField } from "@/games/ChoiceField";
 import { GameCard } from "@/games/GameCard";
+import { calendarPath, editPath, parseRoute, type Route } from "@/games/routes";
 import { calendarSections, gamesSchema, MONTHS, type Game } from "@/games/model";
 import gameData from "@/data/games.json";
 
@@ -35,12 +37,29 @@ const initialYear = initialGames.some((game) => game.release.year === currentYea
   : (initialGames.find((game) => game.release.year !== null)?.release.year ?? currentYear);
 
 export function App() {
+  const route = parseRoute(useLocation().pathname);
+  if (!route || (route.view === "edit" && !DevWorkspace)) return <Navigate to="/" replace />;
+  return <Games route={route} />;
+}
+
+function Games({ route }: { route: Route }) {
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const calendarHere = route.view === "calendar";
+  const lastCalendar = useRef("/");
+  useEffect(() => {
+    if (calendarHere) lastCalendar.current = pathname;
+  }, [calendarHere, pathname]);
   const [saved, setSaved] = useState<{ base: Game[]; games: Game[] } | null>(null);
   const games = saved?.base === initialGames ? saved.games : initialGames;
   const setGames = (next: Game[]) => setSaved({ base: initialGames, games: next });
-  const [year, setYear] = useState(String(initialYear));
-  const [month, setMonth] = useState("all");
-  const [editor, setEditor] = useState<{ id: string | null } | null>(null);
+  const year = (route.view === "calendar" && route.year) || String(initialYear);
+  const month = route.view === "calendar" ? route.month : "all";
+  const editId = route.view === "edit" ? route.id : undefined;
+  const editor = useMemo(() => (editId === undefined ? null : { id: editId }), [editId]);
+  const openEditor = (id: string | null, replace = false) =>
+    void navigate(editPath(id), { replace });
+  const setMonth = (next: string) => void navigate(calendarPath(year, next));
   const years = [
     ...new Set([
       currentYear,
@@ -52,17 +71,14 @@ export function App() {
   const sections = calendarSections(games, year, month);
   const selectedGames = games.filter((game) => String(game.release.year ?? "unscheduled") === year);
   const count = sections.reduce((total, section) => total + section.games.length, 0);
-  const editGame = DevWorkspace ? (id: string) => setEditor({ id }) : undefined;
-  const changeYear = (next: string) => {
-    setYear(next);
-    setMonth("all");
-  };
+  const editGame = DevWorkspace ? (id: string) => openEditor(id) : undefined;
+  const changeYear = (next: string) => void navigate(calendarPath(next));
   const content = (
     <div className={editor ? undefined : "min-h-svh"}>
       <header className="border-b border-border">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-4 sm:px-8">
-          <a
-            href="/"
+          <Link
+            to="/"
             className="flex items-center gap-2.5 font-heading text-lg font-semibold tracking-tight"
             aria-label="Soleone Gaming home"
           >
@@ -71,10 +87,10 @@ export function App() {
             <span className="hidden text-sm font-normal tracking-normal text-muted-foreground sm:inline">
               / What I'm excited about
             </span>
-          </a>
+          </Link>
           <div className="flex items-center gap-2">
             {DevWorkspace && !editor && (
-              <Button variant="ghost" onClick={() => setEditor({ id: games[0]?.id ?? null })}>
+              <Button variant="ghost" onClick={() => openEditor(games[0]?.id ?? null)}>
                 <Pencil data-icon="inline-start" />
                 Edit collection
               </Button>
@@ -105,7 +121,7 @@ export function App() {
             </p>
           </div>
           {DevWorkspace && (
-            <Button variant="outline" onClick={() => setEditor({ id: null })}>
+            <Button variant="outline" onClick={() => openEditor(null)}>
               <Plus data-icon="inline-start" />
               Add a game
             </Button>
@@ -238,8 +254,8 @@ export function App() {
       <DevWorkspace
         games={games}
         editor={editor}
-        onEdit={(id) => setEditor({ id })}
-        onClose={() => setEditor(null)}
+        onEdit={openEditor}
+        onClose={() => void navigate(lastCalendar.current)}
         onSaved={setGames}
       >
         {content}
