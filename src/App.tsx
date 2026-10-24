@@ -106,7 +106,7 @@ function Games({ route }: { route: Route }) {
             </p>
           </div>
           {DevWorkspace && (
-            <Button variant="outline" onClick={() => openEditor(null)}>
+            <Button onClick={() => openEditor(null)}>
               <Plus data-icon="inline-start" />
               Add a game
             </Button>
