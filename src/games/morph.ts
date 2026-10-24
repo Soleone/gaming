@@ -1,3 +1,5 @@
+import { flushSync } from "react-dom";
+
 // The class that gives an element the shared cover's transition name (see index.css).
 const MORPH = "review-morph";
 
@@ -10,12 +12,12 @@ export function canMorph(): boolean {
 
 // Flies the cover from `from` to whatever `to` returns once `apply` has rendered the new state.
 // Each end carries the shared name only in its own snapshot, since two elements with one name
-// abort the transition. `apply` must render synchronously (flushSync).
+// abort the transition. `apply` renders under flushSync, so it must not defer its own updates.
 export function morph(from: HTMLElement, to: () => HTMLElement | null, apply: () => void) {
   from.classList.add(MORPH);
   const transition = document.startViewTransition(() => {
     from.classList.remove(MORPH);
-    apply();
+    flushSync(apply);
     to()?.classList.add(MORPH);
   });
   void transition.finished.finally(() => to()?.classList.remove(MORPH));
