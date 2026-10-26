@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { expect, it } from "vite-plus/test";
+import { afterEach, expect, it, vi } from "vite-plus/test";
 import { GameCard } from "./GameCard";
-import { reviewColumns } from "./Review";
+import { reviewColumns, ScoreStamp } from "./Review";
 import { markdownSpoilers, splitSpoilers } from "./spoilers";
 import type { Game } from "./model";
 
@@ -90,6 +90,28 @@ it("review.open: puts Amazing and Nice under the good, the rest under the bad, m
     { title: "The good", verdicts: ["nice"] },
   ]);
   expect(reviewColumns(emptyReview)).toEqual([]);
+});
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
+
+it("review.open: counts the stamp up from 0 in a muted tone, or shows the score with reduced motion", () => {
+  const stamp = (reduced: boolean) => {
+    vi.stubGlobal("matchMedia", () => ({ matches: reduced }));
+    return renderToStaticMarkup(<ScoreStamp score={9} label="Verdict" completed={false} />);
+  };
+  const counting = stamp(false);
+  expect(counting).toMatch(/<strong class="[^"]*text-muted-foreground[^"]*">0<\/strong>/);
+  expect(counting).not.toContain("data-filled");
+  expect(counting).not.toContain("data-landed");
+  expect(counting).toContain("9 out of 10");
+
+  const still = stamp(true);
+  expect(still).toMatch(/<strong class="[^"]*text-score-gold[^"]*">9<\/strong>/);
+  expect(still.match(/data-filled/g)).toHaveLength(9);
+  expect(still).toContain('data-tier="gold"');
+  expect(still).toContain("data-landed");
 });
 
 it("review.tone: colours the card score gold from 9, plain at 7 and 8, red below", () => {

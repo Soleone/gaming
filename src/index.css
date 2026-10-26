@@ -139,6 +139,84 @@
     rotate: -9deg;
   }
 }
+/* Then the score counts up (ScoreStamp in src/games/Review.tsx): each number and pip pops in,
+   and the last one lands in the score's colour with a thump, a shake when low, a flare when gold. */
+@keyframes review-score-tick {
+  from {
+    scale: 1.14;
+    translate: 0 -3px;
+  }
+}
+@keyframes review-score-land {
+  0% {
+    scale: 1.6;
+  }
+  55% {
+    scale: 0.92;
+  }
+}
+@keyframes review-score-glow {
+  0% {
+    text-shadow: 0 0 28px color-mix(in oklab, var(--score-gold) 80%, transparent);
+  }
+}
+@keyframes review-pip-fill {
+  from {
+    scale: 1 2.4;
+  }
+}
+@keyframes review-pip-land {
+  0% {
+    scale: 1 2.6;
+    filter: brightness(1.6);
+  }
+}
+@keyframes review-stamp-thump {
+  30% {
+    scale: 1.07;
+  }
+}
+@keyframes review-stamp-shake {
+  20% {
+    translate: -5px 0;
+  }
+  40% {
+    translate: 4px 0;
+  }
+  60% {
+    translate: -3px 0;
+  }
+  80% {
+    translate: 2px 0;
+  }
+}
+/* A completed game's badge is a second, smaller stamp, slammed on once the score has landed,
+   jolting the main stamp as it hits. It leans a touch further the same way as the stamp. */
+.review-seal {
+  rotate: -2deg;
+}
+@keyframes review-seal {
+  from {
+    opacity: 0;
+    scale: 2.4;
+    rotate: -10deg;
+  }
+}
+@keyframes review-stamp-jolt {
+  40% {
+    translate: 0 3px;
+    scale: 0.98;
+  }
+}
+@keyframes review-stamp-flare {
+  from {
+    opacity: 0.9;
+  }
+  to {
+    opacity: 0;
+    scale: 1.25 1.4;
+  }
+}
 
 /* The write-up reads like a magazine lede. */
 .review-text > * + * {
@@ -179,6 +257,55 @@
 @media (prefers-reduced-motion: no-preference) {
   .review-stamp {
     animation: review-stamp 320ms cubic-bezier(0.2, 1.5, 0.4, 1) 300ms backwards;
+  }
+  .review-score {
+    animation: review-score-tick 140ms ease-out;
+  }
+  .review-pips > [data-filled] {
+    animation: review-pip-fill 260ms cubic-bezier(0.2, 1.6, 0.4, 1);
+  }
+  .review-stamp[data-landed] {
+    animation: review-stamp-thump 380ms ease-out;
+  }
+  .review-stamp[data-landed][data-tier="low"] {
+    animation: review-stamp-shake 420ms ease-out;
+  }
+  .review-stamp[data-landed]:has(.review-seal) {
+    animation:
+      review-stamp-thump 380ms ease-out,
+      review-stamp-jolt 240ms ease-out 640ms;
+  }
+  .review-stamp[data-landed][data-tier="low"]:has(.review-seal) {
+    animation:
+      review-stamp-shake 420ms ease-out,
+      review-stamp-jolt 240ms ease-out 640ms;
+  }
+  .review-stamp:not([data-landed]) .review-seal {
+    opacity: 0;
+  }
+  .review-stamp[data-landed] .review-seal {
+    animation: review-seal 280ms cubic-bezier(0.5, 0, 0.75, 1.4) 420ms backwards;
+  }
+  .review-stamp[data-landed] .review-score {
+    animation: review-score-land 520ms cubic-bezier(0.2, 1.2, 0.4, 1);
+  }
+  .review-stamp[data-landed][data-tier="gold"] .review-score {
+    animation:
+      review-score-land 520ms cubic-bezier(0.2, 1.2, 0.4, 1),
+      review-score-glow 1400ms ease-out;
+  }
+  .review-stamp[data-landed] .review-pips > [data-filled] {
+    animation: review-pip-land 420ms ease-out;
+    animation-delay: calc((sibling-index() - 1) * 30ms);
+  }
+  .review-stamp[data-landed][data-tier="gold"]::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border: 2px solid var(--score-gold);
+    border-radius: inherit;
+    pointer-events: none;
+    animation: review-stamp-flare 800ms ease-out forwards;
   }
   .game-entry img.game-cover {
     transition: transform 300ms ease-out;

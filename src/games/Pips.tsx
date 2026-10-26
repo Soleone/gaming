@@ -16,17 +16,17 @@ export function Pips({
 }) {
   return (
     <span {...props}>
-      {Array.from({ length: max }, (_, index) => (
-        <span
-          key={index}
-          aria-hidden="true"
-          className={cn(
-            "h-1.5 rounded-full",
-            value !== null && index < value ? fill : "bg-border",
-            pipClassName,
-          )}
-        />
-      ))}
+      {Array.from({ length: max }, (_, index) => {
+        const filled = value !== null && index < value;
+        return (
+          <span
+            key={index}
+            aria-hidden="true"
+            data-filled={filled || undefined}
+            className={cn("h-1.5 rounded-full", filled ? fill : "bg-border", pipClassName)}
+          />
+        );
+      })}
     </span>
   );
 }

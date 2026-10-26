@@ -1,4 +1,5 @@
-import type { Ref } from "react";
+import { useEffect, useState, type Ref } from "react";
+import { animate } from "motion/react";
 import ReactMarkdown from "react-markdown";
 import { CircleHelp, Sparkles, ThumbsDown, ThumbsUp, type LucideIcon } from "lucide-react";
 import { Dialog, DialogDescription } from "@/components/ui/dialog";
@@ -20,11 +21,87 @@ const verdictLooks: Record<Verdict, { icon: LucideIcon; tone: string; mark: stri
   terrible: { icon: ThumbsDown, tone: "text-destructive", mark: "bg-destructive" },
 };
 
+type ScoreTier = "gold" | "plain" | "low";
+
 // A score reads by tier: 9 and up in gold, 7 and 8 plain, anything lower in red.
-export function scoreLook(score: number): { text: string; fill: string } {
-  if (score >= 9) return { text: "text-score-gold", fill: "bg-score-gold" };
-  if (score >= 7) return { text: "text-foreground", fill: "bg-foreground" };
-  return { text: "text-destructive", fill: "bg-destructive" };
+export function scoreLook(score: number): { tier: ScoreTier; text: string; fill: string } {
+  if (score >= 9) return { tier: "gold", text: "text-score-gold", fill: "bg-score-gold" };
+  if (score >= 7) return { tier: "plain", text: "text-foreground", fill: "bg-foreground" };
+  return { tier: "low", text: "text-destructive", fill: "bg-destructive" };
+}
+
+// The stamp's count starts as it lands (see .review-stamp in index.css) and eases gently into the
+// score. Rounding shows each number halfway into its step, so the last one doesn't hang.
+const countDelay = 0.5;
+const countEase = [0.35, 0.35, 0.6, 1] as const;
+
+function countsUp(): boolean {
+  return (
+    typeof matchMedia === "function" && !matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+}
+
+// The score stamp counts up from 0 with its bar in a muted tone, then lands on the score in its
+// tier's colour, and a completed game's badge is stamped on after it. With reduced motion it
+// shows it all straight away.
+export function ScoreStamp({
+  score,
+  label,
+  completed,
+}: {
+  score: number;
+  label: string;
+  completed: boolean;
+}) {
+  const [shown, setShown] = useState(() => (countsUp() ? 0 : score));
+  useEffect(() => {
+    if (!countsUp()) return;
+    const controls = animate(0, score, {
+      delay: countDelay,
+      duration: 0.4 + score * 0.06,
+      ease: countEase,
+      onUpdate: (value) => setShown(Math.round(value)),
+    });
+    return () => controls.stop();
+  }, [score]);
+  const look = scoreLook(score);
+  const landed = shown === score;
+  return (
+    <div
+      data-tier={look.tier}
+      data-landed={landed || undefined}
+      className="review-stamp relative mx-6 -mb-8 flex w-40 flex-col gap-2.5 self-end rounded-xl border border-primary/50 bg-background px-4.5 pt-3.5 pb-4 shadow-2xl sm:absolute sm:right-12 sm:-bottom-16 sm:m-0"
+    >
+      <span className="text-center text-xs font-semibold tracking-widest text-muted-foreground uppercase">
+        {label}
+      </span>
+      <p aria-hidden="true" className="flex items-baseline justify-center gap-1.5">
+        <strong
+          key={shown}
+          className={cn(
+            "review-score text-7xl leading-none font-extrabold tracking-tighter tabular-nums",
+            landed ? look.text : "text-muted-foreground",
+          )}
+        >
+          {shown}
+        </strong>
+        <span className="text-lg font-medium text-muted-foreground">/ 10</span>
+      </p>
+      <span className="sr-only">{score} out of 10</span>
+      <Pips
+        value={shown}
+        max={10}
+        fill={landed ? look.fill : "bg-muted-foreground"}
+        aria-hidden="true"
+        className="review-pips grid grid-cols-10 gap-1"
+      />
+      {completed && (
+        <div className="review-seal flex justify-center">
+          <PlayBadge play="completed" />
+        </div>
+      )}
+    </div>
+  );
 }
 
 const markdownElements = ["p", "em", "strong", "a", "ul", "ol", "li", "code"];
@@ -68,7 +145,6 @@ export function ReviewDialog({
   const started = game.play === "started";
   const label = reviewLabel(game.play);
   const columns = reviewColumns(review);
-  const look = review.score !== null ? scoreLook(review.score) : null;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <ReviewDialogContent instant={instant} closeLabel={`Close ${label.toLowerCase()}`}>
@@ -98,35 +174,16 @@ export function ReviewDialog({
             </span>
             <ReviewTitle>{game.title}</ReviewTitle>
             <DialogDescription>
-              {look ? "" : `${playLabels[game.play]} · `}Released {releaseLabel(game.release)}
+              {review.score !== null ? "" : `${playLabels[game.play]} · `}Released{" "}
+              {releaseLabel(game.release)}
             </DialogDescription>
           </div>
-          {review.score !== null && look && (
-            <div className="review-stamp relative mx-6 -mb-8 flex w-40 flex-col gap-2.5 self-end rounded-xl border border-primary/50 bg-background px-4.5 pt-3.5 pb-4 shadow-2xl sm:absolute sm:right-12 sm:-bottom-16 sm:m-0">
-              <span className="text-center text-xs font-semibold tracking-widest text-muted-foreground uppercase">
-                {started ? "So far" : "Verdict"}
-              </span>
-              <p className="flex items-baseline justify-center gap-1.5">
-                <strong
-                  className={cn("text-7xl leading-none font-extrabold tracking-tighter", look.text)}
-                >
-                  {review.score}
-                </strong>
-                <span className="text-lg font-medium text-muted-foreground">/ 10</span>
-              </p>
-              <Pips
-                value={review.score}
-                max={10}
-                fill={look.fill}
-                aria-hidden="true"
-                className="grid grid-cols-10 gap-1"
-              />
-              {game.play === "completed" && (
-                <div className="flex justify-center">
-                  <PlayBadge play={game.play} />
-                </div>
-              )}
-            </div>
+          {review.score !== null && (
+            <ScoreStamp
+              score={review.score}
+              label={started ? "So far" : "Verdict"}
+              completed={game.play === "completed"}
+            />
           )}
         </header>
         <div className="flex min-h-24 flex-col gap-9 px-6 pt-14 pb-10 sm:px-12 sm:pt-11 sm:pb-12">
