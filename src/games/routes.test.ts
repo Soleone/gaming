@@ -1,15 +1,10 @@
 import { expect, it } from "vite-plus/test";
 import { backdropOf, calendarPath, editPath, gameSlug, parseRoute, reviewPath } from "./routes";
 
-it("nav.routes: reads calendar filters and editor targets from the path", () => {
-  expect(parseRoute("/")).toEqual({ view: "calendar", year: null, month: "all" });
-  expect(parseRoute("/2026")).toEqual({ view: "calendar", year: "2026", month: "all" });
-  expect(parseRoute("/2026/10")).toEqual({ view: "calendar", year: "2026", month: "10" });
-  expect(parseRoute("/unscheduled")).toEqual({
-    view: "calendar",
-    year: "unscheduled",
-    month: "all",
-  });
+it("nav.routes: reads the calendar year and editor targets from the path", () => {
+  expect(parseRoute("/")).toEqual({ view: "calendar", year: null });
+  expect(parseRoute("/2026")).toEqual({ view: "calendar", year: "2026" });
+  expect(parseRoute("/unscheduled")).toEqual({ view: "calendar", year: "unscheduled" });
   expect(parseRoute("/games/hades-ii")).toEqual({ view: "review", slug: "hades-ii" });
   expect(parseRoute("/edit")).toEqual({ view: "edit", id: null });
   expect(parseRoute("/edit/hades-ii")).toEqual({ view: "edit", id: "hades-ii" });
@@ -17,8 +12,7 @@ it("nav.routes: reads calendar filters and editor targets from the path", () => 
 
 it("nav.routes: rejects paths that name no real view", () => {
   for (const path of [
-    "/2026/13",
-    "/2026/0",
+    "/2026/10",
     "/1800",
     "/abc",
     "/2026/1/2",
@@ -32,8 +26,7 @@ it("nav.routes: rejects paths that name no real view", () => {
 
 it("nav.routes: builds paths that parse back to the same view", () => {
   expect(calendarPath("2026")).toBe("/2026");
-  expect(calendarPath("2026", "3")).toBe("/2026/3");
-  expect(calendarPath("unscheduled", "3")).toBe("/unscheduled");
+  expect(calendarPath("unscheduled")).toBe("/unscheduled");
   expect(parseRoute(editPath("a b"))).toEqual({ view: "edit", id: "a b" });
   expect(editPath(null)).toBe("/edit");
 });
@@ -47,11 +40,7 @@ it("nav.routes: round-trips review paths and keeps only a calendar as the backdr
   });
   expect(gameSlug({ id: "x", title: "Pokémon Légendes: Z-A" })).toBe("pokemon-legendes-z-a");
   expect(gameSlug({ id: "x", title: "!!!" })).toBe("x");
-  expect(backdropOf({ from: "/2026/10" })?.route).toEqual({
-    view: "calendar",
-    year: "2026",
-    month: "10",
-  });
+  expect(backdropOf({ from: "/2026" })?.route).toEqual({ view: "calendar", year: "2026" });
   expect(backdropOf({ from: "/edit" })).toBeNull();
   expect(backdropOf({ from: "/games/x" })).toBeNull();
   expect(backdropOf(null)).toBeNull();

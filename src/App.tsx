@@ -4,7 +4,6 @@ import { CalendarDays, Gamepad2, Palette, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Empty,
-  EmptyContent,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
@@ -34,6 +33,7 @@ import {
   hasReviewContent,
   isPlayed,
   MONTHS,
+  upcomingGame,
   type Game,
 } from "@/games/model";
 import gameData from "@/data/games.json";
@@ -85,11 +85,9 @@ function Games({ route }: { route: Route }) {
       : (backdrop?.route ?? {
           view: "calendar" as const,
           year: reviewed ? String(reviewed.release.year ?? "unscheduled") : null,
-          month: "all",
         });
   const viewPath = backdrop?.path ?? pathname;
   const year = calendar.year || String(initialYear);
-  const month = calendar.month;
   const editId = route.view === "edit" ? route.id : undefined;
   const editor = useMemo(() => (editId === undefined ? null : { id: editId }), [editId]);
   const openEditor = (id: string | null, replace = false) =>
@@ -98,7 +96,6 @@ function Games({ route }: { route: Route }) {
     void navigate(reviewPath(game), { state: { from: pathname }, flushSync: true });
   const closeReview = () =>
     void navigate(backdrop?.path ?? calendarPath(year), { flushSync: true });
-  const setMonth = (next: string) => void navigate(calendarPath(year, next));
   const years = [
     ...new Set([
       currentYear,
@@ -107,15 +104,15 @@ function Games({ route }: { route: Route }) {
       ...(year === "unscheduled" ? [] : [Number(year)]),
     ]),
   ].sort((a, b) => a - b);
-  const sections = calendarSections(games, year, month);
+  const sections = calendarSections(games, year);
   // The full-year view keeps going into later years as the visitor nears the bottom.
   const [continued, setContinued] = useState({ view: viewPath, count: 0 });
-  const following = month === "all" ? followingYears(games, year) : [];
+  const following = followingYears(games, year);
   const shownYears = following.slice(0, continued.view === viewPath ? continued.count : 0);
   const nextYear = sections.length ? following[shownYears.length] : undefined;
   const continuedSections = shownYears.map((value) => ({
     year: value,
-    sections: calendarSections(games, value, "all"),
+    sections: calendarSections(games, value),
   }));
   const selectedGames = games.filter((game) => String(game.release.year ?? "unscheduled") === year);
   const count = sections.reduce((total, section) => total + section.games.length, 0);
@@ -128,6 +125,21 @@ function Games({ route }: { route: Route }) {
     (id) => openEditor(id),
   );
   const changeYear = (next: string) => void navigate(calendarPath(next));
+  const scrollTo = (element: Element | null | undefined) =>
+    window.scrollTo({
+      top: element ? element.getBoundingClientRect().top + window.scrollY - 24 : 0,
+      behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+    });
+  // The month control scrolls to that month's releases in the year being shown.
+  const jumpToMonth = (month: string) =>
+    scrollTo(document.getElementById(`section-${year}-${month}`)?.closest("section"));
+  // Today opens this year and scrolls so the next release, not one already out, is at the top.
+  const goToday = () => {
+    const today = new Date();
+    void navigate(calendarPath(String(today.getFullYear())), { flushSync: true });
+    const next = upcomingGame(games, today);
+    scrollTo(next && document.querySelector(`[data-game-id="${next.id}"]`));
+  };
   const renderSections = (list: typeof sections, sectionYear: string) =>
     list.map((section) => (
       <section
@@ -224,12 +236,7 @@ function Games({ route }: { route: Route }) {
           )}
         </div>
         <div className="mt-9 flex flex-wrap items-end justify-between gap-5 pb-5">
-          <Button
-            variant="outline"
-            onClick={() =>
-              void navigate(calendarPath(String(currentYear), String(new Date().getMonth() + 1)))
-            }
-          >
+          <Button variant="outline" onClick={goToday}>
             Today
           </Button>
           <div className="flex items-end gap-3">
@@ -237,13 +244,15 @@ function Games({ route }: { route: Route }) {
               <ChoiceField
                 id="calendar-month"
                 label="Month"
-                value={month}
-                onChange={setMonth}
+                value={null}
+                placeholder="Jump to"
+                onChange={jumpToMonth}
                 disabled={year === "unscheduled"}
-                options={[
-                  { value: "all", label: "All months" },
-                  ...MONTHS.map((label, index) => ({ value: String(index + 1), label })),
-                ]}
+                options={MONTHS.map((label, index) => ({
+                  value: String(index + 1),
+                  label,
+                  disabled: !sections.some((section) => section.key === index + 1),
+                }))}
               />
             </div>
             <div className="w-32">
@@ -267,7 +276,7 @@ function Games({ route }: { route: Route }) {
         >
           <p>
             {count} {count === 1 ? "game" : "games"}
-            {month === "all" ? " on my radar" : ` in ${MONTHS[Number(month) - 1]}`}
+            {" on my radar"}
             <span className="mx-2" aria-hidden="true">
               /
             </span>
@@ -307,20 +316,11 @@ function Games({ route }: { route: Route }) {
                 <h2>Nothing on the calendar. Yet.</h2>
               </EmptyTitle>
               <EmptyDescription>
-                {month !== "all"
-                  ? "No dated releases this month. Games with unannounced months stay in the full-year view."
-                  : year === "unscheduled"
-                    ? "Every game has a year for now. Games without one will live here."
-                    : "A little room for the next discovery. Try another year or add a game to the collection."}
+                {year === "unscheduled"
+                  ? "Every game has a year for now. Games without one will live here."
+                  : "A little room for the next discovery. Try another year or add a game to the collection."}
               </EmptyDescription>
             </EmptyHeader>
-            {month !== "all" && (
-              <EmptyContent>
-                <Button variant="outline" onClick={() => setMonth("all")}>
-                  Show the whole year
-                </Button>
-              </EmptyContent>
-            )}
           </Empty>
         )}
       </main>

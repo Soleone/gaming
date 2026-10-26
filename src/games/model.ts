@@ -165,6 +165,19 @@ export function hasReleased(release: Release, today = new Date()): boolean {
   return release.precision === "day" ? currentDay >= lastDay : currentDay > lastDay;
 }
 
+/** The first game in today's year that hasn't passed yet, so Today can scroll past the releases already out. */
+export function upcomingGame(games: Game[], today = new Date()): Game | undefined {
+  const month = today.getMonth() + 1;
+  return calendarSections(games, String(today.getFullYear()))
+    .filter((section) => section.key <= 12)
+    .flatMap((section) => section.games)
+    .find(({ release }) =>
+      release.precision === "day"
+        ? release.month > month || (release.month === month && release.day >= today.getDate())
+        : release.precision === "month" && release.month >= month,
+    );
+}
+
 /** Later years with games, in order, then "unscheduled" last if any game has no year. */
 export function followingYears(games: Game[], selectedYear: string): string[] {
   if (selectedYear === "unscheduled") return [];
@@ -175,15 +188,9 @@ export function followingYears(games: Game[], selectedYear: string): string[] {
   return games.some(({ release }) => release.year === null) ? [...years, "unscheduled"] : years;
 }
 
-export function calendarSections(games: Game[], selectedYear: string, selectedMonth: string) {
-  const filtered = games.filter(
-    ({ release }) =>
-      (release.year === null
-        ? selectedYear === "unscheduled"
-        : String(release.year) === selectedYear) &&
-      (selectedMonth === "all" ||
-        ((release.precision === "day" || release.precision === "month") &&
-          String(release.month) === selectedMonth)),
+export function calendarSections(games: Game[], selectedYear: string) {
+  const filtered = games.filter(({ release }) =>
+    release.year === null ? selectedYear === "unscheduled" : String(release.year) === selectedYear,
   );
   const groups = new Map<number, { label: string; games: Game[] }>();
   for (const game of filtered) {

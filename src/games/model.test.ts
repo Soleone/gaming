@@ -7,6 +7,7 @@ import {
   hasReleased,
   releaseCountdown,
   releaseLabel,
+  upcomingGame,
   type Game,
 } from "./model";
 import data from "../data/games.json";
@@ -133,38 +134,22 @@ describe("game data", () => {
     expect(gameSchema.safeParse({ ...game, cover: "/covers/../../secret" }).success).toBe(false);
     expect(gamesSchema.safeParse([game, game]).success).toBe(false);
   });
-  it("calendar.filter: always filters by year and optionally by known month", () => {
+  it("calendar.filter: filters by year and groups by known month", () => {
     const entries: Game[] = [
       game,
       { ...game, id: "quarter", release: { precision: "quarter", year: 2026, quarter: 2 } },
       { ...game, id: "april", release: { precision: "month", year: 2026, month: 4 } },
       { ...game, id: "other-year", release: { precision: "year", year: 2027 } },
     ];
-    expect(calendarSections(entries, "2026", "all").map((section) => section.label)).toEqual([
+    expect(calendarSections(entries, "2026").map((section) => section.label)).toEqual([
       "April",
       "Q2 · month unannounced",
       "Date to be announced",
     ]);
-    expect(
-      calendarSections(entries, "2026", "4").flatMap((section) =>
-        section.games.map((entry) => entry.id),
-      ),
-    ).toEqual(["april"]);
-    expect(calendarSections(entries, "2007", "all")).toEqual([]);
-    expect(
-      calendarSections(
-        [{ ...game, release: { precision: "unknown", year: null } }],
-        "unscheduled",
-        "all",
-      ),
-    ).toHaveLength(1);
-    expect(
-      calendarSections(
-        [{ ...game, release: { precision: "unknown", year: null } }],
-        "unscheduled",
-        "all",
-      )[0]?.label,
-    ).toBe("TBD");
+    expect(calendarSections(entries, "2007")).toEqual([]);
+    const unscheduled = [{ ...game, release: { precision: "unknown", year: null } } as Game];
+    expect(calendarSections(unscheduled, "unscheduled")).toHaveLength(1);
+    expect(calendarSections(unscheduled, "unscheduled")[0]?.label).toBe("TBD");
   });
   it("calendar.continue: continues into later years that have games, skipping empty ones", () => {
     const entries: Game[] = [
@@ -186,10 +171,24 @@ describe("game data", () => {
       { ...game, id: "late", release: { precision: "day", year: 2026, month: 4, day: 20 } },
       { ...game, id: "early", release: { precision: "day", year: 2026, month: 4, day: 1 } },
     ];
-    expect(calendarSections(entries, "2026", "all")[0]?.games.map((entry) => entry.id)).toEqual([
+    expect(calendarSections(entries, "2026")[0]?.games.map((entry) => entry.id)).toEqual([
       "early",
       "late",
       "month",
     ]);
+  });
+  it("calendar.today: finds the first release this year that is not already out", () => {
+    const entries: Game[] = [
+      { ...game, id: "out", release: { precision: "day", year: 2026, month: 10, day: 2 } },
+      { ...game, id: "soon", release: { precision: "day", year: 2026, month: 10, day: 27 } },
+      { ...game, id: "month", release: { precision: "month", year: 2026, month: 10 } },
+      { ...game, id: "dec", release: { precision: "day", year: 2026, month: 12, day: 1 } },
+    ];
+    const id = (today: Date) => upcomingGame(entries, today)?.id;
+    expect(id(new Date(2026, 9, 26))).toBe("soon");
+    expect(id(new Date(2026, 9, 27))).toBe("soon");
+    expect(id(new Date(2026, 9, 28))).toBe("month");
+    expect(id(new Date(2026, 10, 1))).toBe("dec");
+    expect(id(new Date(2026, 11, 2))).toBeUndefined();
   });
 });

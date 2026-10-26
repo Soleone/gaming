@@ -14,13 +14,15 @@ export function ChoiceField({
   value,
   options,
   onChange,
+  placeholder,
   disabled = false,
 }: {
   id: string;
   label: string;
-  value: string;
+  value: string | null;
   options: { value: string; label: string; disabled?: boolean }[];
   onChange: (value: string) => void;
+  placeholder?: string;
   disabled?: boolean;
 }) {
   return (
@@ -36,7 +38,7 @@ export function ChoiceField({
         items={options}
       >
         <SelectTrigger id={id} className="w-full">
-          <SelectValue />
+          <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
