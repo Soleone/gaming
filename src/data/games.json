@@ -146,7 +146,10 @@
         "Zombie variety ||And especially the personalities feel like an evolution in the series||",
         "Cinematic presentation"
       ],
-      "nice": ["Good amount of content", "Exploring the areas, especially early on, feels great"],
+      "nice": [
+        "Good amount of content",
+        "Exploring the areas, especially early on, feels great"
+      ],
       "questionable": [
         "Pacing starts off great, but is more one-dimensional towards the end ||Just tons of shooting, which isn't bad, but a few more survival scenes would have bee nice.||"
       ],
@@ -191,7 +194,9 @@
         "Great world building and scale",
         "Developers kept shipping new improvements quickly, very impressive"
       ],
-      "nice": ["Surprising amount of game systems, but me personally"],
+      "nice": [
+        "Surprising amount of game systems, but me personally"
+      ],
       "questionable": [
         "Combat system is too button mashy for my taste, mainly the bosses required some strategy and variety"
       ],
@@ -214,7 +219,9 @@
     "review": {
       "text": "",
       "score": 7,
-      "amazing": ["Impeccable fighting system with lots of move and weapon variety"],
+      "amazing": [
+        "Impeccable fighting system with lots of move and weapon variety"
+      ],
       "nice": [],
       "questionable": [
         "Open world exploration starts out interesting, but becomes formulaic and repetitive quickly",
@@ -443,7 +450,10 @@
       "amazing": [],
       "nice": [],
       "questionable": [],
-      "terrible": []
+      "terrible": [
+        "Enemy variety seemed very low",
+        "I generally play on Hard mode, but here very early enemies two shot you and come from different angles and it felt very chaotic"
+      ]
     }
   },
   {
