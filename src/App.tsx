@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router";
-import { CalendarDays, ChevronLeft, ChevronRight, Gamepad2, Palette, Plus } from "lucide-react";
+import { CalendarDays, Gamepad2, Palette, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Empty,
@@ -224,29 +224,28 @@ function Games({ route }: { route: Route }) {
           )}
         </div>
         <div className="mt-9 flex flex-wrap items-end justify-between gap-5 pb-5">
-          <div className="w-44">
-            <ChoiceField
-              id="calendar-month"
-              label="Month"
-              value={month}
-              onChange={setMonth}
-              disabled={year === "unscheduled"}
-              options={[
-                { value: "all", label: "All months" },
-                ...MONTHS.map((label, index) => ({ value: String(index + 1), label })),
-              ]}
-            />
-          </div>
-          <div className="flex items-end gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Previous year"
-              disabled={year === "unscheduled" || Number(year) <= 1970}
-              onClick={() => changeYear(String(Number(year) - 1))}
-            >
-              <ChevronLeft />
-            </Button>
+          <Button
+            variant="outline"
+            onClick={() =>
+              void navigate(calendarPath(String(currentYear), String(new Date().getMonth() + 1)))
+            }
+          >
+            Today
+          </Button>
+          <div className="flex items-end gap-3">
+            <div className="w-44">
+              <ChoiceField
+                id="calendar-month"
+                label="Month"
+                value={month}
+                onChange={setMonth}
+                disabled={year === "unscheduled"}
+                options={[
+                  { value: "all", label: "All months" },
+                  ...MONTHS.map((label, index) => ({ value: String(index + 1), label })),
+                ]}
+              />
+            </div>
             <div className="w-32">
               <ChoiceField
                 id="calendar-year"
@@ -259,15 +258,6 @@ function Games({ route }: { route: Route }) {
                 ]}
               />
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Next year"
-              disabled={year === "unscheduled" || Number(year) >= 2200}
-              onClick={() => changeYear(String(Number(year) + 1))}
-            >
-              <ChevronRight />
-            </Button>
           </div>
         </div>
         <Separator />
