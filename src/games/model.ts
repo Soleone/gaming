@@ -178,6 +178,19 @@ export function upcomingGame(games: Game[], today = new Date()): Game | undefine
     );
 }
 
+/**
+ * How search reaches a game given the years on the page, the shown year first: scroll to it where it
+ * already is, continue into the year right after the shown one so that year stays in view, or open its year.
+ */
+export function searchJump(game: Game, pageYears: string[]): "scroll" | "continue" | "open" {
+  const year = String(game.release.year ?? "unscheduled");
+  if (pageYears.includes(year)) return "scroll";
+  const [shown] = pageYears;
+  return shown && shown !== "unscheduled" && year === String(Number(shown) + 1)
+    ? "continue"
+    : "open";
+}
+
 /** Later years with games, in order, then "unscheduled" last if any game has no year. */
 export function followingYears(games: Game[], selectedYear: string): string[] {
   if (selectedYear === "unscheduled") return [];

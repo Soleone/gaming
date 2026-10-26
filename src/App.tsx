@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { Link, Navigate, useLocation, useNavigate } from "react-router";
 import { CalendarDays, Gamepad2, Palette, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { ChoiceField } from "@/games/ChoiceField";
 import { GameCard } from "@/games/GameCard";
+import { GameSearch } from "@/games/GameSearch";
 import { NotesMenu } from "@/games/NotesMenu";
 import { NotesSheet } from "@/games/NotesSheet";
 import { blankNote } from "@/games/notes";
@@ -33,6 +35,7 @@ import {
   hasReviewContent,
   isPlayed,
   MONTHS,
+  searchJump,
   upcomingGame,
   type Game,
 } from "@/games/model";
@@ -140,6 +143,14 @@ function Games({ route }: { route: Route }) {
     const next = upcomingGame(games, today);
     scrollTo(next && document.querySelector(`[data-game-id="${next.id}"]`));
   };
+  // Search scrolls to a game on the page; the year after the shown one continues below it, others open first.
+  const findGame = (game: Game) => {
+    const jump = searchJump(game, sections.length ? [year, ...shownYears] : []);
+    if (jump === "continue") flushSync(() => setContinued({ view: viewPath, count: 1 }));
+    if (jump === "open")
+      void navigate(calendarPath(String(game.release.year ?? "unscheduled")), { flushSync: true });
+    scrollTo(document.querySelector(`[data-game-id="${game.id}"]`));
+  };
   const renderSections = (list: typeof sections, sectionYear: string) =>
     list.map((section) => (
       <section
@@ -181,13 +192,14 @@ function Games({ route }: { route: Route }) {
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-4 sm:px-8">
           <Link
             to="/"
-            className="flex items-center gap-2.5 font-heading text-lg font-semibold tracking-tight"
+            className="flex shrink-0 items-center gap-2.5 font-heading text-lg font-semibold tracking-tight"
             aria-label="Soleone Gaming home"
           >
             <Gamepad2 className="size-5 text-primary" aria-hidden="true" />
             Soleone Gaming
           </Link>
-          <div className="flex items-center gap-2">
+          <div className="flex min-w-0 items-center gap-2">
+            {!editor && <GameSearch games={games} onPick={findGame} />}
             {notes.on && (
               <NotesMenu
                 notes={notes.notes}

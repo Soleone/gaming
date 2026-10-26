@@ -7,6 +7,7 @@ import {
   hasReleased,
   releaseCountdown,
   releaseLabel,
+  searchJump,
   upcomingGame,
   type Game,
 } from "./model";
@@ -177,6 +178,21 @@ describe("game data", () => {
       "month",
     ]);
   });
+  it("calendar.search: scrolls on the page, continues into the next year, and opens any other year", () => {
+    const inYear = (year: number | null): Game => ({
+      ...game,
+      release: { precision: "unknown", year },
+    });
+    expect(searchJump(inYear(2026), ["2026"])).toBe("scroll");
+    expect(searchJump(inYear(2029), ["2026", "2027", "2029"])).toBe("scroll");
+    expect(searchJump(inYear(2027), ["2026"])).toBe("continue");
+    expect(searchJump(inYear(2028), ["2026"])).toBe("open");
+    expect(searchJump(inYear(2025), ["2026"])).toBe("open");
+    expect(searchJump(inYear(null), ["2026"])).toBe("open");
+    expect(searchJump(inYear(2027), [])).toBe("open");
+    expect(searchJump(inYear(2026), ["unscheduled"])).toBe("open");
+  });
+
   it("calendar.today: finds the first release this year that is not already out", () => {
     const entries: Game[] = [
       { ...game, id: "out", release: { precision: "day", year: 2026, month: 10, day: 2 } },
