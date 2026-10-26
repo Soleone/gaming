@@ -15,13 +15,18 @@
     "review": {
       "text": "",
       "score": 8,
-      "amazing": ["Controls feels very snappy"],
+      "amazing": [
+        "Controls feels very snappy",
+        "There are generally always many paths to explore so you feel like you're making decisions. And many secret walls make you feel like maybe many people missed some of those paths."
+      ],
       "nice": [
         "Graphics are certainly not amazing, but there is enough variety and character in the levels to give certain areas some character",
         "The jump and run failures not costing a lot of health is appreciated"
       ],
       "questionable": [
-        "Sometimes hard to identify your character in frantic situations can lead to damage or death"
+        "Sometimes hard to identify your character in frantic situations can lead to damage or death",
+        "Sometimes if you die or take the wrong turn you might have quite the long runback time. Me personally I don't mind the punishments too much, but repeated experiences could break some people.",
+        "Not really much loot per se, definitely nothing surprising besides the major upgrades and speels. There is a fixed list of weapons you already know the amount at the start of the game and some upgrades."
       ],
       "terrible": []
     }
