@@ -120,3 +120,11 @@ it("review.spoiler: carries a write-up spoiler through Markdown without its brac
     "Ends with [a *twist* \\[sic\\]](#spoiler).",
   );
 });
+
+it("notes.mode: shows a notes button only when given one, filled once the game has notes", () => {
+  expect(renderToStaticMarkup(<GameCard game={game({})} />)).not.toContain("notes for");
+  const empty = renderToStaticMarkup(<GameCard game={game({})} onNote={() => {}} />);
+  expect(empty).toContain('aria-label="Add notes for Resident Evil Requiem"');
+  const noted = renderToStaticMarkup(<GameCard game={game({})} onNote={() => {}} noted />);
+  expect(noted).toContain('aria-label="Edit notes for Resident Evil Requiem"');
+});

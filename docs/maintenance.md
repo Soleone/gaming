@@ -13,6 +13,15 @@ The editor supports titles, local or remote cover URLs, release precision, hype 
 
 You can also edit JSON directly. A stale editor session refuses to overwrite newer file contents. Close and reopen it to load those changes. The file is validated before saving and writes use a temporary file followed by rename. Keep the file in Git for history and recovery. This is a single-person local editor, not multi-user storage; unrelated external writers must not edit the file during the instant of an active save.
 
+## Review notes from the live site
+
+The live site can't write anything, so review notes travel by clipboard. Open any page with `?notes`
+on the device you play on (phone or PC); that browser stays in notes mode until `?notes=off` or
+**Leave notes mode**. Each card then gets a notes button for status, score, write-up, and the four
+point lists. Notes are saved in that browser as you type. The header's notes menu copies them all.
+On the dev server, **Import notes** takes the paste, shows what each game gets, and writes
+`games.json` in one save. Clear the notes on the live site once they are in Git.
+
 ## Research with the local agent
 
 Use Node 24 (pi-durable requires at least Node 22.19), sign in through Pi, and choose a default

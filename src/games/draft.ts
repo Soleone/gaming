@@ -18,7 +18,7 @@ export type GameDraft = {
 } & Record<Verdict, string>;
 
 // Each line of a verdict field is one bullet; pasted Markdown bullet markers are dropped.
-const notesFrom = (text: string) =>
+export const notesFrom = (text: string) =>
   text
     .split("\n")
     .map((line) => line.replace(/^\s*[-*•]\s*/, "").trim())

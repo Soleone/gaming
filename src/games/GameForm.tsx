@@ -1,15 +1,5 @@
 import { useRef, useState, type ChangeEvent, type FormEvent, type KeyboardEvent } from "react";
-import {
-  ArrowLeft,
-  CircleHelp,
-  ImageOff,
-  Save,
-  Sparkles,
-  ThumbsDown,
-  ThumbsUp,
-  Trash2,
-  type LucideIcon,
-} from "lucide-react";
+import { ArrowLeft, ImageOff, Save, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
@@ -31,26 +21,10 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
-import { Textarea } from "@/components/ui/textarea";
 import { ChoiceField } from "./ChoiceField";
 import { parseGameDraft, type GameDraft } from "./draft";
-import {
-  canReview,
-  MONTHS,
-  playLabels,
-  playStatuses,
-  verdictLabels,
-  verdicts,
-  type Game,
-  type Verdict,
-} from "./model";
-
-const verdictIcons: Record<Verdict, LucideIcon> = {
-  amazing: Sparkles,
-  nice: ThumbsUp,
-  questionable: CircleHelp,
-  terrible: ThumbsDown,
-};
+import { ReviewFields } from "./ReviewFields";
+import { canReview, MONTHS, playLabels, playStatuses, type Game } from "./model";
 
 // Previews the cover as the calendar crops it; blank or broken URLs show a placeholder.
 function CoverPreview({ src }: { src: string }) {
@@ -345,33 +319,7 @@ export function GameForm({
               <FieldDescription>
                 Setting the game back to Not played clears the review when saved.
               </FieldDescription>
-              <FieldGroup>
-                <Field>
-                  <FieldLabel htmlFor="review">Write-up</FieldLabel>
-                  <Textarea
-                    id="review"
-                    {...input("review")}
-                    rows={6}
-                    maxLength={1000}
-                    placeholder="What stayed with you? Markdown works. Hide spoilers with ||double bars||."
-                  />
-                  <FieldDescription>{draft.review.length} / 1,000 characters</FieldDescription>
-                </Field>
-                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                  {verdicts.map((verdict) => {
-                    const Icon = verdictIcons[verdict];
-                    return (
-                      <Field key={verdict}>
-                        <FieldLabel htmlFor={`review-${verdict}`}>
-                          <Icon className="size-4 text-muted-foreground" aria-hidden="true" />
-                          {verdictLabels[verdict]}
-                        </FieldLabel>
-                        <Textarea id={`review-${verdict}`} {...input(verdict)} rows={4} />
-                      </Field>
-                    );
-                  })}
-                </div>
-              </FieldGroup>
+              <ReviewFields id="review" values={draft} onChange={edit} />
             </FieldSet>
           ) : (
             <p className="text-sm text-muted-foreground">

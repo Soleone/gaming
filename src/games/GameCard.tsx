@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { ArrowRight, Flame, Gamepad2, Pencil, Star } from "lucide-react";
+import { ArrowRight, Flame, Gamepad2, NotebookPen, Pencil, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,12 +30,17 @@ export function GameCard({
   game,
   selected,
   onEdit,
+  onNote,
+  noted = false,
   reviewOpen = false,
   onReviewOpenChange,
 }: {
   game: Game;
   selected?: boolean;
   onEdit?: (id: string) => void;
+  /** Opens the game's review notes; only given in notes mode. */
+  onNote?: (id: string) => void;
+  noted?: boolean;
   reviewOpen?: boolean;
   /** Must render the change before it returns, so the cover can fly into it. */
   onReviewOpenChange?: (open: boolean) => void;
@@ -122,16 +127,28 @@ export function GameCard({
             {releaseLabel(game.release)}
             {countdown && <span className="font-medium text-primary"> · {countdown}</span>}
           </CardDescription>
-          {onEdit && (
+          {(onEdit || onNote) && (
             <CardAction>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={`Edit ${game.title}`}
-                onClick={() => onEdit(game.id)}
-              >
-                <Pencil />
-              </Button>
+              {onNote && (
+                <Button
+                  variant={noted ? "secondary" : "ghost"}
+                  size="icon"
+                  aria-label={`${noted ? "Edit notes" : "Add notes"} for ${game.title}`}
+                  onClick={() => onNote(game.id)}
+                >
+                  <NotebookPen />
+                </Button>
+              )}
+              {onEdit && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label={`Edit ${game.title}`}
+                  onClick={() => onEdit(game.id)}
+                >
+                  <Pencil />
+                </Button>
+              )}
             </CardAction>
           )}
         </CardHeader>

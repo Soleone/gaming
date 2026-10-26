@@ -13,6 +13,10 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { ChoiceField } from "@/games/ChoiceField";
 import { GameCard } from "@/games/GameCard";
+import { NotesMenu } from "@/games/NotesMenu";
+import { NotesSheet } from "@/games/NotesSheet";
+import { blankNote } from "@/games/notes";
+import { useNotes } from "@/games/useNotes";
 import { useGameSelection } from "@/games/useGameSelection";
 import {
   backdropOf,
@@ -39,6 +43,7 @@ const ThemePicker = lazy(() =>
 );
 const initialGames = gamesSchema.parse(gameData);
 const DevWorkspace = import.meta.env.DEV ? lazy(() => import("./games/Workspace")) : null;
+const DevNotesImport = import.meta.env.DEV ? lazy(() => import("./games/NotesImport")) : null;
 const currentYear = new Date().getFullYear();
 const initialYear = initialGames.some((game) => game.release.year === currentYear)
   ? currentYear
@@ -62,6 +67,10 @@ function Games({ route }: { route: Route }) {
   const [saved, setSaved] = useState<{ base: Game[]; games: Game[] } | null>(null);
   const games = saved?.base === initialGames ? saved.games : initialGames;
   const setGames = (next: Game[]) => setSaved({ base: initialGames, games: next });
+  const notes = useNotes();
+  // The game whose notes are open; it stays set while the sheet closes so its title doesn't vanish.
+  const [noting, setNoting] = useState<{ id: string; open: boolean } | null>(null);
+  const notedGame = noting ? (games.find((game) => game.id === noting.id) ?? null) : null;
   // An open review sits over the calendar it was opened from, or over its game's year.
   const reviewed =
     route.view === "review"
@@ -144,6 +153,8 @@ function Games({ route }: { route: Route }) {
               game={game}
               selected={game.id === selectedId}
               onEdit={editGame}
+              onNote={notes.on ? (id) => setNoting({ id, open: true }) : undefined}
+              noted={game.id in notes.notes}
               reviewOpen={game.id === reviewed?.id}
               onReviewOpenChange={(open) => (open ? openReview(game) : closeReview())}
             />
@@ -165,6 +176,14 @@ function Games({ route }: { route: Route }) {
             Soleone Gaming
           </Link>
           <div className="flex items-center gap-2">
+            {notes.on && (
+              <NotesMenu
+                notes={notes.notes}
+                games={games}
+                onClear={notes.clear}
+                onLeave={notes.leave}
+              />
+            )}
             <Suspense
               fallback={
                 <Button variant="ghost" size="icon" disabled aria-label="Loading themes">
@@ -191,10 +210,17 @@ function Games({ route }: { route: Route }) {
             </p>
           </div>
           {DevWorkspace && (
-            <Button onClick={() => openEditor(null)}>
-              <Plus data-icon="inline-start" />
-              Add a game
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              {DevNotesImport && (
+                <Suspense fallback={null}>
+                  <DevNotesImport games={games} onSaved={setGames} />
+                </Suspense>
+              )}
+              <Button onClick={() => openEditor(null)}>
+                <Plus data-icon="inline-start" />
+                Add a game
+              </Button>
+            </div>
           )}
         </div>
         <div className="mt-9 flex flex-wrap items-end justify-between gap-5 pb-5">
@@ -308,6 +334,15 @@ function Games({ route }: { route: Route }) {
           </Empty>
         )}
       </main>
+      {notes.on && (
+        <NotesSheet
+          game={notedGame}
+          note={(noting && notes.notes[noting.id]) ?? blankNote}
+          open={Boolean(noting?.open && notedGame)}
+          onChange={(note) => noting && notes.setNote(noting.id, note)}
+          onClose={() => setNoting((current) => current && { ...current, open: false })}
+        />
+      )}
     </div>
   );
   return DevWorkspace ? (
