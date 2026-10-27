@@ -3,12 +3,12 @@ import { Search } from "lucide-react";
 import { isInteractiveTarget } from "@/components/soleone/theme";
 import {
   Combobox,
-  ComboboxContent,
   ComboboxEmpty,
   ComboboxInput,
   ComboboxItem,
   ComboboxList,
 } from "@/components/ui/combobox";
+import { SearchResults } from "@/components/variants/SearchResults";
 import { InputGroupAddon } from "@/components/ui/input-group";
 import { Kbd } from "@/components/ui/kbd";
 import { releaseLabel, type Game } from "./model";
@@ -60,7 +60,7 @@ export function GameSearch({ games, onPick }: { games: Game[]; onPick: (game: Ga
           </InputGroupAddon>
         )}
       </ComboboxInput>
-      <ComboboxContent>
+      <SearchResults>
         <ComboboxEmpty>No game by that name.</ComboboxEmpty>
         <ComboboxList>
           {(game: Game) => (
@@ -72,7 +72,7 @@ export function GameSearch({ games, onPick }: { games: Game[]; onPick: (game: Ga
             </ComboboxItem>
           )}
         </ComboboxList>
-      </ComboboxContent>
+      </SearchResults>
     </Combobox>
   );
 }
