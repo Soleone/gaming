@@ -559,5 +559,579 @@
       "questionable": [],
       "terrible": []
     }
+  },
+  {
+    "id": "55338201-a7e0-439d-ae53-1ac2ca956814",
+    "title": "Prey",
+    "cover": "/covers/agent-d84ce7254119704b12286832.webp",
+    "release": {
+      "precision": "day",
+      "year": 2017,
+      "month": 5,
+      "day": 5
+    },
+    "source": "https://store.playstation.com/en-us/product/UP1003-CUSA04493_00-PREYPS4FULLGAME1",
+    "hype": null,
+    "play": "completed",
+    "review": {
+      "text": "The best modern immersive sim.",
+      "score": 9,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
+  },
+  {
+    "id": "7c6037f0-0879-4daf-8bbc-48c8f83905ec",
+    "title": "Hollow Knight: Silksong",
+    "cover": "/covers/agent-cd159a8f318e3327b9348a99.webp",
+    "release": {
+      "precision": "day",
+      "year": 2025,
+      "month": 9,
+      "day": 4
+    },
+    "source": "https://store.playstation.com/en-us/product/EP1805-PPSA12544_00-HKSILKSONGPS5000",
+    "hype": 5,
+    "play": "completed",
+    "review": {
+      "text": "Brutally soul-crushing, but blissfully rewarding and magical. Currently there is no better Metroidvania.",
+      "score": 10,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
+  },
+  {
+    "id": "d938ef70-c599-412a-b247-0c171bf456e0",
+    "title": "ELDEN RING",
+    "cover": "/covers/agent-7399eed33d33d317335e9240.webp",
+    "release": {
+      "precision": "day",
+      "year": 2022,
+      "month": 2,
+      "day": 25
+    },
+    "source": "https://store.playstation.com/en-us/product/UP0700-PPSA04610_00-ELDENRING0000000",
+    "hype": 5,
+    "play": "completed",
+    "review": {
+      "text": "The best game ever made.",
+      "score": 10,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
+  },
+  {
+    "id": "bc32a270-3d68-4050-8323-a9f50cf0e0c5",
+    "title": "ELDEN RING Shadow of the Erdtree",
+    "cover": "/covers/agent-69f2ba08b9de4ca65842c0d9.webp",
+    "release": {
+      "precision": "day",
+      "year": 2024,
+      "month": 6,
+      "day": 21
+    },
+    "source": "https://www.playstation.com/en-us/games/elden-ring/elden-ring-shadow-of-the-erdtree/",
+    "hype": 5,
+    "play": "played",
+    "review": {
+      "text": "This world is arguably even better than the base game, but some of the boss fights are pretty insanely tough.",
+      "score": 10,
+      "amazing": ["Unbelievably epic vertical landscapes and intricate large area design"],
+      "nice": [],
+      "questionable": [
+        "Difficulty is maybe a bit over the edge for a few fights. I'm still stuck at one particular arena fight against multiple enemies so I haven't even seen the last boss yet, which is probably even harder."
+      ],
+      "terrible": []
+    }
+  },
+  {
+    "id": "fc8c8f2b-c223-4de7-972a-8d9dc25df090",
+    "title": "Dark Souls III",
+    "cover": "/covers/agent-dd0efc736ad640cb0a2377cc.webp",
+    "release": {
+      "precision": "day",
+      "year": 2016,
+      "month": 3,
+      "day": 24
+    },
+    "source": "https://www.darksouls.jp/detail_ds3.html",
+    "hype": 5,
+    "play": "completed",
+    "review": {
+      "text": "",
+      "score": 10,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
+  },
+  {
+    "id": "28758410-de35-4489-912f-32591e27dc23",
+    "title": "Dark Souls II",
+    "cover": "/covers/agent-579df6520b9157bca4dd756a.webp",
+    "release": {
+      "precision": "day",
+      "year": 2014,
+      "month": 3,
+      "day": 13
+    },
+    "source": "https://www.darksouls.jp/detail_ds2.html",
+    "hype": 5,
+    "play": "completed",
+    "review": {
+      "text": "",
+      "score": 10,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
+  },
+  {
+    "id": "e2cbdf6b-e315-41db-b0e3-365899971037",
+    "title": "Dark Souls",
+    "cover": "/covers/agent-de77b7f19eebc2700354fac6.webp",
+    "release": {
+      "precision": "day",
+      "year": 2011,
+      "month": 9,
+      "day": 22
+    },
+    "source": "https://www.darksouls.jp/detail_ds1.html",
+    "hype": 5,
+    "play": "completed",
+    "review": {
+      "text": "",
+      "score": 10,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
+  },
+  {
+    "id": "7052401b-8a27-4100-a91b-a92defd17b0f",
+    "title": "Bloodborne",
+    "cover": "/covers/agent-cbbefb7a6e5a46edc4fcd9b8.webp",
+    "release": {
+      "precision": "day",
+      "year": 2015,
+      "month": 3,
+      "day": 24
+    },
+    "source": "https://store.playstation.com/en-pl/product/EP9000-CUSA00207_00-BLOODBORNE0000EU",
+    "hype": 5,
+    "play": "completed",
+    "review": {
+      "text": "",
+      "score": 10,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
+  },
+  {
+    "id": "5dfba865-65e1-4485-b9a6-5219d0b11e01",
+    "title": "Sekiro: Shadows Die Twice",
+    "cover": "/covers/agent-595623049d435a3b372023f4.webp",
+    "release": {
+      "precision": "day",
+      "year": 2019,
+      "month": 3,
+      "day": 22
+    },
+    "source": "https://www.playstation.com/en-us/games/sekiro-shadows-die-twice/",
+    "hype": 5,
+    "play": "played",
+    "review": {
+      "text": "",
+      "score": 10,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
+  },
+  {
+    "id": "8f1ba4b8-5a14-435c-b097-9536b3ef0df2",
+    "title": "The Legend of Zelda: Majora's Mask",
+    "cover": "/covers/agent-e82eaeb6178cf1bf457329ab.webp",
+    "release": {
+      "precision": "day",
+      "year": 2000,
+      "month": 4,
+      "day": 27
+    },
+    "source": "https://en.wikipedia.org/wiki/The_Legend_of_Zelda:_Majora%27s_Mask",
+    "hype": null,
+    "play": "completed",
+    "review": {
+      "text": "",
+      "score": 10,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
+  },
+  {
+    "id": "4f662cff-2ed7-45f2-b98c-ed87432e09ad",
+    "title": "The Legend of Zelda: Tears of the Kingdom",
+    "cover": "/covers/agent-5956f9f4f17034b31e39d199.webp",
+    "release": {
+      "precision": "day",
+      "year": 2023,
+      "month": 5,
+      "day": 12
+    },
+    "source": "https://www.nintendo.com/us/store/products/the-legend-of-zelda-tears-of-the-kingdom-switch/",
+    "hype": 5,
+    "play": "played",
+    "review": {
+      "text": "",
+      "score": 10,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
+  },
+  {
+    "id": "a2c591b2-04cf-46ce-8e92-5f4f926335fe",
+    "title": "The Legend of Zelda: Breath of the Wild",
+    "cover": "/covers/agent-d6db15fcf7fa44eb5da8e0fa.webp",
+    "release": {
+      "precision": "day",
+      "year": 2017,
+      "month": 3,
+      "day": 3
+    },
+    "source": "https://www.nintendo.com/us/store/products/the-legend-of-zelda-breath-of-the-wild-switch/",
+    "hype": 5,
+    "play": "completed",
+    "review": {
+      "text": "",
+      "score": 10,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
+  },
+  {
+    "id": "9fb33d93-34ac-4878-a1b2-7bcc2d2b6f2b",
+    "title": "The Legend of Zelda: A Link to the Past",
+    "cover": "/covers/agent-1e2d95beebe567359ee61223.webp",
+    "release": {
+      "precision": "day",
+      "year": 1991,
+      "month": 11,
+      "day": 21
+    },
+    "source": "https://en.wikipedia.org/wiki/The_Legend_of_Zelda:_A_Link_to_the_Past",
+    "hype": null,
+    "play": "completed",
+    "review": {
+      "text": "",
+      "score": 10,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
+  },
+  {
+    "id": "a3937b1a-810c-4f57-91c0-9fc55008db0a",
+    "title": "ARMORED CORE VI FIRES OF RUBICON",
+    "cover": "/covers/agent-d939fe204d197e57fa19429f.webp",
+    "release": {
+      "precision": "day",
+      "year": 2023,
+      "month": 8,
+      "day": 25
+    },
+    "source": "https://www.fromsoftware.jp/ww/pressrelease/20230428_armoredcore6_releasedate.html",
+    "hype": 5,
+    "play": "played",
+    "review": {
+      "text": "",
+      "score": 8,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
+  },
+  {
+    "id": "05c6e649-77d8-4955-91b0-ee2216092875",
+    "title": "Nine Sols",
+    "cover": "/covers/agent-bb3361120385752705cc5a28.webp",
+    "release": {
+      "precision": "day",
+      "year": 2024,
+      "month": 5,
+      "day": 28
+    },
+    "source": "https://store.steampowered.com/app/1809540/Nine_Sols/",
+    "hype": null,
+    "play": "played",
+    "review": {
+      "text": "",
+      "score": 8,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
+  },
+  {
+    "id": "d05903a6-38d5-49c5-9a7b-358b0f3ddd0a",
+    "title": "Metroid Dread",
+    "cover": "/covers/agent-0b0dede83a37f74658a8797c.webp",
+    "release": {
+      "precision": "day",
+      "year": 2021,
+      "month": 10,
+      "day": 8
+    },
+    "source": "https://www.nintendo.com/en-gb/Games/Nintendo-Switch-games/Metroid-Dread-1987653.html",
+    "hype": 5,
+    "play": "completed",
+    "review": {
+      "text": "",
+      "score": 9,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
+  },
+  {
+    "id": "64db7b5e-010f-4fc4-9892-b4d34095c82c",
+    "title": "MIO: Memories in Orbit",
+    "cover": "/covers/agent-f2e4da111f1bd4c8c95cd2d6.webp",
+    "release": {
+      "precision": "day",
+      "year": 2026,
+      "month": 1,
+      "day": 20
+    },
+    "source": "https://store.steampowered.com/app/1672810/MIO_Memories_in_Orbit/",
+    "hype": null,
+    "play": "played",
+    "review": {
+      "text": "",
+      "score": 8,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
+  },
+  {
+    "id": "f69e6874-ccdc-495c-9b05-25d99756df1d",
+    "title": "Death Stranding",
+    "cover": "/covers/agent-82d1866013fbf3cf94b3b8d2.webp",
+    "release": {
+      "precision": "day",
+      "year": 2019,
+      "month": 11,
+      "day": 8
+    },
+    "source": "https://www.kojimaproductions.jp/en/company",
+    "hype": 5,
+    "play": "completed",
+    "review": {
+      "text": "",
+      "score": 9,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
+  },
+  {
+    "id": "dd7ce751-65ea-468d-b016-79226012e256",
+    "title": "Dead Space (2023)",
+    "cover": "/covers/agent-0de32f74e9c8ca65c989ed88.webp",
+    "release": {
+      "precision": "day",
+      "year": 2023,
+      "month": 1,
+      "day": 27
+    },
+    "source": "https://www.ea.com/games/dead-space/dead-space",
+    "hype": 4,
+    "play": "completed",
+    "review": {
+      "text": "",
+      "score": 9,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
+  },
+  {
+    "id": "117e926e-b5fd-4ac3-a900-6ee16607f997",
+    "title": "Death Stranding 2: On The Beach",
+    "cover": "/covers/agent-37c1477812d770dbb34bfc45.webp",
+    "release": {
+      "precision": "day",
+      "year": 2025,
+      "month": 6,
+      "day": 26
+    },
+    "source": "https://www.playstation.com/en-us/games/death-stranding-2-on-the-beach/",
+    "hype": 5,
+    "play": "played",
+    "review": {
+      "text": "",
+      "score": 9,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
+  },
+  {
+    "id": "fa57fc4d-dd02-4455-95ec-934fe742b6db",
+    "title": "Metal Gear Solid V: The Phantom Pain",
+    "cover": "/covers/agent-d3a803394b68ce758ee4e30b.webp",
+    "release": {
+      "precision": "day",
+      "year": 2015,
+      "month": 9,
+      "day": 1
+    },
+    "source": "https://store.playstation.com/en-us/product/UP0101-CUSA01140_00-MAINGAME00000000",
+    "hype": 5,
+    "play": "completed",
+    "review": {
+      "text": "",
+      "score": 10,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
+  },
+  {
+    "id": "9e032f75-c060-4575-ac12-b0b6b9e6123a",
+    "title": "Stellar Blade",
+    "cover": "/covers/agent-f0d4fde9879b9f6d0a7661c7.webp",
+    "release": {
+      "precision": "day",
+      "year": 2024,
+      "month": 4,
+      "day": 26
+    },
+    "source": "https://www.playstation.com/en-us/games/stellar-blade/",
+    "hype": 4,
+    "play": "completed",
+    "review": {
+      "text": "",
+      "score": 9,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
+  },
+  {
+    "id": "e3c7811c-a382-47d6-b82e-e03f2cb366ec",
+    "title": "God of War Ragnarök",
+    "cover": "/covers/agent-5f50515d8a7a277afdff3ab4.webp",
+    "release": {
+      "precision": "day",
+      "year": 2022,
+      "month": 11,
+      "day": 9
+    },
+    "source": "https://www.playstation.com/en-us/games/god-of-war-ragnarok/",
+    "hype": 5,
+    "play": "completed",
+    "review": {
+      "text": "",
+      "score": 10,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
+  },
+  {
+    "id": "e0a2f427-f1b0-4e61-9b48-6f29d01d8e23",
+    "title": "God of War (2018)",
+    "cover": "/covers/agent-585ee8512a4d4bf6d118d934.webp",
+    "release": {
+      "precision": "day",
+      "year": 2018,
+      "month": 4,
+      "day": 20
+    },
+    "source": "https://www.playstation.com/en-us/games/god-of-war/",
+    "hype": 5,
+    "play": "completed",
+    "review": {
+      "text": "",
+      "score": 9,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
+  },
+  {
+    "id": "d1f6246b-0432-45ee-a36c-2cf7eebefa83",
+    "title": "WUCHANG: Fallen Feathers",
+    "cover": "/covers/agent-67ddeb02061f9d1ae94e5de8.webp",
+    "release": {
+      "precision": "day",
+      "year": 2025,
+      "month": 7,
+      "day": 24
+    },
+    "source": "https://505games.com/games/wuchang-fallen-feathers/",
+    "hype": 3,
+    "play": "played",
+    "review": {
+      "text": "",
+      "score": 8,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
+  },
+  {
+    "id": "42c22889-23fe-4eb0-8b51-91142fce9112",
+    "title": "Black Myth: Wukong",
+    "cover": "/covers/agent-8047902dcdeabf1198dacff2.webp",
+    "release": {
+      "precision": "day",
+      "year": 2024,
+      "month": 8,
+      "day": 20
+    },
+    "source": "https://www.playstation.com/en-us/games/black-myth-wukong/",
+    "hype": 5,
+    "play": "completed",
+    "review": {
+      "text": "",
+      "score": 10,
+      "amazing": [],
+      "nice": [],
+      "questionable": [],
+      "terrible": []
+    }
   }
 ]
