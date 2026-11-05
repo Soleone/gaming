@@ -290,8 +290,8 @@
     "release": {
       "precision": "day",
       "year": 2027,
-      "month": 2,
-      "day": 16
+      "month": 5,
+      "day": 20
     },
     "source": "https://store.playstation.com/en-us/product/UP9000-PPSA19249_00-LAUFEY0000000000",
     "hype": 5,
@@ -1140,5 +1140,20 @@
       "questionable": [],
       "terrible": []
     }
+  },
+  {
+    "id": "f9486cd5-a6e3-4f19-b126-8f257ed02fbc",
+    "title": "Queen's Domain",
+    "cover": "/covers/agent-ace86a26ae23a783158963a6.webp",
+    "release": {
+      "precision": "day",
+      "year": 2026,
+      "month": 10,
+      "day": 30
+    },
+    "source": "https://store.steampowered.com/app/1799840/Queens_Domain/",
+    "hype": 2,
+    "play": "not_played",
+    "review": null
   }
 ]
