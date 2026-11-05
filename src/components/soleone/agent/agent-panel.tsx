@@ -1,7 +1,10 @@
+"use client"
+
 import { memo, useId, useState, type Dispatch, type SetStateAction, type ReactNode } from "react"
 import ReactMarkdown from "react-markdown"
-import { ArrowUp, Square, Wrench } from "lucide-react"
+import { ArrowUp, Brain, Globe, Square, TextQuote, Wrench } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Badge } from "@/components/ui/badge"
 import { Bubble, BubbleContent } from "@/components/ui/bubble"
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty"
 import {
@@ -24,13 +27,26 @@ export type AgentTool = {
   label: string
   status: "running" | "complete" | "error"
   output?: string
+  /** Web pages the step searched or read, shown as site chips under its title. */
+  sources?: AgentSource[]
   data?: unknown
+}
+
+export type AgentSource = { url: string; title?: string }
+
+/** Text a user message is about, such as a selection, shown above the message and open at first. */
+export type AgentQuote = {
+  text: string
+  /** Where the text came from, like "Mail · Your order". */
+  source: string
+  href?: string
 }
 
 export type AgentMessage = {
   id: string
   role: "user" | "assistant"
   text: string
+  quote?: AgentQuote
   tools?: AgentTool[]
 }
 
@@ -47,6 +63,8 @@ type AgentPanelProps = {
   onSend: (text: string) => Promise<boolean>
   onStop: () => void
   renderTool?: (tool: AgentTool) => ReactNode
+  /** The model and thinking level the conversation runs with, shown under the composer. */
+  model?: { name: string; thinking: string }
 }
 
 type AgentTurn = { id: string; role: AgentMessage["role"]; messages: AgentMessage[] }
@@ -83,21 +101,91 @@ function blocksOf(messages: AgentMessage[], renderTool?: (tool: AgentTool) => Re
   return blocks
 }
 
+function SiteIcon({ host }: { host: string }) {
+  const [missing, setMissing] = useState(false)
+  if (missing) return <Globe />
+  return (
+    <img
+      src={`https://icons.duckduckgo.com/ip3/${host}.ico`}
+      alt=""
+      className="size-3 shrink-0 rounded-sm"
+      onError={() => setMissing(true)}
+    />
+  )
+}
+
+const shownSites = 6
+
+/** One chip per site, so ten results from two sites read as two. */
+function Sources({ sources }: { sources: AgentSource[] }) {
+  const sites = new Map<string, AgentSource>()
+  for (const source of sources) {
+    const host = new URL(source.url).hostname
+    if (!sites.has(host)) sites.set(host, source)
+  }
+  const hidden = sites.size - shownSites
+  return (
+    <ul aria-label="Sources" className="flex flex-wrap gap-1 pl-6">
+      {[...sites].slice(0, shownSites).map(([host, source]) => (
+        <li key={host}>
+          <Badge
+            variant="outline"
+            render={<a href={source.url} target="_blank" rel="noopener noreferrer" title={source.title ?? source.url} />}
+          >
+            <SiteIcon host={host} />
+            {host.replace(/^www\./, "")}
+          </Badge>
+        </li>
+      ))}
+      {hidden > 0 && <li><Badge variant="secondary">+{hidden}</Badge></li>}
+    </ul>
+  )
+}
+
 function ToolStep({ tool }: { tool: AgentTool }) {
   const line = (
     <TraceLine status={tool.status === "complete" ? undefined : tool.status}>
-      <TraceIcon><Wrench /></TraceIcon>
+      <TraceIcon>{tool.sources ? <Globe /> : <Wrench />}</TraceIcon>
       <TraceTitle>{tool.label}</TraceTitle>
     </TraceLine>
   )
-  if (!tool.output) return line
-  return (
+  const step = tool.output ? (
     <TraceCollapsible>
       <TraceCollapsibleTrigger>{line}</TraceCollapsibleTrigger>
       <TraceCollapsibleContent>
         <pre className="max-h-48 overflow-auto whitespace-pre-wrap text-xs">{tool.output}</pre>
       </TraceCollapsibleContent>
     </TraceCollapsible>
+  ) : line
+  if (!tool.sources?.length) return step
+  return (
+    <div className="flex min-w-0 flex-col gap-1.5">
+      {step}
+      <Sources sources={tool.sources} />
+    </div>
+  )
+}
+
+function QuoteStep({ quote }: { quote: AgentQuote }) {
+  return (
+    <Trace>
+      <TraceCollapsible defaultOpen>
+        <TraceCollapsibleTrigger>
+          <TraceLine>
+            <TraceIcon><TextQuote /></TraceIcon>
+            <TraceTitle>{quote.source}</TraceTitle>
+          </TraceLine>
+        </TraceCollapsibleTrigger>
+        <TraceCollapsibleContent>
+          <p className="max-h-48 overflow-auto whitespace-pre-wrap text-foreground">{quote.text}</p>
+          {quote.href && (
+            <a href={quote.href} target="_blank" rel="noopener noreferrer" className="block truncate text-xs underline underline-offset-4">
+              {quote.href}
+            </a>
+          )}
+        </TraceCollapsibleContent>
+      </TraceCollapsible>
+    </Trace>
   )
 }
 
@@ -121,7 +209,7 @@ const AssistantText = memo(function AssistantText({ text }: { text: string }) {
 
 /** Controlled UI only. The host owns transport, credentials, tools, and approval policy. */
 export function AgentPanel({
-  messages, prompt, onPromptChange, busy, disabled = false, error, onSend, onStop, renderTool,
+  messages, prompt, onPromptChange, busy, disabled = false, error, onSend, onStop, renderTool, model,
   placeholder = "Ask the agent…",
   emptyTitle = "What would you like to do?",
   emptyDescription = "Ask a question or describe a change. You stay in control of what gets applied.",
@@ -167,9 +255,12 @@ export function AgentPanel({
                     <Message align={turn.role === "user" ? "end" : "start"}>
                       <MessageContent>
                         {turn.role === "user" ? (
-                          <Bubble align="end" variant="muted">
-                            <BubbleContent>{turn.messages[0].text}</BubbleContent>
-                          </Bubble>
+                          <div className="flex min-w-0 flex-col items-end gap-2">
+                            {turn.messages[0].quote && <QuoteStep quote={turn.messages[0].quote} />}
+                            <Bubble align="end" variant="muted">
+                              <BubbleContent className="whitespace-pre-wrap">{turn.messages[0].text}</BubbleContent>
+                            </Bubble>
+                          </div>
                         ) : (
                           <div className="flex min-w-0 flex-col gap-3">
                             {blocksOf(turn.messages, renderTool).map((block, index) =>
@@ -231,9 +322,16 @@ export function AgentPanel({
           </InputGroupAddon>
         </InputGroup>
       </form>
-      <p role="status" className="text-xs text-muted-foreground">
-        {working ? "Agent working. You can stop it at any time." : "Enter to send. Shift+Enter for a new line."}
-      </p>
+      <div className="flex min-w-0 items-center justify-between gap-2">
+        <p role="status" className="truncate text-xs text-muted-foreground">
+          {working ? "Agent working. You can stop it at any time." : "Enter to send. Shift+Enter for a new line."}
+        </p>
+        {model && (
+          <Badge variant="secondary" title={`Model ${model.name}, thinking ${model.thinking}`}>
+            <Brain />{model.name} · {model.thinking}
+          </Badge>
+        )}
+      </div>
     </section>
   )
 }

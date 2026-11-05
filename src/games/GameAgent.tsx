@@ -17,7 +17,7 @@ import {
   Save,
 } from "lucide-react";
 import { z } from "zod";
-import { AgentPanel, type AgentTool } from "@/components/soleone/agent";
+import { AgentModelFields, AgentPanel, type AgentTool } from "@/components/soleone/agent";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -38,7 +38,6 @@ import {
 import { useSidebar } from "@/components/ui/sidebar";
 import { CoverDialogContent, CoverTile } from "@/components/variants/CoverChoice";
 import { agentSnapshotSchema, type AgentRequest, type AgentSnapshot } from "./agent-protocol";
-import { ChoiceField } from "./ChoiceField";
 import { researchTarget } from "./collection";
 import type { GameDraft } from "./draft";
 import { releaseLabel, type Game } from "./model";
@@ -507,30 +506,36 @@ export function GameAgent({
       </div>
       {snapshot && choice && (
         <div className="grid min-w-0 grid-cols-1 gap-3">
-          <ChoiceField
-            id="agent-model"
-            label="Model"
-            value={snapshot.model}
+          <AgentModelFields
             disabled={locked}
-            options={[
+            models={[
               ...snapshot.models.map((model) => ({
-                value: model.id,
+                id: model.id,
                 label: `${model.name} · ${model.id.split("/")[0]}`,
+                thinkingLevels: model.thinkingLevels,
+                thinking: model.defaultThinking,
               })),
               ...snapshot.unavailableModels.map((id) => ({
-                value: `unavailable:${id}`,
+                id: `unavailable:${id}`,
                 label: `${id} (unavailable)`,
+                thinkingLevels: [],
+                thinking: "",
                 disabled: true,
               })),
             ]}
-            onChange={(model) => {
+            model={snapshot.model}
+            thinking={snapshot.thinkingLevel}
+            onChange={(model, level) => {
               const selected = snapshot.models.find((candidate) => candidate.id === model);
-              if (connection && selected)
+              const thinkingLevel = selected?.thinkingLevels.find(
+                (candidate) => candidate === level,
+              );
+              if (connection && thinkingLevel)
                 void action({
                   action: "configure",
                   conversationId: connection.id,
                   model,
-                  thinkingLevel: selected.defaultThinking,
+                  thinkingLevel,
                 });
             }}
           />
@@ -539,26 +544,6 @@ export function GameAgent({
               Unavailable models need a Pi login or a provider extension.
             </p>
           )}
-          <ChoiceField
-            id="agent-effort"
-            label="Effort"
-            value={snapshot.thinkingLevel}
-            disabled={locked}
-            options={choice.thinkingLevels.map((level) => ({
-              value: level,
-              label: `${level}${level === choice.defaultThinking ? " (Pi default)" : ""}`,
-            }))}
-            onChange={(level) => {
-              const thinkingLevel = choice.thinkingLevels.find((candidate) => candidate === level);
-              if (connection && thinkingLevel)
-                void action({
-                  action: "configure",
-                  conversationId: connection.id,
-                  model: snapshot.model,
-                  thinkingLevel,
-                });
-            }}
-          />
         </div>
       )}
       <AgentPanel

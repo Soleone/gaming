@@ -88,6 +88,9 @@ export const agentSnapshotSchema = z.object({
             label: z.string(),
             status: z.enum(["running", "complete", "error"]),
             output: z.string().optional(),
+            sources: z
+              .array(z.object({ url: z.string(), title: z.string().optional() }))
+              .optional(),
             data: z.unknown().optional(),
           }),
         )

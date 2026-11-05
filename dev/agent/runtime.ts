@@ -18,6 +18,7 @@ import {
 } from "@earendil-works/pi-durable";
 import { openNodeSqliteStorage } from "@earendil-works/pi-durable/storage/sqlite/node";
 import type { AgentMessage, AgentTool } from "../../src/components/soleone/agent";
+import { piStep, piSteps, type PiStep } from "../../src/components/soleone/agent/pi-steps";
 import type { AgentRequest, AgentSnapshot, AgentModelChoice } from "../../src/games/agent-protocol";
 import { researchProposalSchema } from "../../src/games/research";
 import { HttpError } from "../local-access";
@@ -33,33 +34,15 @@ const Conversations = defineDoc<{ byDraft: Record<string, number> }>({
   scope: "session",
   initial: () => ({ byDraft: {} }),
 });
-// Trace titles carry the status: present tense while running, past when done, "Failed to" on error.
-const steps: Record<
-  string,
-  {
-    verbs: Record<AgentTool["status"], string>;
-    subject: (input: Record<string, unknown>) => string;
-  }
-> = {
-  search_web: {
-    verbs: { running: "Searching", complete: "Searched", error: "Failed to search" },
-    subject: ({ query }) => (typeof query === "string" && query ? `for “${query}”` : "the web"),
-  },
-  read_page: {
-    verbs: { running: "Reading", complete: "Read", error: "Failed to read" },
-    subject: ({ url }) =>
-      typeof url === "string" && URL.canParse(url) ? new URL(url).hostname : "a source",
-  },
+// Pi's own steps, the research tools read like Pi's web tools, and the proposal step.
+const steps: Record<string, PiStep> = {
+  ...piSteps,
+  search_web: piSteps.web_search!,
+  read_page: piSteps.fetch_content!,
   propose_game: {
     verbs: { running: "Proposing", complete: "Proposed", error: "Failed to propose" },
     subject: ({ title }) => (typeof title === "string" && title ? title : "a game"),
   },
-};
-const stepTitle = (name: string, status: AgentTool["status"], input: Record<string, unknown>) => {
-  const step = steps[name];
-  if (!step)
-    return `${{ running: "Running", complete: "Ran", error: "Failed to run" }[status]} ${name}`;
-  return `${step.verbs[status]} ${step.subject(input)}`;
 };
 const messageText = (message: AssistantMessage | ToolResultMessage) =>
   message.content.flatMap((part) => (part.type === "text" ? [part.text] : [])).join("\n");
@@ -109,14 +92,20 @@ export function createGamingRuntime(
               : slot?.status === "done"
                 ? "error"
                 : "running";
+            const output = result ? messageText(result).slice(0, 6000) : slot?.output;
             return [
               {
                 id: part.id,
                 name: part.name,
-                label: stepTitle(part.name, status, part.arguments ?? {}),
                 status,
-                output: result ? messageText(result).slice(0, 6000) : slot?.output,
+                output,
                 data: result?.details,
+                ...piStep(
+                  { name: part.name, arguments: part.arguments ?? {} },
+                  status,
+                  result && output,
+                  steps,
+                ),
               },
             ];
           }),
