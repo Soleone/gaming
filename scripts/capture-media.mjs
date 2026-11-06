@@ -2,7 +2,7 @@
 // Usage: vp run media:capture -- [--url http://localhost:4173]
 // Needs agent-browser (with its browser installed) and FFmpeg on the PATH. Recording and encoding come from showcase.
 import { parseArgs } from "node:util";
-import { record } from "@soleone/showcase/capture";
+import { record } from "@soleone/showcase-capture";
 
 const { values } = parseArgs({
   options: { url: { type: "string", default: "https://gaming.soleone.xyz" } },
