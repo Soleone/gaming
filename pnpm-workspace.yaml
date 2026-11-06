@@ -2,6 +2,7 @@ catalog:
   vite: npm:@voidzero-dev/vite-plus-core@1.2.0
   vite-plus: 1.2.0
 minimumReleaseAgeExclude:
+  - "@soleone/*"
   - "@voidzero-dev/vite-plus-core@1.2.0"
   - "@voidzero-dev/vite-plus-darwin-arm64@1.2.0"
   - "@voidzero-dev/vite-plus-darwin-x64@1.2.0"
