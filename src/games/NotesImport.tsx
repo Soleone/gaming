@@ -67,9 +67,14 @@ export default function NotesImport({
 
   return (
     <>
-      <Button variant="outline" onClick={() => setOpen(true)}>
-        <ClipboardPaste data-icon="inline-start" />
-        Import notes
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => setOpen(true)}
+        aria-label="Import notes"
+        title="Import notes"
+      >
+        <ClipboardPaste />
       </Button>
       <Dialog open={open} onOpenChange={(next) => !busy && setOpen(next)}>
         <DialogContent>

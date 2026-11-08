@@ -10,8 +10,16 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { ChoiceField } from "@/games/ChoiceField";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { MonthButton, YearSelectTrigger } from "@/components/variants/CalendarHeader";
 import { CoverWall } from "@/games/CoverWall";
 import { canMorph } from "@/games/morph";
 import { GameCard } from "@/games/GameCard";
@@ -35,7 +43,6 @@ import {
   followingYears,
   gamesSchema,
   hasReviewContent,
-  isPlayed,
   MONTHS,
   searchJump,
   upcomingGame,
@@ -50,6 +57,7 @@ const initialGames = gamesSchema.parse(gameData);
 const DevWorkspace = import.meta.env.DEV ? lazy(() => import("./games/Workspace")) : null;
 const DevNotesImport = import.meta.env.DEV ? lazy(() => import("./games/NotesImport")) : null;
 const currentYear = new Date().getFullYear();
+const currentMonth = new Date().getMonth();
 const initialYear = initialGames.some((game) => game.release.year === currentYear)
   ? currentYear
   : (initialGames.find((game) => game.release.year !== null)?.release.year ?? currentYear);
@@ -109,6 +117,10 @@ function Games({ route }: { route: Route }) {
       ...(year === "unscheduled" ? [] : [Number(year)]),
     ]),
   ].sort((a, b) => a - b);
+  const yearOptions = [
+    ...years.map((value) => ({ value: String(value), label: String(value) })),
+    { value: "unscheduled", label: "Unscheduled" },
+  ];
   const sections = calendarSections(games, year);
   // The full-year view keeps going into later years as the visitor nears the bottom.
   const [continued, setContinued] = useState({ view: viewPath, count: 0 });
@@ -120,7 +132,6 @@ function Games({ route }: { route: Route }) {
     sections: calendarSections(games, value),
   }));
   const selectedGames = games.filter((game) => String(game.release.year ?? "unscheduled") === year);
-  const count = sections.reduce((total, section) => total + section.games.length, 0);
   const editGame = DevWorkspace ? (id: string) => openEditor(id) : undefined;
   const selectedId = useGameSelection(
     [sections, ...continuedSections.map((entry) => entry.sections)].flatMap((list) =>
@@ -200,7 +211,7 @@ function Games({ route }: { route: Route }) {
   const content = (
     <div className={editor ? undefined : "min-h-svh"}>
       <CoverWall covers={selectedGames.flatMap((game) => (game.cover ? [game.cover] : []))} />
-      <header className="border-b border-border">
+      <header>
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-4 sm:px-8">
           <Link
             to="/"
@@ -212,6 +223,24 @@ function Games({ route }: { route: Route }) {
           </Link>
           <div className="flex min-w-0 items-center gap-2">
             {!editor && <GameSearch games={games} onPick={findGame} />}
+            {DevWorkspace && !editor && (
+              <>
+                {DevNotesImport && (
+                  <Suspense fallback={null}>
+                    <DevNotesImport games={games} onSaved={setGames} />
+                  </Suspense>
+                )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => openEditor(null)}
+                  aria-label="Add a game"
+                  title="Add a game"
+                >
+                  <Plus />
+                </Button>
+              </>
+            )}
             {notes.on && (
               <NotesMenu
                 notes={notes.notes}
@@ -236,78 +265,70 @@ function Games({ route }: { route: Route }) {
         hidden={Boolean(editor)}
         className="mx-auto max-w-6xl px-5 pt-10 pb-16 sm:px-8 sm:pt-14"
       >
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-          <div className="flex flex-col gap-3">
-            <h1 className="font-heading text-4xl font-semibold tracking-tight sm:text-5xl">
-              Release calendar<span className="text-primary">.</span>
-            </h1>
-            <p className="max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-              Interesting games I care about
-            </p>
-          </div>
-          {DevWorkspace && (
-            <div className="flex flex-wrap gap-2">
-              {DevNotesImport && (
-                <Suspense fallback={null}>
-                  <DevNotesImport games={games} onSaved={setGames} />
-                </Suspense>
-              )}
-              <Button onClick={() => openEditor(null)}>
-                <Plus data-icon="inline-start" />
-                Add a game
-              </Button>
+        <div className="flex flex-col gap-4">
+          <h1 className="text-xs font-semibold tracking-widest text-primary uppercase">
+            Release calendar
+          </h1>
+          <Select
+            value={year}
+            onValueChange={(next) => next !== null && changeYear(next)}
+            items={yearOptions}
+          >
+            <YearSelectTrigger aria-label="Year">
+              <SelectValue />
+            </YearSelectTrigger>
+            <SelectContent align="start" alignItemWithTrigger={false}>
+              <SelectGroup>
+                {yearOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          {year !== "unscheduled" && (
+            <div className="border-t border-border pt-3">
+              <TooltipProvider>
+                <nav aria-label="Jump to month" className="-mx-2.5 flex flex-wrap gap-0.5">
+                  {MONTHS.map((label, index) => {
+                    const count =
+                      sections.find((section) => section.key === index + 1)?.games.length ?? 0;
+                    return (
+                      <Tooltip key={label}>
+                        <TooltipTrigger
+                          render={
+                            <MonthButton
+                              aria-label={label}
+                              aria-current={
+                                year === String(currentYear) && index === currentMonth
+                                  ? "date"
+                                  : undefined
+                              }
+                              disabled={!count}
+                              onClick={() => jumpToMonth(String(index + 1))}
+                            />
+                          }
+                        >
+                          {label.slice(0, 3)}
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          {count} {count === 1 ? "game" : "games"}
+                        </TooltipContent>
+                      </Tooltip>
+                    );
+                  })}
+                  <div className="ml-auto">
+                    <Button variant="link" size="sm" onClick={goToday}>
+                      Today
+                    </Button>
+                  </div>
+                </nav>
+              </TooltipProvider>
             </div>
           )}
         </div>
-        <div className="mt-9 flex flex-wrap items-end justify-between gap-5 pb-5">
-          <Button variant="outline" onClick={goToday}>
-            Today
-          </Button>
-          <div className="flex items-end gap-3">
-            <div className="w-44">
-              <ChoiceField
-                id="calendar-month"
-                label="Month"
-                value={null}
-                placeholder="Jump to"
-                onChange={jumpToMonth}
-                disabled={year === "unscheduled"}
-                options={MONTHS.map((label, index) => ({
-                  value: String(index + 1),
-                  label,
-                  disabled: !sections.some((section) => section.key === index + 1),
-                }))}
-              />
-            </div>
-            <div className="w-32">
-              <ChoiceField
-                id="calendar-year"
-                label="Year"
-                value={year}
-                onChange={changeYear}
-                options={[
-                  ...years.map((value) => ({ value: String(value), label: String(value) })),
-                  { value: "unscheduled", label: "Unscheduled" },
-                ]}
-              />
-            </div>
-          </div>
-        </div>
-        <Separator />
-        <div
-          className="flex flex-wrap items-center justify-between gap-3 py-5 text-xs text-muted-foreground"
-          aria-live="polite"
-        >
-          <p>
-            {count} {count === 1 ? "game" : "games"}
-            {" on my radar"}
-            <span className="mx-2" aria-hidden="true">
-              /
-            </span>
-            {selectedGames.filter((game) => isPlayed(game.play)).length} played this year
-          </p>
-        </div>
-        <div className="calendar-year">
+        <div className="calendar-year mt-10">
           {sections.length ? (
             <div className="flex flex-col gap-12 pt-3">
               {renderSections(sections, year)}

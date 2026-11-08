@@ -58,8 +58,18 @@
     },
     "source": "https://www.nintendo.com/au/news-and-articles/you-have-been-summoned-to-watch-the-new-the-legend-of-zelda-ocarina-of-time-overview-trailer/",
     "hype": 4,
-    "play": "not_played",
-    "review": null
+    "play": "started",
+    "review": {
+      "text": "Because it is so close to the original I find myself less motivated to play through because I mostly know what to expect. What it does re-envision it does great though of course.",
+      "score": 8,
+      "amazing": ["Great reimagination graphics-wise"],
+      "nice": ["Jumping and sprinting is appreciated"],
+      "questionable": [
+        "Some more content additions or adjustments would have been appreciated for the people who know the original",
+        "Some puzzles seem to have been simplified"
+      ],
+      "terrible": []
+    }
   },
   {
     "id": "phantom-blade-zero",
@@ -93,9 +103,7 @@
         "Non-boss encounters are generally not very challenging",
         "Most standard loot doesn't feel super rewarding"
       ],
-      "terrible": [
-        "A handful of boss reuse, that feel mandatory to take on"
-      ]
+      "terrible": ["A handful of boss reuse, that feel mandatory to take on"]
     }
   },
   {
@@ -168,10 +176,7 @@
         "Zombie variety ||And especially the personalities feel like an evolution in the series||",
         "Cinematic presentation"
       ],
-      "nice": [
-        "Good amount of content",
-        "Exploring the areas, especially early on, feels great"
-      ],
+      "nice": ["Good amount of content", "Exploring the areas, especially early on, feels great"],
       "questionable": [
         "Pacing starts off great, but is more one-dimensional towards the end ||Just tons of shooting, which isn't bad, but a few more survival scenes would have bee nice.||"
       ],
@@ -216,9 +221,7 @@
         "Great world building and scale",
         "Developers kept shipping new improvements quickly, very impressive"
       ],
-      "nice": [
-        "Surprising amount of game systems, but me personally"
-      ],
+      "nice": ["Surprising amount of game systems, but me personally"],
       "questionable": [
         "Combat system is too button mashy for my taste, mainly the bosses required some strategy and variety"
       ],
@@ -241,9 +244,7 @@
     "review": {
       "text": "",
       "score": 7,
-      "amazing": [
-        "Impeccable fighting system with lots of move and weapon variety"
-      ],
+      "amazing": ["Impeccable fighting system with lots of move and weapon variety"],
       "nice": [],
       "questionable": [
         "Open world exploration starts out interesting, but becomes formulaic and repetitive quickly",
@@ -671,9 +672,7 @@
     "review": {
       "text": "This world is arguably even better than the base game, but some of the boss fights are pretty insanely tough.",
       "score": 10,
-      "amazing": [
-        "Unbelievably epic vertical landscapes and intricate large area design"
-      ],
+      "amazing": ["Unbelievably epic vertical landscapes and intricate large area design"],
       "nice": [],
       "questionable": [
         "Difficulty is maybe a bit over the edge for a few fights. I'm still stuck at one particular arena fight against multiple enemies so I haven't even seen the last boss yet, which is probably even harder."
@@ -1181,9 +1180,17 @@
     "review": {
       "text": "",
       "score": 8,
-      "amazing": [],
-      "nice": [],
-      "questionable": [],
+      "amazing": [
+        "Loot feels very rewarding because you start out so weak and with limited options.",
+        "Level design feels elegant, fairly minimalistic like the first Dark Souls where you really get to know each path."
+      ],
+      "nice": [
+        "Have to carefully look around the environment to not accidentally miss some items, personally I like that."
+      ],
+      "questionable": [
+        "Combat involves a lot of moving backwards, no dodge or block yet, hopefully that changes later?",
+        "Graphics are acceptable I guess"
+      ],
       "terrible": []
     }
   }
