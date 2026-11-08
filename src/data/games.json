@@ -77,10 +77,25 @@
     "review": {
       "text": "",
       "score": 9,
-      "amazing": ["Next gen cinematic landscapes, characters and animations"],
-      "nice": [],
-      "questionable": [],
-      "terrible": []
+      "amazing": [
+        "Next gen cinematic landscapes, characters and animations",
+        "Finding new weapons feels rewarding",
+        "Great boss fights, sometimes quite challenging on the hard difficulty"
+      ],
+      "nice": [
+        "Multiple paths to explore",
+        "Backtracking is generally pretty fun because it's clearly marked on the map",
+        "Story is decently engaging for a traditionally Chinese game (easier to get into than Black Myth: Wukong)",
+        "Good pacing between exploration and boss fights",
+        "Fair upgrade systems that let you try different routes"
+      ],
+      "questionable": [
+        "Non-boss encounters are generally not very challenging",
+        "Most standard loot doesn't feel super rewarding"
+      ],
+      "terrible": [
+        "A handful of boss reuse, that feel mandatory to take on"
+      ]
     }
   },
   {
@@ -153,7 +168,10 @@
         "Zombie variety ||And especially the personalities feel like an evolution in the series||",
         "Cinematic presentation"
       ],
-      "nice": ["Good amount of content", "Exploring the areas, especially early on, feels great"],
+      "nice": [
+        "Good amount of content",
+        "Exploring the areas, especially early on, feels great"
+      ],
       "questionable": [
         "Pacing starts off great, but is more one-dimensional towards the end ||Just tons of shooting, which isn't bad, but a few more survival scenes would have bee nice.||"
       ],
@@ -198,7 +216,9 @@
         "Great world building and scale",
         "Developers kept shipping new improvements quickly, very impressive"
       ],
-      "nice": ["Surprising amount of game systems, but me personally"],
+      "nice": [
+        "Surprising amount of game systems, but me personally"
+      ],
       "questionable": [
         "Combat system is too button mashy for my taste, mainly the bosses required some strategy and variety"
       ],
@@ -221,7 +241,9 @@
     "review": {
       "text": "",
       "score": 7,
-      "amazing": ["Impeccable fighting system with lots of move and weapon variety"],
+      "amazing": [
+        "Impeccable fighting system with lots of move and weapon variety"
+      ],
       "nice": [],
       "questionable": [
         "Open world exploration starts out interesting, but becomes formulaic and repetitive quickly",
@@ -649,7 +671,9 @@
     "review": {
       "text": "This world is arguably even better than the base game, but some of the boss fights are pretty insanely tough.",
       "score": 10,
-      "amazing": ["Unbelievably epic vertical landscapes and intricate large area design"],
+      "amazing": [
+        "Unbelievably epic vertical landscapes and intricate large area design"
+      ],
       "nice": [],
       "questionable": [
         "Difficulty is maybe a bit over the edge for a few fights. I'm still stuck at one particular arena fight against multiple enemies so I haven't even seen the last boss yet, which is probably even harder."
