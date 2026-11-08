@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/empty";
 import { Separator } from "@/components/ui/separator";
 import { ChoiceField } from "@/games/ChoiceField";
+import { CoverWall } from "@/games/CoverWall";
+import { canMorph } from "@/games/morph";
 import { GameCard } from "@/games/GameCard";
 import { GameSearch } from "@/games/GameSearch";
 import { NotesMenu } from "@/games/NotesMenu";
@@ -127,7 +129,16 @@ function Games({ route }: { route: Route }) {
     Boolean(editGame) && !editor,
     (id) => openEditor(id),
   );
-  const changeYear = (next: string) => void navigate(calendarPath(next));
+  // Switching years scrolls into the new one: a later year rises from below, an earlier one drops in.
+  const changeYear = (next: string) => {
+    const open = () => navigate(calendarPath(next), { flushSync: true });
+    if (!canMorph()) return void open();
+    const root = document.documentElement;
+    const rank = (value: string) => (value === "unscheduled" ? Infinity : Number(value));
+    root.dataset.yearShift = rank(next) > rank(year) ? "later" : "earlier";
+    const transition = document.startViewTransition(open);
+    void transition.finished.finally(() => delete root.dataset.yearShift);
+  };
   const scrollTo = (element: Element | null | undefined) =>
     window.scrollTo({
       top: element ? element.getBoundingClientRect().top + window.scrollY - 24 : 0,
@@ -188,6 +199,7 @@ function Games({ route }: { route: Route }) {
   if (route.view === "review" && !reviewed) return <Navigate to="/" replace />;
   const content = (
     <div className={editor ? undefined : "min-h-svh"}>
+      <CoverWall covers={selectedGames.flatMap((game) => (game.cover ? [game.cover] : []))} />
       <header className="border-b border-border">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-4 sm:px-8">
           <Link
@@ -295,46 +307,48 @@ function Games({ route }: { route: Route }) {
             {selectedGames.filter((game) => isPlayed(game.play)).length} played this year
           </p>
         </div>
-        {sections.length ? (
-          <div className="flex flex-col gap-12 pt-3">
-            {renderSections(sections, year)}
-            {continuedSections.map((entry) => [
-              entry.year !== "unscheduled" && (
-                <div key={entry.year} className="flex items-center gap-5 pt-6">
-                  <h2 className="font-heading text-3xl font-semibold tracking-tight">
-                    {entry.year}
-                  </h2>
-                  <div className="min-w-0 flex-1">
-                    <Separator />
+        <div className="calendar-year">
+          {sections.length ? (
+            <div className="flex flex-col gap-12 pt-3">
+              {renderSections(sections, year)}
+              {continuedSections.map((entry) => [
+                entry.year !== "unscheduled" && (
+                  <div key={entry.year} className="flex items-center gap-5 pt-6">
+                    <h2 className="font-heading text-3xl font-semibold tracking-tight">
+                      {entry.year}
+                    </h2>
+                    <div className="min-w-0 flex-1">
+                      <Separator />
+                    </div>
                   </div>
-                </div>
-              ),
-              ...renderSections(entry.sections, entry.year),
-            ])}
-            {nextYear !== undefined && (
-              <NearBottom
-                key={nextYear}
-                onReach={() => setContinued({ view: viewPath, count: shownYears.length + 1 })}
-              />
-            )}
-          </div>
-        ) : (
-          <Empty className="min-h-72">
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <CalendarDays aria-hidden="true" />
-              </EmptyMedia>
-              <EmptyTitle>
-                <h2>Nothing on the calendar. Yet.</h2>
-              </EmptyTitle>
-              <EmptyDescription>
-                {year === "unscheduled"
-                  ? "Every game has a year for now. Games without one will live here."
-                  : "A little room for the next discovery. Try another year or add a game to the collection."}
-              </EmptyDescription>
-            </EmptyHeader>
-          </Empty>
-        )}
+                ),
+                ...renderSections(entry.sections, entry.year),
+              ])}
+              {nextYear !== undefined && (
+                <NearBottom
+                  key={nextYear}
+                  onReach={() => setContinued({ view: viewPath, count: shownYears.length + 1 })}
+                />
+              )}
+            </div>
+          ) : (
+            <Empty className="min-h-72">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <CalendarDays aria-hidden="true" />
+                </EmptyMedia>
+                <EmptyTitle>
+                  <h2>Nothing on the calendar. Yet.</h2>
+                </EmptyTitle>
+                <EmptyDescription>
+                  {year === "unscheduled"
+                    ? "Every game has a year for now. Games without one will live here."
+                    : "A little room for the next discovery. Try another year or add a game to the collection."}
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          )}
+        </div>
       </main>
       {notes.on && (
         <NotesSheet

@@ -86,6 +86,106 @@
   }
 }
 
+/* The page backdrop: the cover wall (src/games/CoverWall.tsx) under fine CRT scanlines
+   and a faint glow at the top. */
+.cover-wall {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, black 10%, transparent 85%);
+}
+.cover-wall-track {
+  position: absolute;
+  inset: -40% -20% auto;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.75rem;
+  /* Matches the gap so each half of the doubled tiles is exactly 50% of the track. */
+  padding-bottom: 0.75rem;
+  rotate: -9deg;
+  animation: cover-wall-drift 120s linear infinite;
+}
+.cover-wall-track img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  opacity: 0.08;
+  filter: grayscale(0.5);
+}
+.dark .cover-wall-track img {
+  opacity: 0.11;
+}
+@media (max-width: 40rem) {
+  .cover-wall-track {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+@keyframes cover-wall-drift {
+  to {
+    translate: 0 -50%;
+  }
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--foreground) 5%, transparent) 0 1px,
+      transparent 1px 3px
+    ),
+    radial-gradient(
+      70% 45% at 50% 0%,
+      color-mix(in oklab, var(--chart-1) 14%, transparent),
+      transparent 70%
+    );
+}
+@media (prefers-reduced-motion: reduce) {
+  .cover-wall-track {
+    animation: none;
+  }
+}
+
+/* Switching years scrolls into the new one (changeYear in src/App.tsx): the old year slides out
+   past the top of the list as the new one comes in, from below for a later year, from above for an earlier one. */
+:root[data-year-shift="later"] {
+  --year-shift: 40vh;
+}
+:root[data-year-shift="earlier"] {
+  --year-shift: -40vh;
+}
+:root[data-year-shift] .calendar-year {
+  view-transition-name: calendar-year;
+}
+::view-transition-group(calendar-year) {
+  animation: none;
+  overflow: clip;
+}
+::view-transition-old(calendar-year) {
+  animation: year-leave 550ms cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+::view-transition-new(calendar-year) {
+  animation: year-enter 550ms cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+@keyframes year-leave {
+  to {
+    opacity: 0;
+    translate: 0 calc(var(--year-shift) * -1);
+  }
+}
+@keyframes year-enter {
+  from {
+    opacity: 0;
+    translate: 0 var(--year-shift);
+  }
+}
+
 /* The cover that flies between a card and its open review (src/games/morph.ts). */
 .review-morph {
   view-transition-name: review-cover;
