@@ -1185,7 +1185,8 @@
         "Level design feels elegant, fairly minimalistic like the first Dark Souls where you really get to know each path."
       ],
       "nice": [
-        "Have to carefully look around the environment to not accidentally miss some items, personally I like that."
+        "Have to carefully look around the environment to not accidentally miss some items, personally I like that.",
+        "Music starts out a bit boring at first, some of the tracks grow on you"
       ],
       "questionable": [
         "Combat involves a lot of moving backwards, no dodge or block yet, hopefully that changes later?",
@@ -1193,5 +1194,18 @@
       ],
       "terrible": []
     }
+  },
+  {
+    "id": "d08eed3c-0b1b-4050-b113-2874d6660df0",
+    "title": "Hollow Knight: Silksong - Sea of Sorrow",
+    "cover": "/covers/agent-77ccfc626cbac8cac3a03485.webp",
+    "release": {
+      "precision": "year",
+      "year": 2026
+    },
+    "source": "https://www.teamcherry.com.au/blog/holiday2025",
+    "hype": 5,
+    "play": "not_played",
+    "review": null
   }
 ]
