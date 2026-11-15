@@ -10,7 +10,12 @@ import { gameEditorPlugin } from "./dev/game-editor";
 
 // Vendored code: shadcn primitives, its mobile hook, and @soleone registry items.
 // Keep upstream source intact; kit check verifies the component copies.
-const vendored = ["src/components/ui/**", "src/components/soleone/**", "src/hooks/use-mobile.ts"];
+const vendored = [
+  "src/components/ui/**",
+  "src/components/soleone/**",
+  "src/components/live/**",
+  "src/hooks/use-mobile.ts",
+];
 
 const noBaseUi = {
   group: ["@base-ui/react", "@base-ui/react/*"],
