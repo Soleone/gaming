@@ -1176,21 +1176,27 @@
     },
     "source": "https://store.steampowered.com/app/1799840/Queens_Domain/",
     "hype": 2,
-    "play": "started",
+    "play": "played",
     "review": {
-      "text": "",
-      "score": 8,
+      "text": "This game finally gave me the Dark Souls experience I have been craving for many years. A meticulously designed world where you can go everywhere you can look, but not in the sense of Elden Ring where there is a lot of empty space. Instead it is packed with encounters, exploration and secrets around every corner. There are even Metroidvania elements, so I hope you don't mind some backtracking.\n\nIf last generation graphics and a slower pace don't put you off, then you will find a best in class RPG here with a focus on combat and traversal instead of quests and dialogues. Every character you meet you are curious about because there aren't many survivors left. The \"puzzles\" and traversal can sometimes challenge your observational skills so make sure to keep a keen eye on your surroundings.\n\nSo many things I would like to talk about here and advertise but really can't because I don't want to spoil any surprises.",
+      "score": 10,
       "amazing": [
         "Loot feels very rewarding because you start out so weak and with limited options.",
-        "Level design feels elegant, fairly minimalistic like the first Dark Souls where you really get to know each path."
+        "Level design is elegant, on the more minimalistic end like the first Dark Souls where you really get to know each path.",
+        "What an epic world you're being thrown in, some great scale too, which hard to imagine when you first land on the beach",
+        "Get completely absorbed in exploration",
+        "Secrets everywhere make you feel special for uncovering things a lot of people might have missed"
       ],
       "nice": [
-        "Have to carefully look around the environment to not accidentally miss some items, personally I like that.",
-        "Music starts out a bit boring at first, some of the tracks grow on you"
+        "The combat system starts out very clunky but gradually becomes more engaging and varying until it feels pretty great, if you don't mind slow and methodical",
+        "You have to carefully look around the environment to not accidentally miss some items, personally I like that.",
+        "You can optionally save without rest and respawn",
+        "Story is mostly told through item descriptions and works decently enough, I liked to read most of them"
       ],
       "questionable": [
-        "Combat involves a lot of moving backwards, no dodge or block yet, hopefully that changes later?",
-        "Graphics are acceptable I guess"
+        "Music is bit bland and simplistic and repetitive, but some tracks definitely grow on you and there is variety overall",
+        "Graphics are acceptable I guess",
+        "Names of a bunch of the characters and places are weird and hard to remember"
       ],
       "terrible": []
     }
