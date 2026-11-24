@@ -1213,5 +1213,18 @@
     "hype": 5,
     "play": "not_played",
     "review": null
+  },
+  {
+    "id": "bcc0bf70-5248-4ce2-8c5a-c4b902771f30",
+    "title": "ILL",
+    "cover": "/covers/agent-8ea272c5bc38e371ec44d7fe.webp",
+    "release": {
+      "precision": "year",
+      "year": 2027
+    },
+    "source": "https://store.steampowered.com/app/1757350/ILL/",
+    "hype": 4,
+    "play": "not_played",
+    "review": null
   }
 ]
