@@ -504,48 +504,6 @@ export function GameAgent({
           New conversation
         </Button>
       </div>
-      {snapshot && choice && (
-        <div className="grid min-w-0 grid-cols-1 gap-3">
-          <AgentModelFields
-            disabled={locked}
-            models={[
-              ...snapshot.models.map((model) => ({
-                id: model.id,
-                label: `${model.name} · ${model.id.split("/")[0]}`,
-                thinkingLevels: model.thinkingLevels,
-                thinking: model.defaultThinking,
-              })),
-              ...snapshot.unavailableModels.map((id) => ({
-                id: `unavailable:${id}`,
-                label: `${id} (unavailable)`,
-                thinkingLevels: [],
-                thinking: "",
-                disabled: true,
-              })),
-            ]}
-            model={snapshot.model}
-            thinking={snapshot.thinkingLevel}
-            onChange={(model, level) => {
-              const selected = snapshot.models.find((candidate) => candidate.id === model);
-              const thinkingLevel = selected?.thinkingLevels.find(
-                (candidate) => candidate === level,
-              );
-              if (connection && thinkingLevel)
-                void action({
-                  action: "configure",
-                  conversationId: connection.id,
-                  model,
-                  thinkingLevel,
-                });
-            }}
-          />
-          {snapshot.unavailableModels.length > 0 && (
-            <p className="text-xs text-muted-foreground">
-              Unavailable models need a Pi login or a provider extension.
-            </p>
-          )}
-        </div>
-      )}
       <AgentPanel
         messages={snapshot?.messages ?? []}
         prompt={prompt}
@@ -561,6 +519,58 @@ export function GameAgent({
             : "Which game would you like to add?"
         }
         renderTool={renderProposal}
+        model={
+          choice && snapshot ? { name: choice.name, thinking: snapshot.thinkingLevel } : undefined
+        }
+        modelPicker={
+          snapshot && choice ? (
+            <div className="grid min-w-0 grid-cols-1 gap-3">
+              <AgentModelFields
+                disabled={locked}
+                models={[
+                  ...snapshot.models.map((model) => ({
+                    id: model.id,
+                    label: `${model.name} · ${model.id.split("/")[0]}`,
+                    thinkingLevels: model.thinkingLevels,
+                    thinking: model.defaultThinking,
+                  })),
+                  ...snapshot.unavailableModels.map((id) => ({
+                    id: `unavailable:${id}`,
+                    label: `${id} (unavailable)`,
+                    thinkingLevels: [],
+                    thinking: "",
+                    disabled: true,
+                  })),
+                ]}
+                model={snapshot.model}
+                thinking={snapshot.thinkingLevel}
+                onChange={(model, level) => {
+                  const selected = snapshot.models.find((candidate) => candidate.id === model);
+                  const thinkingLevel = selected?.thinkingLevels.find(
+                    (candidate) => candidate === level,
+                  );
+                  if (connection && thinkingLevel)
+                    void action({
+                      action: "configure",
+                      conversationId: connection.id,
+                      model,
+                      thinkingLevel,
+                    });
+                }}
+              />
+              {snapshot.unavailableModels.length > 0 && (
+                <p className="text-xs text-muted-foreground">
+                  Unavailable models need a Pi login or a provider extension.
+                </p>
+              )}
+            </div>
+          ) : undefined
+        }
+        suggestions={
+          draft
+            ? [`Find release information and a cover for ${draft.title || "this game"}`]
+            : ["Which games come out next month?", "Add Hades II to my collection"]
+        }
         onSend={async (text) => {
           if (!connection || pending || disabled) return false;
           if (retry.current?.text !== text) retry.current = { text, id: crypto.randomUUID() };
